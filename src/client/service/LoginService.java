@@ -3,18 +3,18 @@ package client.service;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
-public class LoginService extends Service<String> {
+public class LoginService extends Service<Boolean> {
     @Override
-    protected Task<String> createTask() {
-        return new Task<String>() {
+    protected Task<Boolean> createTask() {
+        return new Task<Boolean>() {
             @Override
-            protected String call() throws Exception {
+            protected Boolean call() throws Exception {
+
+                boolean isSuccessful=true;
 
                 //TODO RMI call
 
-                //return msg if succesfull
-                String msg = "Successfully logged in with username TODO"; //TODO
-                return msg;
+                return isSuccessful; //Calls succeeded()
             }
         };
     }

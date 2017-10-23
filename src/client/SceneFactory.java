@@ -3,8 +3,9 @@ package client;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +23,7 @@ public class SceneFactory {
 
     public Scene getLoginScene() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("layout/login.fxml"));
             return new Scene(root, WIDTH, HEIGHT);
         }catch (Exception e){
             e.printStackTrace();
@@ -32,9 +33,16 @@ public class SceneFactory {
         return null;
     }
 
-    public Scene getLobbyScene() {
+    public Scene getLobbyScene(String msg) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("lobby.fxml"));
+            Parent root = FXMLLoader.load(getClass().getResource("layout/lobby.fxml"));
+
+            Alert alert = new Alert(AlertType.INFORMATION);
+            alert.setTitle("Welcome to UNO");
+            alert.setHeaderText("Join the lobby!");
+            alert.setContentText(msg);
+            alert.showAndWait();
+
             return new Scene(root, WIDTH, HEIGHT);
         }catch (Exception e){
             e.printStackTrace();

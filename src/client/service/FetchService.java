@@ -33,6 +33,9 @@ public class FetchService extends Service<Void> {
                     LOGGER.log(Level.INFO,"GameData fetch received: {0}");
 
                     //TODO update Game-model
+
+                    //tmp
+                    online=false;
                 }
 
                 return null;
