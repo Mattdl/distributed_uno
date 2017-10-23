@@ -1,14 +1,11 @@
 package client;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
 
 public class Main extends Application {
 
-
+    public static SceneFactory sceneFactory;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
@@ -17,12 +14,15 @@ public class Main extends Application {
         FetchService fetchService = new FetchService();
         fetchService.start();
 
-        //Init scene
-        Parent root = FXMLLoader.load(getClass().getResource("layout.fxml"));
+        final int HEIGHT = 600;
+        final int WIDTH = 900;
+        sceneFactory = new SceneFactory(WIDTH,HEIGHT);
+        primaryStage.setScene(sceneFactory.getLoginScene());
+
+
         primaryStage.setTitle("UNO");
         primaryStage.setAlwaysOnTop( false );
         primaryStage.setResizable( true );
-        primaryStage.setScene(new Scene(root)); //width and height changable
         primaryStage.show();
     }
 

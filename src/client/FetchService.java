@@ -20,6 +20,9 @@ public class FetchService extends Service<Void> {
                 //The fetching loop
                 while(online){
 
+                    //TODO RMI call to fetch Game-data
+
+                    //TODO update Game-model
                 }
 
                 return null;
