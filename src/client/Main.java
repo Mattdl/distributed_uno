@@ -24,8 +24,6 @@ public class Main extends Application {
         primaryStage.setResizable( true );
         primaryStage.setScene(new Scene(root)); //width and height changable
         primaryStage.show();
-
-
     }
 
 

@@ -7,7 +7,7 @@ public class FetchService extends Service<Void> {
     private boolean online;
 
     public FetchService() {
-        this.online = false;
+        this.online = true;
     }
 
     @Override
