@@ -7,7 +7,7 @@ public class Model extends Observable{
     private List<Game> gamesInLobby;
 
 
-    //To warn Controller
+    //To warn LoginController
     //setChanged();
     //notifyObservers();
 
