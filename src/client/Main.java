@@ -1,6 +1,7 @@
 package client;
 
 import client.service.FetchService;
+import client.service.ServerInitiatorService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -11,13 +12,13 @@ public class Main extends Application {
 
     private static final Logger LOGGER = Logger.getLogger( Main.class.getName() );
 
-
     public static SceneFactory sceneFactory;
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
         LOGGER.log(Level.INFO,"Launching client application");
+
 
         //Multiple threads should run here (Service!)
         //FetchService fetchService = new FetchService();

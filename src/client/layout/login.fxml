@@ -54,4 +54,7 @@
          </padding>
       </VBox>
    </center>
+   <bottom>
+      <Text fx:id="connectionTextField" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for connection..." BorderPane.alignment="CENTER" />
+   </bottom>
 </BorderPane>

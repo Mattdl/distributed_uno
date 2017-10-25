@@ -1,6 +1,8 @@
-package dispatcher.model;
+package model;
 
-public class Server {
+import java.io.Serializable;
+
+public class Server implements Serializable{
     private String ip;
     private int port;
 

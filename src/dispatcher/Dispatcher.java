@@ -6,8 +6,12 @@ import app_server.AppServer;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Logger;
 
 public class Dispatcher {
+
+    private static final Logger LOGGER = Logger.getLogger( Dispatcher.class.getName() );
+
 
     private final int DISPATCHER_PORT = 1099;
 
@@ -19,11 +23,13 @@ public class Dispatcher {
 
     private void startServer() {
 
+        LOGGER.info("Starting server from dispatch");
+
         //Startup one server
         String[] serverArgs = new String[2];
         serverArgs[0] = STARTING_SERVER_IP;
         serverArgs[1] = String.valueOf(STARTING_SERVER_PORT);
-        AppServer.main(null);
+        AppServer.main(serverArgs);
 
 
         //SERVER-SIDE RMI
@@ -41,7 +47,7 @@ public class Dispatcher {
         //CLIENT-SIDE RMI to application servers
         //new DispatcherThread().start();
 
-        System.out.println("system is ready");
+        LOGGER.info("DISPATCHER is ready");
     }
 
     public static void main(String[] args) {

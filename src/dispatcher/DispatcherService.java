@@ -1,15 +1,19 @@
 package dispatcher;
 
-import stub_RMI.appserver_dbserver.DispatcherStub;
+import model.Server;
+import stub_RMI.client_dispatcher.DispatcherStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.logging.Logger;
 
 //RMI handles multi-threading itsel: may be or may not be in multiple threads
 public class DispatcherService extends UnicastRemoteObject implements DispatcherStub {
 
-    public DispatcherService() throws RemoteException {
-    }
+    private static final Logger LOGGER = Logger.getLogger( DispatcherService.class.getName() );
+
+
+    public DispatcherService() throws RemoteException {}
 
 
     /**
@@ -17,11 +21,14 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
      * @return
      */
     @Override
-    public synchronized String[] retrieveServerInfo() {
-        String[] ret = new String[2];
-        ret[0] = Dispatcher.STARTING_SERVER_IP;
-        ret[1] = String.valueOf(Dispatcher.STARTING_SERVER_PORT);
-        return ret;
+    public synchronized Server retrieveServerInfo() throws RemoteException{
+        LOGGER.info("retrieveServerInfo");
+
+        Server server = new Server();
+        server.setIp(Dispatcher.STARTING_SERVER_IP);
+        server.setPort(Dispatcher.STARTING_SERVER_PORT);
+
+        return server;
     }
 
 }

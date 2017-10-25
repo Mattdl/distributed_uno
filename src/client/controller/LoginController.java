@@ -3,11 +3,15 @@ package client.controller;
 import client.Main;
 import client.Model;
 import client.service.LoginService;
+import client.service.ServerInitiatorService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Server;
 
+import java.awt.TextField;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,8 +19,24 @@ public class LoginController{
 
     private static final Logger LOGGER = Logger.getLogger( LoginController.class.getName() );
 
-    //@FXML
-    //private Button loginButton;
+    private boolean hasServerConnection = false;
+
+    @FXML
+    private Text connectionTextField;
+
+
+    @FXML
+    public void initialize(){
+        ServerInitiatorService serverInitiatorService = new ServerInitiatorService();
+        serverInitiatorService.setOnSucceeded(event -> {
+
+            Server serverInfo = (Server) event.getSource().getValue();
+
+            //TODO unlock login field
+            connectionTextField.setText("Has serverinfo: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+        });
+        serverInitiatorService.start();
+    }
 
     /* LOGIN SCREEN */
     @FXML
