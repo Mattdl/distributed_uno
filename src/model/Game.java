@@ -19,7 +19,6 @@ public class Game {
         this.playerList = new ArrayList<>();
         this.clockwise = true;
         this.state = State.WAITING;
-        //TODO: Generate deck
         playerList.add(initialPlayer);
     }
 
