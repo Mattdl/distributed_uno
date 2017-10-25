@@ -18,9 +18,10 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
      */
     @Override
     public synchronized String[] retrieveServerInfo() {
-
-
-        return new String[0];
+        String[] ret = new String[2];
+        ret[0] = Dispatcher.STARTING_SERVER_IP;
+        ret[1] = String.valueOf(Dispatcher.STARTING_SERVER_PORT);
+        return ret;
     }
 
 }

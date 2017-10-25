@@ -20,8 +20,8 @@ public class Main extends Application {
         LOGGER.log(Level.INFO,"Launching client application");
 
         //Multiple threads should run here (Service!)
-        FetchService fetchService = new FetchService();
-        fetchService.start();
+        //FetchService fetchService = new FetchService();
+        //fetchService.start();
 
         final int HEIGHT = 600;
         final int WIDTH = 900;

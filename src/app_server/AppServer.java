@@ -3,14 +3,12 @@ package app_server;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class ServerMain {
-    private void startServer() {
+public class AppServer {
+    private void startServer(String ip, int port) {
         try {
-            // create on port 1099
-            Registry registry = LocateRegistry.createRegistry(1099);
+            Registry registry = LocateRegistry.createRegistry(port);
 
-            // create a new service named CounterService
-            //TODO name
+            //Bind RMI implementations to service names
             registry.rebind("NAMEService", new StubImpl());
 
         } catch (Exception e) {
@@ -20,7 +18,9 @@ public class ServerMain {
     }
 
     public static void main(String[] args) {
-        //TODO multithreading
-        new ServerMain().startServer();
+        String ip = args[0];
+        int port = Integer.parseInt(args[1]);
+
+        new AppServer().startServer(ip,port);
     }
 }
