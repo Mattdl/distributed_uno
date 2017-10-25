@@ -8,7 +8,7 @@ public class Card {
     private CardColor color;
     private int value;
 
-    public Card(Image image, CardType cardType, CardColor color, int value) {
+    public Card(Image image, CardType cardType, CardColor color, Integer value) {
         this.image = image;
         this.cardType = cardType;
         this.color = color;
@@ -46,10 +46,10 @@ public class Card {
      */
     public enum CardType{
         NORMAL,
-        PLUS,
-        PASS_TURN,
-        JOKER,
+        PLUS2,
+        PLUS4,
+        SKIP,
         REVERSE,
-        CHANGE_COLOR
+        PICK_COLOR
     }
 }
