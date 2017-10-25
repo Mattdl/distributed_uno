@@ -1,8 +1,11 @@
 package model;
 
+import java.util.List;
+
 public class Player {
     private String name;
     private String password;
+    private List<Card> hand;
     //private String token;
 
 
@@ -11,8 +14,20 @@ public class Player {
         this.password = password;
     }
 
+    public void addCard(Card card){
+        hand.add(card);
+    }
+
     public String getName() {
         return name;
+    }
+
+    public List<Card> getHand() {
+        return hand;
+    }
+
+    public void setHand(List<Card> hand) {
+        this.hand = hand;
     }
 
     public String getPassword() {
