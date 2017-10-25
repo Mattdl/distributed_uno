@@ -14,4 +14,16 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
     public boolean ping() throws RemoteException {
         return true;
     }
+
+
+    @Override
+    public String getLoginToken(String username, String password) throws RemoteException {
+        //TODO decrypt username & password
+
+        //TODO check login with database
+        //return null if failed login
+
+        //TODO generate token
+        return "DMLKJMLSDF123";
+    }
 }

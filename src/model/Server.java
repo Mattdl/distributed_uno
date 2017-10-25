@@ -2,11 +2,13 @@ package model;
 
 import java.io.Serializable;
 
-public class Server implements Serializable{
+public class Server implements Serializable {
     private String ip;
     private int port;
 
     public Server() {
+        ip = null;
+        port = -1;
     }
 
     public String getIp() {

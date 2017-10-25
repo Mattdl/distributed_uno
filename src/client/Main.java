@@ -14,8 +14,8 @@ public class Main extends Application {
     private static final Logger LOGGER = Logger.getLogger( Main.class.getName() );
 
     public static SceneFactory sceneFactory;
-
     public static Server appServer;
+    public static String token;
 
     @Override
     public void start(Stage primaryStage) throws Exception{

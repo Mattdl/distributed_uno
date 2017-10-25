@@ -1,45 +1,53 @@
 package client.controller;
 
 import client.Main;
-import client.Model;
 import client.service.LoginService;
 import client.service.PingService;
 import client.service.ServerInitiatorService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Server;
 
-import java.awt.TextField;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static client.Main.appServer;
 
-public class LoginController{
+public class LoginController {
 
-    private static final Logger LOGGER = Logger.getLogger( LoginController.class.getName() );
-
-    private boolean hasServerConnection = false;
+    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
 
     @FXML
-    private Text connectionTextField;
+    private PasswordField passwordInput;
+
+    @FXML
+    private TextField usernameInput;
+
+    @FXML
+    private Text connectionText;
 
 
     @FXML
-    public void initialize(){
+    public void initialize() {
+
+        //TODO check if token is valid, if token is valid => go to Lobby
         ServerInitiatorService serverInitiatorService = new ServerInitiatorService();
         serverInitiatorService.setOnSucceeded(event -> {
 
             Server serverInfo = (Server) event.getSource().getValue();
 
-            if(serverInfo != null){
+            if (serverInfo != null) {
                 appServer = serverInfo;
-                connectionTextField.setText("Has serverinfo: " + serverInfo.getIp() + ":" + serverInfo.getPort());
-            }
-            else{
+                if (appServer.getIp() != null && appServer.getPort() != -1) {
+                    connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
+                }
+            } else {
                 LOGGER.warning("AppServer info is null!");
             }
 
@@ -47,9 +55,9 @@ public class LoginController{
             PingService pingService = new PingService();
             pingService.setOnSucceeded(event1 -> {
                 boolean isConnected = (boolean) event1.getSource().getValue();
-                if(isConnected) {
-                    connectionTextField.setText("Connection established: " + serverInfo.getIp() + ":" + serverInfo.getPort());
-                }else{
+                if (isConnected) {
+                    connectionText.setText("Connection established: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+                } else {
                     LOGGER.warning("Could not connect to the retrieved server from dispatch!");
                 }
             });
@@ -61,28 +69,29 @@ public class LoginController{
     /* LOGIN SCREEN */
     @FXML
     public void tryLogin(ActionEvent event) {
-        LOGGER.log(Level.INFO,"Trying Login");
+        LOGGER.log(Level.INFO, "Trying Login");
+
+        //TODO encryption of username and password before giving to loginservice!
 
         //Init background service for login
-        LoginService loginService = new LoginService();
+        LoginService loginService = new LoginService(usernameInput.getText(), passwordInput.getText());
 
-        loginService.setOnSucceeded( e -> {
-            LOGGER.log(Level.INFO,"Login attempt finished");
+        loginService.setOnSucceeded(e -> {
+            LOGGER.log(Level.INFO, "Login attempt finished");
 
             boolean isSuccessful = (Boolean) e.getSource().getValue();
 
             //return msg if succesfull
             String msg;
-            if(isSuccessful) {
+            if (isSuccessful) {
                 msg = "Successfully logged in with username TODO"; //TODO
-                LOGGER.log(Level.INFO,"Login attempt was SUCCESSFUL");
+                LOGGER.log(Level.INFO, "Login attempt was SUCCESSFUL");
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToLobbyScene(stage,msg);
-            }
-            else{
-                msg= "Could not login, try again.";
-                LOGGER.log(Level.WARNING,"Login attempt FAILED");
+                switchToLobbyScene(stage, msg);
+            } else {
+                msg = "Could not login, try again.";
+                LOGGER.log(Level.WARNING, "Login attempt FAILED");
             }
         });
         loginService.start();
@@ -94,10 +103,10 @@ public class LoginController{
     }
 
     private void switchToLobbyScene(Stage stage, String msg) {
-        LOGGER.log(Level.INFO,"switching To LobbyScene");
+        LOGGER.log(Level.INFO, "switching To LobbyScene");
 
         stage.setScene(Main.sceneFactory.getLobbyScene(msg));
 
-        LOGGER.log(Level.INFO,"switched To LobbyScene");
+        LOGGER.log(Level.INFO, "switched To LobbyScene");
     }
 }

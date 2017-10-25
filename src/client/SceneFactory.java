@@ -1,5 +1,6 @@
 package client;
 
+import client.controller.LobbyController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -35,13 +36,12 @@ public class SceneFactory {
 
     public Scene getLobbyScene(String msg) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("layout/lobby.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
+            Parent root = fxmlLoader.load();
 
-            Alert alert = new Alert(AlertType.INFORMATION);
-            alert.setTitle("Welcome to UNO");
-            alert.setHeaderText("Join the lobby!");
-            alert.setContentText(msg);
-            alert.showAndWait();
+            //TODO msg to LobbyController
+            //LobbyController lobbyController = (LobbyController) fxmlLoader.getController();
+            //lobbyController.setLoginMsg(msg);
 
             return new Scene(root, WIDTH, HEIGHT);
         }catch (Exception e){

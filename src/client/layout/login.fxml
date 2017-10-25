@@ -26,7 +26,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Text>
-                  <TextField promptText="Enter Username" />
+                  <TextField fx:id="usernameInput" promptText="Enter Username" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
@@ -36,7 +36,7 @@
                         <Insets right="10.0" />
                      </HBox.margin>
                   </Text>
-                  <PasswordField promptText="Enter password" />
+                  <PasswordField fx:id="passwordInput" promptText="Enter password" />
                </children>
             </HBox>
             <HBox prefHeight="100.0" prefWidth="200.0">
@@ -55,6 +55,6 @@
       </VBox>
    </center>
    <bottom>
-      <Text fx:id="connectionTextField" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for connection..." BorderPane.alignment="CENTER" />
+      <Text fx:id="connectionText" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for connection..." BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>
