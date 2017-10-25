@@ -49,6 +49,7 @@ public class Card {
         PLUS,
         PASS_TURN,
         JOKER,
-        TURNAROUND
+        REVERSE,
+        CHANGE_COLOR
     }
 }
