@@ -36,8 +36,9 @@ public class SceneFactory {
 
     public Scene getLobbyScene(String msg) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
-            Parent root = fxmlLoader.load();
+            Parent root = FXMLLoader.load(getClass().getResource("layout/lobby.fxml"));
+            //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
+            //Parent root = fxmlLoader.load();
 
             //TODO msg to LobbyController
             //LobbyController lobbyController = (LobbyController) fxmlLoader.getController();

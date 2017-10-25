@@ -45,7 +45,8 @@ public class LoginController {
             if (serverInfo != null) {
                 appServer = serverInfo;
                 if (appServer.getIp() != null && appServer.getPort() != -1) {
-                    connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
+                    LOGGER.log(Level.WARNING, "Appserver="+appServer +", ip="+appServer.getIp()+", port="+appServer.getPort());
+                    //connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
                 }
             } else {
                 LOGGER.warning("AppServer info is null!");

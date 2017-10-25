@@ -28,21 +28,20 @@ public class ServerInitiatorService extends Service<Server> {
                 try {
                     //RMI init
                     Registry myRegistry = LocateRegistry.getRegistry(DISPATCHER_IP, DISPATCHER_PORT);
-                    LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
+                    //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
 
-                    //LOGGER.log(Level.INFO, "Dispatcher retrieved: {0}", myRegistry.lookup("DispatcherService"));
                     DispatcherStub dispatcherService = (DispatcherStub) myRegistry.lookup(DISPATCHER_SERVICE);
-                    LOGGER.log(Level.INFO, "Dispatcher Service retrieved: {0}", dispatcherService);
+                    //LOGGER.log(Level.INFO, "Dispatcher Service retrieved: {0}", dispatcherService);
 
                     boolean successfullConnection = false;
                     Server serverInfo = null;
 
                     while (!successfullConnection) {
-                        LOGGER.info("In connection cycle");
+                        //LOGGER.info("In connection cycle");
                         //RMI call
                         serverInfo = dispatcherService.retrieveServerInfo();
 
-                        LOGGER.log(Level.INFO, "Received serverInfo: {0}", serverInfo);
+                        //LOGGER.log(Level.INFO, "Received serverInfo: {0}", serverInfo);
 
                         successfullConnection = serverInfo != null;
                     }
