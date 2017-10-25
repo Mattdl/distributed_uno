@@ -3,6 +3,7 @@ package client.controller;
 import client.Main;
 import client.Model;
 import client.service.LoginService;
+import client.service.PingService;
 import client.service.ServerInitiatorService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,6 +15,8 @@ import model.Server;
 import java.awt.TextField;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static client.Main.appServer;
 
 public class LoginController{
 
@@ -32,8 +35,25 @@ public class LoginController{
 
             Server serverInfo = (Server) event.getSource().getValue();
 
-            //TODO unlock login field
-            connectionTextField.setText("Has serverinfo: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+            if(serverInfo != null){
+                appServer = serverInfo;
+                connectionTextField.setText("Has serverinfo: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+            }
+            else{
+                LOGGER.warning("AppServer info is null!");
+            }
+
+            //Check if retrieved info has valid connection
+            PingService pingService = new PingService();
+            pingService.setOnSucceeded(event1 -> {
+                boolean isConnected = (boolean) event1.getSource().getValue();
+                if(isConnected) {
+                    connectionTextField.setText("Connection established: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+                }else{
+                    LOGGER.warning("Could not connect to the retrieved server from dispatch!");
+                }
+            });
+            pingService.start();
         });
         serverInitiatorService.start();
     }

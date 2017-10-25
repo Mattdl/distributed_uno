@@ -1,5 +1,7 @@
 package app_server;
 
+import app_server.service.LoginService;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
@@ -9,7 +11,7 @@ public class AppServer {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Bind RMI implementations to service names
-            registry.rebind("NAMEService", new StubImpl());
+            registry.rebind("LoginService", new LoginService());
 
         } catch (Exception e) {
             e.printStackTrace();
