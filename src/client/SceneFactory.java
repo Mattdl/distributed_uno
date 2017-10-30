@@ -51,4 +51,40 @@ public class SceneFactory {
         }
         return null;
     }
+
+    public Scene getCreateGameScene(String msg) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("layout/createGame.fxml"));
+            //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
+            //Parent root = fxmlLoader.load();
+
+            //TODO msg to LobbyController
+            //LobbyController lobbyController = (LobbyController) fxmlLoader.getController();
+            //lobbyController.setLoginMsg(msg);
+
+            return new Scene(root, WIDTH, HEIGHT);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"Could not load createGame.fxml");
+        }
+        return null;
+    }
+
+    public Scene getGameScene(String msg) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getResource("layout/game.fxml"));
+            //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
+            //Parent root = fxmlLoader.load();
+
+            //TODO msg to LobbyController
+            //LobbyController lobbyController = (LobbyController) fxmlLoader.getController();
+            //lobbyController.setLoginMsg(msg);
+
+            return new Scene(root, WIDTH, HEIGHT);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"Could not load game.fxml");
+        }
+        return null;
+    }
 }

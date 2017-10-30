@@ -1,10 +1,13 @@
 package client.controller;
 
+import client.Main;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
+import javafx.stage.Stage;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class LobbyController implements Observer {
@@ -35,5 +38,21 @@ public class LobbyController implements Observer {
 
     public void setLoginMsg(String msg) {
         loginMsg = msg;
+    }
+
+    private void switchToCreateGameScene(Stage stage, String msg) {
+        LOGGER.log(Level.INFO, "switching To CreateGameScene");
+
+        stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
+
+        LOGGER.log(Level.INFO, "switched To CreateGameScene");
+    }
+
+    private void switchToGameScene(Stage stage, String msg) {
+        LOGGER.log(Level.INFO, "switching To GameScene");
+
+        stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
+
+        LOGGER.log(Level.INFO, "switched To GameScene");
     }
 }
