@@ -27,10 +27,10 @@ public class PingService extends Service<Boolean> {
                 if (Main.appServer != null) {
                     //RMI init
                     Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
-                    LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
+                    //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
 
                     LoginStub loginService = (LoginStub) myRegistry.lookup("LoginService");
-                    LOGGER.log(Level.INFO, "loginService retrieved: {0}", loginService);
+                    //LOGGER.log(Level.INFO, "loginService retrieved: {0}", loginService);
 
                     isSuccessful = loginService.ping();
                 }

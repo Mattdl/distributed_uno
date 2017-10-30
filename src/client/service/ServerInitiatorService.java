@@ -18,6 +18,9 @@ public class ServerInitiatorService extends Service<Server> {
     public static final int DISPATCHER_PORT = 1099;
     public static final String DISPATCHER_SERVICE = "DispatcherService";
 
+    public ServerInitiatorService() {
+    }
+
     @Override
     protected Task<Server> createTask() {
         return new Task<Server>() {
@@ -41,7 +44,7 @@ public class ServerInitiatorService extends Service<Server> {
                         //RMI call
                         serverInfo = dispatcherService.retrieveServerInfo();
 
-                        //LOGGER.log(Level.INFO, "Received serverInfo: {0}", serverInfo);
+                        LOGGER.log(Level.INFO, "Received serverInfo: {0}", serverInfo);
 
                         successfullConnection = serverInfo != null;
                     }
@@ -53,8 +56,5 @@ public class ServerInitiatorService extends Service<Server> {
                 return null;
             }
         };
-    }
-
-    public ServerInitiatorService() {
     }
 }

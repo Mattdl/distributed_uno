@@ -37,10 +37,10 @@ public class LoginService extends Service<Boolean> {
 
                 try {
                     Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
-                    LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
+                    //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
 
                     LoginStub loginService = (LoginStub) myRegistry.lookup("LoginService");
-                    LOGGER.log(Level.INFO, "loginService retrieved: {0}", loginService);
+                    //LOGGER.log(Level.INFO, "loginService retrieved: {0}", loginService);
 
                     String token = loginService.getLoginToken(username,password);
                     isSuccessful = token != null;
@@ -48,6 +48,8 @@ public class LoginService extends Service<Boolean> {
                     if (isSuccessful) {
                         Main.token = token;
                     }
+
+                    LOGGER.log(Level.INFO, "Loginserver retrieve token succesful=", isSuccessful);
 
                     return isSuccessful;
                 } catch (Exception e) {
