@@ -13,6 +13,7 @@ public class AppServer {
     final int DB_PORT = 1200;
 
     private void startServer(String ip, int port) {
+
         GameDbService gameDbService = registerClientRMI();
 
         try {

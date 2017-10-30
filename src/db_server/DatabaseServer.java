@@ -13,6 +13,7 @@ public class DatabaseServer {
     private final int PORT = 7000;
 
     private void startServer() {
+
         initDb("uno.db");
 
         if(conn!=null){
@@ -23,6 +24,7 @@ public class DatabaseServer {
 
                 //Bind RMI implementations to service names
                 registry.rebind("UserDbService", new UserDbService());
+                registry.rebind("GameDbService", new GameDbService(conn));
 
             } catch (Exception e) {
                 e.printStackTrace();
