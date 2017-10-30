@@ -2,9 +2,9 @@ package app_server.service;
 
 import db_server.GameDbService;
 import model.Game;
-import stub_RMI.client_appserver.GameStub;
+import model.Lobby;
+import model.Player;
 import stub_RMI.client_appserver.LobbyStub;
-import stub_RMI.client_appserver.LoginStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -12,10 +12,11 @@ import java.util.List;
 
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
+    private Lobby lobby;
     private GameDbService gameDbService;
 
-    public LobbyService(GameDbService gameDbService) throws RemoteException {
-        this.gameDbService = gameDbService;
+    public LobbyService(Lobby lobby) throws RemoteException {
+        this.lobby = lobby;
     }
 
     @Override
@@ -23,5 +24,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         //Get games from database that are not full
         return gameDbService.getJoinableGames();
+    }
+
+    @Override
+    public void createNewGame(Player initPlayer, String gameName, int gameSize) throws RemoteException {
+        lobby.addGame(new Game(gameName, gameSize, initPlayer));
     }
 }

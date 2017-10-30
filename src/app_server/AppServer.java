@@ -3,6 +3,7 @@ package app_server;
 import app_server.service.GameService;
 import app_server.service.LoginService;
 import db_server.GameDbService;
+import model.Lobby;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -12,9 +13,11 @@ public class AppServer {
     final String DB_IP = "localhost";
     final int DB_PORT = 1200;
 
-    private void startServer(String ip, int port) {
+    private Lobby lobby;
 
-        GameDbService gameDbService = registerClientRMI();
+    private void startServer(String ip, int port) {
+        //GameDbService gameDbService = registerClientRMI();
+        initData();
 
         try {
             Registry registry = LocateRegistry.createRegistry(port);
@@ -22,7 +25,7 @@ public class AppServer {
             //Bind RMI implementations to service names
             registry.rebind("LoginService", new LoginService());
 
-            registry.rebind("GameService", new GameService(gameDbService));
+            registry.rebind("GameService", new GameService(lobby));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -30,6 +33,14 @@ public class AppServer {
 
 
         System.out.println("system is ready");
+    }
+
+    /**
+     * Method to initialise a new lobby, must be filled with games later on from database
+     */
+    private void initData(){
+        lobby = new Lobby();
+        //TODO connect with db
     }
 
     private GameDbService registerClientRMI(){
