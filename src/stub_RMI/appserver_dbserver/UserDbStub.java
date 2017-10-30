@@ -7,4 +7,5 @@ public interface UserDbStub extends Remote {
 
     boolean saveUserinfo() throws RemoteException;
 
+
 }
