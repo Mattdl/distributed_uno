@@ -3,6 +3,7 @@ package model;
 public class Move {
     private Player player;
     private Card card;
+    private boolean takesFromDeck;
 
     public Move(Player player, Card card) {
         this.player = player;
@@ -17,4 +18,8 @@ public class Move {
         return card;
     }
 
+
+    public boolean isTakesFromDeck() {
+        return takesFromDeck;
+    }
 }

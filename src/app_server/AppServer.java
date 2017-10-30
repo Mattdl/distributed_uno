@@ -1,5 +1,6 @@
 package app_server;
 
+import app_server.service.GameService;
 import app_server.service.LoginService;
 
 import java.rmi.registry.LocateRegistry;
@@ -12,6 +13,8 @@ public class AppServer {
 
             //Bind RMI implementations to service names
             registry.rebind("LoginService", new LoginService());
+            registry.rebind("GameService", new GameService());
+
 
         } catch (Exception e) {
             e.printStackTrace();
