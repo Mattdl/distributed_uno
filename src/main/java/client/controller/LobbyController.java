@@ -2,7 +2,9 @@ package client.controller;
 
 import client.Main;
 import client.service.lobby.LobbyService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.Lobby;
@@ -19,6 +21,8 @@ public class LobbyController implements Observer {
     private String loginMsg;
 
     private Lobby lobby;
+
+    private LobbyService lobbyService;
 
     public LobbyController() {
         this.lobby = new Lobby();
@@ -37,7 +41,7 @@ public class LobbyController implements Observer {
             alert.showAndWait();
         }
 
-        LobbyService lobbyService = new LobbyService(lobby);
+        lobbyService = new LobbyService(lobby);
         lobbyService.start();
     }
 
@@ -52,9 +56,11 @@ public class LobbyController implements Observer {
         loginMsg = msg;
     }
 
+
     private void switchToCreateGameScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To CreateGameScene");
 
+        lobbyService.setInLobby(false);
         stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
 
         LOGGER.log(Level.INFO, "switched To CreateGameScene");
@@ -63,8 +69,15 @@ public class LobbyController implements Observer {
     private void switchToGameScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
+        lobbyService.setInLobby(false);
         stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
 
         LOGGER.log(Level.INFO, "switched To GameScene");
+    }
+
+    @FXML
+    public void createNewGame(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        switchToCreateGameScene(stage, null);
     }
 }

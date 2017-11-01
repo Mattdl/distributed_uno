@@ -45,7 +45,7 @@ public class LobbyService extends Service<Void> {
 
                     version = ret.getValue();
                     lobby.setGameList(ret.getKey());
-                    LOGGER.log(Level.INFO,"Received gamelist: {0}, version = {1}",ret.getKey());
+                    LOGGER.log(Level.INFO,"Received gamelist: {0}, version = {1}", ret.getKey());
                 }
 
                 return null;
