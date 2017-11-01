@@ -58,15 +58,17 @@ public class Game {
         return playerList.size() < gameSize;
     }
 
-    public void removePlayer(Player player) {
-        int i=0;
+    public boolean removePlayer(Player player) {
+        int i = 0;
 
-        while(!playerList.get(i).equals(player) && i < playerList.size()){
+        while (!playerList.get(i).equals(player) && i < playerList.size()) {
             i++;
         }
-        if(i< playerList.size()){
+        if (i < playerList.size()) {
             playerList.remove(i);
+            return true;
         }
+        return false;
     }
 
     public enum State {

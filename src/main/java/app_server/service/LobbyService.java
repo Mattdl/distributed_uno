@@ -91,10 +91,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
             if (gameInLobby.isJoinable()) {
                 gameInLobby.addPlayer(player);
                 return null;
-            }else{
+            } else {
                 return "Could not join the game...";
             }
-        }else{
+        } else {
             return "Game could not be found in the lobby...";
         }
     }
@@ -106,13 +106,17 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         Game gameInLobby = lobby.getGameList().get(index);
 
         if (gameInLobby != null) {
-            if(gameInLobby.getPlayerList().size() <= 1){
+            if (gameInLobby.getPlayerList().size() <= 1) {
                 lobby.getGameList().remove(index);
+                return null;
+            } else {
+                if (gameInLobby.removePlayer(player)) {
+                    return null;
+                } else {
+                    return "Player could not be found in Game playerlist...";
+                }
             }
-            else{
-                gameInLobby.removePlayer(player);
-            }
-        }else{
+        } else {
             return "Game could not be found in the lobby...";
         }
     }
