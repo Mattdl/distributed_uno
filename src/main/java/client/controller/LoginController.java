@@ -11,6 +11,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Player;
 import model.Server;
 
 
@@ -45,7 +46,7 @@ public class LoginController {
             if (serverInfo != null) {
                 appServer = serverInfo;
                 if (appServer.getIp() != null && appServer.getPort() != -1) {
-                    LOGGER.log(Level.WARNING, "Appserver="+appServer +", ip="+appServer.getIp()+", port="+appServer.getPort());
+                    LOGGER.log(Level.WARNING, "Appserver=" + appServer + ", ip=" + appServer.getIp() + ", port=" + appServer.getPort());
                     //connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
                 }
             } else {
@@ -72,10 +73,12 @@ public class LoginController {
     public void tryLogin(ActionEvent event) {
         LOGGER.log(Level.INFO, "Trying Login");
 
+        String username = usernameInput.getText();
+
         //TODO encryption of username and password before giving to loginservice!
 
         //Init background service for login
-        LoginService loginService = new LoginService(usernameInput.getText(), passwordInput.getText());
+        LoginService loginService = new LoginService(username, passwordInput.getText());
 
         loginService.setOnSucceeded(e -> {
             LOGGER.log(Level.INFO, "Login attempt finished");
@@ -85,7 +88,8 @@ public class LoginController {
             //return msg if succesfull
             String msg;
             if (isSuccessful) {
-                msg = "Successfully logged in with username TODO"; //TODO
+                Main.currentPlayer = new Player(username);
+                msg = "Successfully logged in with username " + username; //TODO
                 LOGGER.log(Level.INFO, "Login attempt was SUCCESSFUL");
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();

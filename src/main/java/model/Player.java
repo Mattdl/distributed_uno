@@ -9,6 +9,10 @@ public class Player {
     //private String token;
 
 
+    public Player(String name) {
+        this.name = name;
+    }
+
     public Player(String name, String password) {
         this.name = name;
         this.password = password;
