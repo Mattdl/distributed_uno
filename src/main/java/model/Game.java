@@ -78,8 +78,6 @@ public class Game {
     }
 
     //GETTERS & SETTERS
-
-
     public State getState() {
         return state;
     }
