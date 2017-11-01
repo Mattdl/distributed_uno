@@ -36,6 +36,7 @@ public class CreateGameController {
         //Set choicebox values
         ObservableList<Integer> availableChoices = FXCollections.observableArrayList(2, 3, 4);
         numberOfPlayers.setItems(availableChoices);
+        numberOfPlayers.setValue(4);
     }
 
     @FXML
