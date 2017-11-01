@@ -1,4 +1,4 @@
-package client.service;
+package client.service.login;
 
 import client.Main;
 import client.controller.LoginController;

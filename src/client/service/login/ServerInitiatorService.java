@@ -1,4 +1,4 @@
-package client.service;
+package client.service.login;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;

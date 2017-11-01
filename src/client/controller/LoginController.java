@@ -1,9 +1,9 @@
 package client.controller;
 
 import client.Main;
-import client.service.LoginService;
-import client.service.PingService;
-import client.service.ServerInitiatorService;
+import client.service.login.LoginService;
+import client.service.login.PingService;
+import client.service.login.ServerInitiatorService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;

@@ -1,7 +1,5 @@
 package client;
 
-import client.service.FetchService;
-import client.service.ServerInitiatorService;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import model.Server;

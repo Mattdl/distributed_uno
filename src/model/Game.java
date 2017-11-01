@@ -35,7 +35,7 @@ public class Game {
     private int gameSize;
     //private Password
 
-    public Game(String gameName, int gameSize, Player initialPlayer){
+    public Game(String gameName, int gameSize, Player initialPlayer) {
         this.gameName = gameName;
         this.gameSize = gameSize;
         this.playerList = new ArrayList<>();
@@ -46,9 +46,10 @@ public class Game {
 
     /**
      * Adds a player to the game
+     *
      * @param player
      */
-    public void addPlayer(Player player){
+    public void addPlayer(Player player) {
         playerList.add(player);
     }
 
@@ -108,7 +109,11 @@ public class Game {
         return gameSize;
     }
 
-    public enum State{
+    public boolean isJoinable() {
+        return playerList.size() < gameSize;
+    }
+
+    public enum State {
         WAITING,
         COUNTING,
         RUNNING

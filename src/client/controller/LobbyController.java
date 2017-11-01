@@ -1,9 +1,11 @@
 package client.controller;
 
 import client.Main;
+import client.service.lobby.LobbyService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
+import model.Lobby;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -16,17 +18,27 @@ public class LobbyController implements Observer {
 
     private String loginMsg;
 
+    private Lobby lobby;
+
+    public LobbyController() {
+        this.lobby = new Lobby();
+        lobby.addObserver(this);
+    }
+
     @FXML
     public void initialize() {
 
         //Show if succesfully logged in or registered
-        if(loginMsg != null) {
+        if (loginMsg != null) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Welcome to UNO");
             alert.setHeaderText("Join the lobby!");
             alert.setContentText(loginMsg);
             alert.showAndWait();
         }
+
+        LobbyService lobbyService = new LobbyService(lobby);
+        lobbyService.start();
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface LobbyStub extends Remote {
 
-    List<Game> getJoinableGames() throws RemoteException;
+    List<Game> getJoinableGames(List<Game> clientGames) throws RemoteException;
 
     void createNewGame(Player initPlayer, String gameName, int gameSize) throws RemoteException;
 

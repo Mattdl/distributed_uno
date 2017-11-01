@@ -1,6 +1,7 @@
 package app_server;
 
 import app_server.service.GameService;
+import app_server.service.LobbyService;
 import app_server.service.LoginService;
 import db_server.GameDbService;
 import model.Lobby;
@@ -26,6 +27,8 @@ public class AppServer {
             registry.rebind("LoginService", new LoginService());
 
             registry.rebind("GameService", new GameService(lobby));
+
+            registry.rebind("LobbyService", new LobbyService(lobby));
 
         } catch (Exception e) {
             e.printStackTrace();

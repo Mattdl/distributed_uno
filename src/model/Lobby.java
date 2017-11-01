@@ -2,8 +2,9 @@ package model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
 
-public class Lobby {
+public class Lobby extends Observable {
     private List<Game> gameList;
 
     public Lobby(){
@@ -22,4 +23,9 @@ public class Lobby {
         gameList.add(game);
     }
 
+    public void setGameList(List<Game> gameList) {
+        this.gameList = gameList;
+        setChanged();
+        notifyObservers();
+    }
 }

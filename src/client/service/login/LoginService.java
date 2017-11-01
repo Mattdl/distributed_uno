@@ -1,7 +1,6 @@
-package client.service;
+package client.service.login;
 
 import client.Main;
-import dispatcher.DispatcherService;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import stub_RMI.client_appserver.LoginStub;
