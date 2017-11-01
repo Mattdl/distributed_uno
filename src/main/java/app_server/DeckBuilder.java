@@ -34,7 +34,7 @@ public class DeckBuilder {
                     } catch (IOException e) {
                         LOGGER.info("Error loading card image");
                     }
-                    deck.add(new Card(img, Card.CardType.NORMAL, color, number.getValue()));
+                    //deck.add(new Card(img, Card.CardType.NORMAL, color, number.getValue()));
                 }
                 //Generate each special colored card
                 for (Card.CardType cardType : Card.CardType.values()) {
@@ -52,7 +52,7 @@ public class DeckBuilder {
                             LOGGER.info("Error loading card image");
                         }
 
-                        deck.add(new Card(img, cardType, null, null));
+                        //deck.add(new Card(img, cardType, null, null));
                     }
 
                     try {
@@ -60,7 +60,7 @@ public class DeckBuilder {
                     } catch (IOException e) {
                         LOGGER.info("Error loading card image");
                     }
-                    deck.add(new Card(img, cardType, color, null));
+                    //deck.add(new Card(img, cardType, color, null));
                 }
             }
         }

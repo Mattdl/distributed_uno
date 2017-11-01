@@ -3,6 +3,7 @@ package client.service.lobby;
 import dispatcher.Dispatcher;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import javafx.util.Pair;
 import model.Game;
 import model.Lobby;
 import stub_RMI.client_appserver.LobbyStub;
@@ -39,11 +40,14 @@ public class LobbyService extends Service<Void> {
                 //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
 
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
+                int version = -1;
 
                 while(isInLobby){
-                    List<Game> games = lobbyService.getJoinableGames(lobby.getGameList());
-                    lobby.setGameList(games);
-                    LOGGER.log(Level.INFO,"Received gamelist: {0}",games);
+                    Pair<List<Game>,Integer> ret = lobbyService.getJoinableGames(version);
+
+                    version = ret.getValue();
+                    lobby.setGameList(ret.getKey());
+                    LOGGER.log(Level.INFO,"Received gamelist: {0}, version = {1}",ret.getKey());
                 }
 
                 return null;
