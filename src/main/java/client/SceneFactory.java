@@ -21,19 +21,18 @@ public class SceneFactory {
 
     public Scene getLoginScene() {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("layout/login.fxml"));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/login.fxml"));
             return new Scene(root, WIDTH, HEIGHT);
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.log(Level.SEVERE,"Could not load login.fxml");
-
         }
         return null;
     }
 
     public Scene getLobbyScene(String msg) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("layout/lobby.fxml"));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/lobby.fxml"));
             //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
             //Parent root = fxmlLoader.load();
 
@@ -51,7 +50,7 @@ public class SceneFactory {
 
     public Scene getCreateGameScene(String msg) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("layout/createGame.fxml"));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/createGame.fxml"));
             //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
             //Parent root = fxmlLoader.load();
 
@@ -69,7 +68,7 @@ public class SceneFactory {
 
     public Scene getGameScene(String msg) {
         try {
-            Parent root = FXMLLoader.load(getClass().getResource("layout/game.fxml"));
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/game.fxml"));
             //FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("layout/lobby.fxml"));
             //Parent root = fxmlLoader.load();
 
