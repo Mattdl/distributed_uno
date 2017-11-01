@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -44,11 +45,21 @@ public class CreateGameController {
         String name = gameName.getText();
         String password = passwordField.getText(); //TODO encryption
 
-        CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer ,password);
+        CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer, password);
         createGameService.setOnSucceeded(event1 -> {
-            String msg = "Created game with succes";
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            switchToLobbyScene(stage, msg);
+            boolean successful = (boolean) event1.getSource().getValue();
+
+            if (successful) {
+                String msg = "Created game with success";
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                switchToLobbyScene(stage, msg);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("UNO");
+                alert.setHeaderText("Could not create game");
+                alert.setContentText("Try a different name.");
+                alert.showAndWait();
+            }
         });
         createGameService.start();
     }

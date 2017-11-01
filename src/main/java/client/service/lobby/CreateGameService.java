@@ -22,6 +22,10 @@ public class CreateGameService extends Service<Boolean> {
         this.password = password;
     }
 
+    /**
+     * Tries to create a new game through RMI on server
+     * @return
+     */
     protected Task<Boolean> createTask() {
         return new Task<Boolean>() {
             @Override
