@@ -52,14 +52,39 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     }
 
+    /**
+     * Method to create a new game
+     *
+     * @param initPlayer
+     * @param gameName
+     * @param gameSize
+     * @param password
+     * @return Returns a message if failed, null if successful
+     * @throws RemoteException
+     */
     public synchronized boolean createNewGame(Player initPlayer, String gameName, int gameSize, String password)
             throws RemoteException {
         //TODO extend with password (if time)
 
+        //TODO CHECK IF NAME IS UNIQUE!
         lobby.addGame(new Game(gameName, gameSize, initPlayer));
         lobbyUpdated();
 
         return true;
+    }
+
+    @Override
+    public String joinGame(Player player, Game game) throws RemoteException {
+        int index = lobby.findGameIndex(game);
+
+        Game gameInLobby = lobby.getGameList().get(index);
+
+        if(gameInLobby.isJoinable()){
+            gameInLobby.addPlayer(player);
+            return null;
+        }
+
+        return "Could not join the game...";
     }
 
     private void lobbyUpdated() {
