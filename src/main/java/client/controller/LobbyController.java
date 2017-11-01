@@ -47,8 +47,7 @@ public class LobbyController implements Observer {
 
 
     public void update(Observable o, Object arg) {
-        //Update the ListView of games
-
+        //TODO Update the ListView of games
     }
 
 
