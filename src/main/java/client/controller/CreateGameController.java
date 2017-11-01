@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.Main;
+import client.service.lobby.CreateGameService;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -15,14 +16,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class CreateGameController {
-    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CreateGameController.class.getName());
 
 
     @FXML
     private ChoiceBox<Integer> numberOfPlayers;
 
     @FXML
-    private PasswordField password;
+    private PasswordField passwordField;
 
     @FXML
     private TextField gameName;
@@ -32,19 +33,24 @@ public class CreateGameController {
     public void initialize() {
 
         //Set choicebox values
-        ObservableList<Integer> availableChoices = FXCollections.observableArrayList(2,3,4);
+        ObservableList<Integer> availableChoices = FXCollections.observableArrayList(2, 3, 4);
         numberOfPlayers.setItems(availableChoices);
     }
 
     @FXML
-    public void createGame(ActionEvent event){
+    public void createGame(ActionEvent event) {
 
         int playerCount = numberOfPlayers.getSelectionModel().getSelectedItem();
+        String name = gameName.getText();
+        String password = passwordField.getText(); //TODO encryption
 
-        String msg = "Created game with succes";
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        switchToLobbyScene(stage, msg);
-
+        CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer ,password);
+        createGameService.setOnSucceeded(event1 -> {
+            String msg = "Created game with succes";
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            switchToLobbyScene(stage, msg);
+        });
+        createGameService.start();
     }
 
     private void switchToLobbyScene(Stage stage, String msg) {

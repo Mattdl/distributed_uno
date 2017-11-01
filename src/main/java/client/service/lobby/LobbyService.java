@@ -21,7 +21,6 @@ public class LobbyService extends Service<Void> {
 
     private static final Logger LOGGER = Logger.getLogger( LobbyService.class.getName() );
 
-
     private Lobby lobby;
     private boolean isInLobby;
 
@@ -37,7 +36,6 @@ public class LobbyService extends Service<Void> {
             protected Void call() throws Exception {
 
                 Registry myRegistry = LocateRegistry.getRegistry("localhost", 1200);
-                //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
 
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
                 int version = -1;

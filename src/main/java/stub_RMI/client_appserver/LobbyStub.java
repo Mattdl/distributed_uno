@@ -12,7 +12,7 @@ public interface LobbyStub extends Remote {
 
     Pair<List<Game>,Integer> getJoinableGames(int version) throws RemoteException;
 
-    void createNewGame(Player initPlayer, String gameName, int gameSize) throws RemoteException;
+    boolean createNewGame(Player initPlayer, String gameName, int gameSize, String password) throws RemoteException;
 
 
 }

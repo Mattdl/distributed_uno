@@ -2,6 +2,7 @@ package client;
 
 import javafx.application.Application;
 import javafx.stage.Stage;
+import model.Player;
 import model.Server;
 
 import java.util.logging.Level;
@@ -14,6 +15,7 @@ public class Main extends Application {
     public static SceneFactory sceneFactory;
     public static Server appServer;
     public static String token;
+    public static Player currentPlayer;
 
     @Override
     public void start(Stage primaryStage) throws Exception{

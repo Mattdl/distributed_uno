@@ -42,8 +42,8 @@ public class LobbyController implements Observer {
     }
 
 
-    @Override
     public void update(Observable o, Object arg) {
+        //Update the ListView of games
 
     }
 

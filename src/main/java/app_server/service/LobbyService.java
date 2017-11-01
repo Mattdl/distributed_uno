@@ -29,7 +29,6 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @return
      * @throws RemoteException
      */
-    @Override
     public synchronized Pair<List<Game>, Integer> getJoinableGames(int version) throws RemoteException {
 
         try {
@@ -53,10 +52,14 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     }
 
-    @Override
-    public synchronized void createNewGame(Player initPlayer, String gameName, int gameSize) throws RemoteException {
+    public synchronized boolean createNewGame(Player initPlayer, String gameName, int gameSize, String password)
+            throws RemoteException {
+        //TODO extend with password (if time)
+
         lobby.addGame(new Game(gameName, gameSize, initPlayer));
         lobbyUpdated();
+
+        return true;
     }
 
     private void lobbyUpdated() {

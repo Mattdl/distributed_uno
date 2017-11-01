@@ -33,7 +33,8 @@ public class Game {
 
     @DatabaseField
     private int gameSize;
-    //private Password
+
+    //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
         this.gameName = gameName;
