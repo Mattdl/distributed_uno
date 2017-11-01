@@ -99,6 +99,24 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         }
     }
 
+    @Override
+    public String leaveGame(Player player, String gameName) throws RemoteException {
+        int index = lobby.findGameIndex(gameName);
+
+        Game gameInLobby = lobby.getGameList().get(index);
+
+        if (gameInLobby != null) {
+            if(gameInLobby.getPlayerList().size() <= 1){
+                lobby.getGameList().remove(index);
+            }
+            else{
+                gameInLobby.removePlayer(player);
+            }
+        }else{
+            return "Game could not be found in the lobby...";
+        }
+    }
+
     private void lobbyUpdated() {
         lobbyVersion++;
         notifyAll();

@@ -37,4 +37,8 @@ public class Player {
     public String getPassword() {
         return password;
     }
+
+    public boolean equals(Player player){
+        return this.name == player.name;
+    }
 }
