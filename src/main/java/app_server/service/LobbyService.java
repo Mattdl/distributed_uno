@@ -73,18 +73,30 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         return true;
     }
 
+    /**
+     * Method to join a game in the lobby
+     *
+     * @param player
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String joinGame(Player player, String gameName) throws RemoteException {
         int index = lobby.findGameIndex(gameName);
 
         Game gameInLobby = lobby.getGameList().get(index);
 
-        if(gameInLobby.isJoinable()){
-            gameInLobby.addPlayer(player);
-            return null;
+        if (gameInLobby != null) {
+            if (gameInLobby.isJoinable()) {
+                gameInLobby.addPlayer(player);
+                return null;
+            }else{
+                return "Could not join the game...";
+            }
+        }else{
+            return "Game could not be found in the lobby...";
         }
-
-        return "Could not join the game...";
     }
 
     private void lobbyUpdated() {
