@@ -80,4 +80,11 @@ public class LobbyController implements Observer {
         Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         switchToCreateGameScene(stage, null);
     }
+
+    @FXML
+    public void joinGame(ActionEvent event) {
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        //TODO service to join game, if succesful: switch scene
+        switchToGameScene(stage, null);
+    }
 }

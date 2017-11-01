@@ -52,6 +52,8 @@ public class CreateGameController {
             if (successful) {
                 String msg = "Created game with success";
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+
+                //TODO if you create a new game: go to GameLobbyScene
                 switchToLobbyScene(stage, msg);
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -64,6 +66,7 @@ public class CreateGameController {
         createGameService.start();
     }
 
+    //TODO if you create a new game: go to GameLobbyScene instead!!!
     private void switchToLobbyScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To LobbyScene");
 
