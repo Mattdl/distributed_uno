@@ -74,8 +74,8 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     }
 
     @Override
-    public String joinGame(Player player, Game game) throws RemoteException {
-        int index = lobby.findGameIndex(game);
+    public String joinGame(Player player, String gameName) throws RemoteException {
+        int index = lobby.findGameIndex(gameName);
 
         Game gameInLobby = lobby.getGameList().get(index);
 

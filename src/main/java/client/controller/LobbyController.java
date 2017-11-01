@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.Main;
+import client.service.lobby.JoinGameService;
 import client.service.lobby.LobbyService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -123,9 +124,21 @@ public class LobbyController implements Observer {
         Button clickedButton = (Button) event.getSource();
         String gameName = clickedButton.getId();
 
-        //TODO service to join game, if succesful: switch scene
-
-        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-        switchToGameScene(stage, null);
+        JoinGameService joinGameService= new JoinGameService(gameName);
+        joinGameService.setOnSucceeded(event1 -> {
+            String failMsg = (String) event1.getSource().getValue();
+            if(failMsg == null) {
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                switchToGameScene(stage, null);
+            }
+            else{
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("UNO");
+                alert.setHeaderText("Joining is not possible");
+                alert.setContentText(failMsg);
+                alert.showAndWait();
+            }
+        });
+        joinGameService.start();
     }
 }

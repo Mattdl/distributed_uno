@@ -15,12 +15,12 @@ public class Lobby extends Observable {
         return gameList;
     }
 
-    public int findGameIndex(Game game) {
+    public int findGameIndex(String gameName) {
         boolean found = false;
         int i = 0;
 
         while (!found && i < gameList.size()) {
-            if (gameList.get(i).getGameName().equals(game.getGameName())) {
+            if (gameList.get(i).getGameName().equals(gameName)) {
                 found = true;
                 return i;
             }
