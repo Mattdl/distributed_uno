@@ -15,7 +15,7 @@ import java.util.List;
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private Lobby lobby;
-    private GameDbService gameDbService;
+    //private GameDbService gameDbService;
     private int lobbyVersion;
 
     public LobbyService(Lobby lobby) throws RemoteException {
@@ -90,6 +90,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         if (gameInLobby != null) {
             if (gameInLobby.isJoinable()) {
                 gameInLobby.addPlayer(player);
+                lobbyUpdated();
                 return null;
             } else {
                 return "Could not join the game...";
@@ -108,9 +109,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         if (gameInLobby != null) {
             if (gameInLobby.getPlayerList().size() <= 1) {
                 lobby.getGameList().remove(index);
+                lobbyUpdated();
                 return null;
             } else {
                 if (gameInLobby.removePlayer(player)) {
+                    lobbyUpdated();
                     return null;
                 } else {
                     return "Player could not be found in Game playerlist...";
