@@ -5,10 +5,12 @@ import client.service.game_lobby.LeaveGameService;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import model.Game;
 import model.Player;
 
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,6 +27,9 @@ public class GameLobbyController {
     public GameLobbyController(Game game) {
         this.currentGame = game;
     }
+
+    @FXML
+    Button leaveGameButton;
 
 
     @FXML
@@ -44,7 +49,7 @@ public class GameLobbyController {
             String failMsg = (String) event.getSource().getValue();
             LOGGER.log(Level.INFO, failMsg);
             if(failMsg == null) {
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Stage stage = (Stage) leaveGameButton.getScene().getWindow();;
                 switchToLobbyScene(stage, null);
             }
             else{
