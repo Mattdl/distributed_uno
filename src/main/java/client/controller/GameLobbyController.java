@@ -39,7 +39,7 @@ public class GameLobbyController {
 
             if(failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameScene(stage, null);
+                switchToLobbyScene(stage, null);
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.WARNING);
@@ -52,13 +52,13 @@ public class GameLobbyController {
         leaveGameService.start();
     }
 
-    private void switchToGameScene(Stage stage, Object o) {
+/*    private void switchToGameScene(Stage stage, Object o) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
         stage.setScene(Main.sceneFactory.getGameScene(o.toString()));
 
         LOGGER.log(Level.INFO, "switched To GameScene");
-    }
+    }*/
 
     private void switchToLobbyScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To LobbyScene");

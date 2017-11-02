@@ -47,8 +47,13 @@ public class CreateGameController {
         String password = passwordField.getText(); //TODO encryption
 
         CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer, password);
+
         createGameService.setOnSucceeded(event1 -> {
             boolean successful = (boolean) event1.getSource().getValue();
+
+            String msg1 = "Boolean: " + successful;
+            LOGGER.log(Level.INFO, msg1);
+
 
             if (successful) {
                 String msg = "Created game with success";
