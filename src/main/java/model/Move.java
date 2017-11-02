@@ -1,6 +1,8 @@
 package model;
 
-public class Move {
+import java.io.Serializable;
+
+public class Move implements Serializable {
     private Player player;
     private Card card;
     private boolean takesFromDeck;

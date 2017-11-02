@@ -15,7 +15,7 @@ import java.util.logging.Logger;
 
 public class CreateGameService extends Service<Boolean> {
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(CreateGameService.class.getName());
 
 
     private String name;
@@ -49,6 +49,8 @@ public class CreateGameService extends Service<Boolean> {
 
 
                 boolean successful = lobbyService.createNewGame(initPlayer, name, size, password);
+
+                LOGGER.log(Level.INFO, "Return value, is successful= {0}",successful);
 
                 return successful;
             }
