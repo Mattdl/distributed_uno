@@ -7,9 +7,10 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Observable;
 
 //@DatabaseTable(tableName = "game")
-public class Game implements Serializable {
+public class Game extends Observable implements Serializable {
 
     //@DatabaseField(generatedId = true)
     //private int id;
@@ -68,6 +69,8 @@ public class Game implements Serializable {
      */
     public void addPlayer(Player player) {
         playerList.add(player);
+        setChanged();
+        notifyObservers();
     }
 
     public boolean isJoinable() {
@@ -82,6 +85,9 @@ public class Game implements Serializable {
         }
         if (i < playerList.size()) {
             playerList.remove(i);
+
+            setChanged();
+            notifyObservers();
             return true;
         }
         return false;
@@ -89,6 +95,9 @@ public class Game implements Serializable {
 
     public void addJoinedPlayer() {
         joinedPlayers++;
+
+        setChanged();
+        notifyObservers();
     }
 
     public void makeCopy(Game serverSideGame) {
@@ -98,6 +107,9 @@ public class Game implements Serializable {
         this.clockwise = serverSideGame.clockwise;
         this.state = serverSideGame.state;
         this.version = serverSideGame.version;
+
+        setChanged();
+        notifyObservers();
     }
 
     public enum State {

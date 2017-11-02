@@ -12,10 +12,12 @@ import model.Game;
 import model.Player;
 
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GameLobbyController {
+public class GameLobbyController implements Observer{
 
     private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
 
@@ -25,6 +27,7 @@ public class GameLobbyController {
 
     @FXML
     public void initialize() {
+        currentGame.addObserver(this);
         gameLobbyService = new GameLobbyService(currentGame);
         gameLobbyService.start();
     }
@@ -58,7 +61,18 @@ public class GameLobbyController {
         leaveGameService.start();
     }
 
-/*    private void switchToGameScene(Stage stage, Object o) {
+    @Override
+    public void update(Observable o, Object arg) {
+        //TODO update UI
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
+    }
+
+    /*    private void switchToGameScene(Stage stage, Object o) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
         stage.setScene(Main.sceneFactory.getGameScene(o.toString()));
