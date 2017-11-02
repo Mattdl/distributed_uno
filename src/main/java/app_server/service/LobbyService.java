@@ -29,12 +29,13 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     }
 
     /**
-     * First method called to init joinable games
+     * First method called to init joinable games. We pass a Lobby object that is serializable, but only with the
+     * joinable games. We don't want to pass ALL the games, as this is redundant information for the client.
      *
      * @return
      * @throws RemoteException
      */
-    public synchronized Pair<List<Game>, Integer> getJoinableGames(int version) throws RemoteException {
+    public synchronized Lobby getJoinableGames(int version) throws RemoteException {
 
         LOGGER.info("Getting joinable games.");
 
@@ -44,16 +45,16 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 wait();
             }
 
-            List<Game> games = new LinkedList<>();
+            List<Game> joinableGames = new LinkedList<>();
             for (Game game : lobby.getGameList()) {
                 if (game.isJoinable()) {
-                    games.add(game);
+                    joinableGames.add(game);
                 }
             }
 
             LOGGER.info("Found joinable games.");
 
-            return new Pair<>(games, version);
+            return new Lobby(joinableGames, lobby.getVersion());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -114,6 +115,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     /**
      * Method that makes a client leave a game. If it was the last client, the game is removed.
+     *
      * @param player
      * @param gameName
      * @return

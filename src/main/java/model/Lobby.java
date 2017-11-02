@@ -14,6 +14,11 @@ public class Lobby extends Observable implements Serializable {
         this.version = version;
     }
 
+    public Lobby(List<Game> games, int version) {
+        gameList = games;
+        this.version = version;
+    }
+
     public List<Game> getGameList() {
         return gameList;
     }
@@ -22,7 +27,7 @@ public class Lobby extends Observable implements Serializable {
 
         int i = 0;
 
-        while ( i < gameList.size()) {
+        while (i < gameList.size()) {
             if (gameList.get(i).getGameName().equals(gameName)) {
                 return gameList.get(i);
             }
@@ -44,5 +49,13 @@ public class Lobby extends Observable implements Serializable {
         this.gameList = gameList;
         setChanged();
         notifyObservers();
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }
