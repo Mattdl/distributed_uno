@@ -71,7 +71,7 @@ public class Game extends Observable implements Serializable {
      *
      * @param player
      */
-    public void addPlayer(Player player) {
+    public synchronized void addPlayer(Player player) {
         playerList.add(player);
         setChanged();
         notifyObservers();

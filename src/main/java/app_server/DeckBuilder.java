@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class DeckBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger( Dispatcher.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(DeckBuilder.class.getName() );
 
     /**
      * Generates a shuffled deck containing each colored card twice and each special uncolored card 4 times

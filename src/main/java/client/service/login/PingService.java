@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 public class PingService extends Service<Boolean> {
 
-    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(PingService.class.getName());
 
     @Override
     protected Task<Boolean> createTask() {

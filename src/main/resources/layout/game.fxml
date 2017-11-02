@@ -31,7 +31,7 @@
                <children>
                   <ImageView fitHeight="150.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../textures/UNO-Back.png" />
+                        <Image url="@../../../../textures/UNO-Back.png" />
                      </image>
                   </ImageView>
                   <Label text="Playername: number of cards" />
@@ -48,7 +48,7 @@
          <children>
             <ImageView fitHeight="150.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../textures/UNO-Back.png" />
+                  <Image url="@../../../../textures/UNO-Back.png" />
                </image>
             </ImageView>
             <Label text="Playername: number of cards" />
@@ -60,7 +60,7 @@
          <children>
             <ImageView fitHeight="150.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../textures/UNO-Back.png" />
+                  <Image url="@../../../../textures/UNO-Back.png" />
                </image>
             </ImageView>
             <Label text="Playername: number of cards" />

@@ -24,7 +24,7 @@ import java.util.logging.Logger;
 
 public class GameLobbyController implements Observer {
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GameLobbyController.class.getName());
 
     private Game currentGame;
 

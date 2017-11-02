@@ -13,7 +13,7 @@ import java.util.logging.Logger;
 
 public class LeaveGameService extends Service<String> {
 
-    private static final Logger LOGGER = Logger.getLogger(LoginController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LeaveGameService.class.getName());
 
 
     private String gameName;
