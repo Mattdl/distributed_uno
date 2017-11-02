@@ -36,6 +36,8 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     public synchronized Pair<List<Game>, Integer> getJoinableGames(int version) throws RemoteException {
 
+        LOGGER.info("Getting joinable games.");
+
         try {
             //If it has already received joinable games one time, let wait until notify
             if (version >= this.lobbyVersion) {
@@ -48,6 +50,8 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                     games.add(game);
                 }
             }
+
+            LOGGER.info("Found joinable games.");
 
             return new Pair<>(games, version);
         } catch (Exception e) {
