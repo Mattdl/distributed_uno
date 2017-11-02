@@ -96,6 +96,7 @@ public class GameLobbyController implements Observer {
 
         if (currentGame.isStartable()) {
             //Go to the game scene
+            //TODO countdown before starting
             Stage stage = (Stage) leaveGameButton.getScene().getWindow();
             switchToGameScene(stage, currentGame);
 

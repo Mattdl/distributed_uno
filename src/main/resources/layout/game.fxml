@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.web.*?>
 <?import javafx.scene.image.*?>
@@ -78,7 +79,7 @@
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="109.0" prefWidth="641.0" BorderPane.alignment="CENTER">
          <children>
             <ListView fx:id="handListView" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
-            <Label alignment="BOTTOM_LEFT" text="Serverinfo" />
+            <Text fx:id="serverInfoText" strokeType="OUTSIDE" strokeWidth="0.0" text="Serverinfo" />
          </children>
       </VBox>
    </bottom>

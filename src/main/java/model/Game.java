@@ -82,7 +82,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public boolean isStartable() {
-        return playerList.size() >= gameSize;
+        return playerList.size() == gameSize;
     }
 
     public synchronized boolean removePlayer(Player player) {
