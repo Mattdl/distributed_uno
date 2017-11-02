@@ -19,7 +19,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GameLobbyController implements Observer{
+public class GameLobbyController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
 
@@ -46,17 +46,21 @@ public class GameLobbyController implements Observer{
      * Called by button in GameLobby view
      */
     @FXML
-    public void leaveGame(){
+    public void leaveGame() {
         LOGGER.log(Level.INFO, "Called leaveGame method in GameLobbyController");
 
         LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameName());
         leaveGameService.setOnSucceeded(event -> {
+
             String failMsg = (String) event.getSource().getValue();
             LOGGER.log(Level.INFO, failMsg);
-            if(failMsg == null) {
+
+            if (failMsg == null) {
+
                 gameLobbyService.setInGameLobby(false);
                 Stage stage = (Stage) leaveGameButton.getScene().getWindow();
                 switchToLobbyScene(stage, null);
+
             } else {
                 Platform.runLater(new Runnable() {
                     @Override
