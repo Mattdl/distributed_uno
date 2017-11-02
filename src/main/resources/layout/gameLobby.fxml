@@ -14,28 +14,38 @@
          <children>
             <HBox alignment="CENTER">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gamelobby: " />
-                  <Label text="Gamename" />
+                  <Text fx:id="gameNameText" strokeType="OUTSIDE" strokeWidth="0.0" text="NAME">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Text>
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gamelobby">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin>
+                     <font>
+                        <Font size="16.0" />
+                     </font></Text>
                </children>
             </HBox>
-            <VBox>
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current players in gamelobby: ">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </Text>
+            <VBox fx:id="currentPlayersVBox" prefHeight="100.0">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Current players in game: ">
-                     <VBox.margin>
-                        <Insets top="10.0" />
-                     </VBox.margin>
-                  </Text>
                   <Label text="List of player names" />
                </children>
             </VBox>
-            <HBox alignment="BOTTOM_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="BOTTOM_LEFT">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Players needed: ">
+                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Players: ">
                      <HBox.margin>
                         <Insets />
                      </HBox.margin>
                   </Text>
-                  <Label text="Amount/Total" />
+                  <Text fx:id="numberOfPlayersText" strokeType="OUTSIDE" strokeWidth="0.0" text="Amount/Total" />
                </children>
                <padding>
                   <Insets bottom="10.0" />
@@ -46,6 +56,6 @@
       </VBox>
    </center>
    <bottom>
-      <Label text="Lobby status (waiting, starting)" BorderPane.alignment="CENTER" />
+      <Label text="Game status (waiting, starting)" BorderPane.alignment="CENTER" />
    </bottom>
 </BorderPane>

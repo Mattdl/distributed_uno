@@ -8,10 +8,13 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
 import model.Player;
 
+import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Observable;
@@ -27,12 +30,21 @@ public class GameLobbyController implements Observer {
 
     private GameLobbyService gameLobbyService;
 
+    @FXML
+    private VBox currentPlayersVBox;
+
+    @FXML
+    private Button leaveGameButton;
+
+    @FXML
+    private Text gameNameText;
+
+    @FXML
+    private Text numberOfPlayersText;
+
     public GameLobbyController(Game game) {
         this.currentGame = game;
     }
-
-    @FXML
-    Button leaveGameButton;
 
 
     @FXML
@@ -40,6 +52,8 @@ public class GameLobbyController implements Observer {
         currentGame.addObserver(this);
         gameLobbyService = new GameLobbyService(currentGame);
         gameLobbyService.start();
+
+        gameNameText.setText(currentGame.getGameName());
     }
 
     /**
@@ -79,11 +93,20 @@ public class GameLobbyController implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+
         //TODO update UI
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
 
+                //Set Playerlist
+                currentPlayersVBox.getChildren().clear();
+                for (Player p : currentGame.getPlayerList()) {
+                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
+                }
+
+                //Set playercount
+                numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
             }
         });
     }
