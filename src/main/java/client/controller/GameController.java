@@ -6,18 +6,23 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import model.Card;
+import model.Game;
 
 
 public class GameController {
 
-    //
+    private Game game;
+
     @FXML
     private ListView<Card> handListView;
-
 
     @FXML
     private ImageView lastCardPlayed;
 
+
+    public GameController(Game game) {
+        this.game = game;
+    }
 
     @FXML
     public void initialize() {

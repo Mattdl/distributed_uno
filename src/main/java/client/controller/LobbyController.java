@@ -60,8 +60,6 @@ public class LobbyController implements Observer {
 
 
     public void update(Observable o, Object arg) {
-        //TODO Update the ListView of games
-
         VBox vboxEntryList = new VBox();
         vboxEntryList.getChildren().add(new Text("Lobby"));
 
