@@ -32,7 +32,7 @@ public class LobbyController implements Observer {
     private LobbyService lobbyService;
 
     //@FXML
-   // private VBox vboxEntryList;
+    // private VBox vboxEntryList;
 
     @FXML
     private BorderPane container;
@@ -61,19 +61,29 @@ public class LobbyController implements Observer {
 
 
     public void update(Observable o, Object arg) {
+        LOGGER.info("Model is updated, updating view");
+
         VBox vboxEntryList = new VBox();
         vboxEntryList.getChildren().add(new Text("Lobby"));
+        LOGGER.info("VBOX initiated");
 
         for (Game game : lobby.getGameList()) {
             vboxEntryList.getChildren().add(createGameEntry(game));
         }
+        LOGGER.info("Game entries initiated");
+
 
         //Set the list to the container view
-        container.setCenter(vboxEntryList);
+        container.getChildren().add(vboxEntryList);
+        LOGGER.info("Set to container view");
+
+
+        LOGGER.info("View updated!");
     }
 
     /**
      * Creates a list entry for the VBOX
+     *
      * @param game
      * @return
      */
@@ -132,14 +142,13 @@ public class LobbyController implements Observer {
         Button clickedButton = (Button) event.getSource();
         String gameName = clickedButton.getId();
 
-        JoinGameService joinGameService= new JoinGameService(gameName);
+        JoinGameService joinGameService = new JoinGameService(gameName);
         joinGameService.setOnSucceeded(event1 -> {
             String failMsg = (String) event1.getSource().getValue();
-            if(failMsg == null) {
+            if (failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToGameLobbyScene(stage, null);
-            }
-            else{
+            } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("UNO");
                 alert.setHeaderText("Joining is not possible");

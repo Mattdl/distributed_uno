@@ -45,7 +45,7 @@ public class LobbyService extends Service<Void> {
                     Lobby retLobby = lobbyService.getJoinableGames(version);
 
                     version = retLobby.getVersion();
-                    lobby = retLobby;
+                    lobby.copyLoby(retLobby);
                     LOGGER.log(Level.INFO,"Received gamelist: {0}", retLobby);
                 }
 

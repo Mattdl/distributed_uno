@@ -43,6 +43,9 @@ public class Lobby extends Observable implements Serializable {
      */
     public void addGame(Game game) {
         gameList.add(game);
+
+        setChanged();
+        notifyObservers();
     }
 
     public void setGameList(List<Game> gameList) {
@@ -57,18 +60,34 @@ public class Lobby extends Observable implements Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+
+        setChanged();
+        notifyObservers();
     }
 
     public void updateVersion() {
         this.version++;
+
+        setChanged();
+        notifyObservers();
     }
 
-    public String toString(){
+    public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("VERSION = " + version + "; GAMES = ");
-        for(Game g:gameList){
+        for (Game g : gameList) {
             sb.append(g + ", ");
         }
         return sb.toString();
     }
+
+    public void copyLoby(Lobby retLobby) {
+        this.gameList = retLobby.gameList;
+        this.version = retLobby.version;
+
+        setChanged();
+        notifyObservers();
+    }
+
+
 }
