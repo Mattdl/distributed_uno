@@ -7,9 +7,11 @@ import java.util.Observable;
 
 public class Lobby extends Observable implements Serializable {
     private List<Game> gameList;
+    private int version;
 
-    public Lobby() {
+    public Lobby(int version) {
         gameList = new ArrayList<Game>();
+        this.version = version;
     }
 
     public List<Game> getGameList() {
@@ -17,12 +19,11 @@ public class Lobby extends Observable implements Serializable {
     }
 
     public Game findGame(String gameName) {
-        boolean found = false;
+
         int i = 0;
 
-        while (!found && i < gameList.size()) {
+        while ( i < gameList.size()) {
             if (gameList.get(i).getGameName().equals(gameName)) {
-                found = true;
                 return gameList.get(i);
             }
             i++;
