@@ -50,8 +50,7 @@ public class GameLobbyService extends Service<Void> {
                     clientGame.makeCopy(serverSideGame);
 
                     LOGGER.log(Level.INFO, "Received from server GameLobby info, Game = {0}", serverSideGame);
-
-                }
+                    }
                 return null;
             }
         };

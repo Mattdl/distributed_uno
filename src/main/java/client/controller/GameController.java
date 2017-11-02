@@ -11,8 +11,14 @@ import javafx.scene.image.ImageView;
 import model.Card;
 import model.Game;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 
 public class GameController {
+
+    private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
+
 
     private Game game;
 
@@ -36,7 +42,9 @@ public class GameController {
         alert.setTitle("Welcome to UNO");
         alert.setHeaderText("yoU kNOw, it's UNO");
         alert.setContentText("Waiting for all players to join...");
-        alert.showAndWait();
+
+        LOGGER.log(Level.INFO, "Everybody's waiting to start");
+
 
         CheckPlayersService checkPlayersService = new CheckPlayersService(game);
         checkPlayersService.setOnSucceeded(event -> {

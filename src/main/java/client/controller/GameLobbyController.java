@@ -107,17 +107,22 @@ public class GameLobbyController implements Observer {
 
                 //Set playercount
                 numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
+
+                if(!currentGame.isJoinable()){
+                    Stage stage = (Stage) leaveGameButton.getScene().getWindow();
+                    switchToGameScene(stage, currentGame);
+                }
             }
         });
     }
 
-    /*    private void switchToGameScene(Stage stage, Object o) {
+    private void switchToGameScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
-        stage.setScene(Main.sceneFactory.getGameScene(o.toString()));
+        stage.setScene(Main.sceneFactory.getGameScene(game));
 
         LOGGER.log(Level.INFO, "switched To GameScene");
-    }*/
+    }
 
     private void switchToLobbyScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To LobbyScene");
