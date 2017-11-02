@@ -146,10 +146,14 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         Game game = lobby.findGame(gameName);
 
         try {
-            if (clientVersion >= game.getVersion()) {
+            //Use while here, because otherwise for every total Lobby update, it will continue...
+            while (clientVersion >= game.getVersion()) {
                 wait();
             }
-        }catch (Exception e){
+
+            //TODO only return lightweight version of Game
+            return game;
+        } catch (Exception e) {
             e.printStackTrace();
             LOGGER.severe("Could not find the requested game for lobby info!");
         }
