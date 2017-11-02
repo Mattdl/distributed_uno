@@ -3,7 +3,9 @@ package model;
 
 import javafx.scene.image.Image;
 
-public class Card {
+import java.io.Serializable;
+
+public class Card implements Serializable {
     private Image image;
     private CardType cardType;
     private CardColor color;

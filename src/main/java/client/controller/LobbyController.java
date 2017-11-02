@@ -104,6 +104,7 @@ public class LobbyController implements Observer {
         LOGGER.log(Level.INFO, "switched To CreateGameScene");
     }
 
+    //TODO: remove because unused? No direct access to game from lobby
     private void switchToGameScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
@@ -111,6 +112,14 @@ public class LobbyController implements Observer {
         stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
 
         LOGGER.log(Level.INFO, "switched To GameScene");
+    }
+
+    private void switchToGameLobbyScene(Stage stage, String msg) {
+        LOGGER.log(Level.INFO, "switching To GameLobbyScene");
+
+        stage.setScene(Main.sceneFactory.getGameLobbyScene(msg));
+
+        LOGGER.log(Level.INFO, "switched To GameLobbyScene");
     }
 
     @FXML
@@ -128,7 +137,7 @@ public class LobbyController implements Observer {
             String failMsg = (String) event1.getSource().getValue();
             if(failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameScene(stage, null);
+                switchToGameLobbyScene(stage, null);
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.WARNING);

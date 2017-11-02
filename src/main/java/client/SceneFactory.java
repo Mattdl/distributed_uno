@@ -94,4 +94,16 @@ public class SceneFactory {
         }
         return null;
     }
+
+    public Scene getGameLobbyScene(String msg) {
+        try {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/gameLobby.fxml"));
+
+            return new Scene(root, WIDTH, HEIGHT);
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE,"Could not load gameLobby.fxml");
+        }
+        return null;
+    }
 }

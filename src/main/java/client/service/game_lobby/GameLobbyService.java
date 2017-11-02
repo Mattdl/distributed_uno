@@ -2,15 +2,18 @@ package client.service.game_lobby;
 
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import model.Game;
 
 /**
  * Service that obtains the information for an in-game Lobby
  */
 public class GameLobbyService extends Service<Void> {
 
+    private Game game;
     private boolean inGameLobby;
 
-    public GameLobbyService() {
+    public GameLobbyService(Game game) {
+        this.game = game;
         inGameLobby = true;
     }
 

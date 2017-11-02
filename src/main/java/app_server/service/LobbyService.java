@@ -1,5 +1,6 @@
 package app_server.service;
 
+import client.controller.LobbyController;
 import javafx.util.Pair;
 import model.Game;
 import model.Lobby;
@@ -10,8 +11,13 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
+
+    private static final Logger LOGGER = Logger.getLogger(LobbyService.class.getName());
+
 
     private Lobby lobby;
     //private GameDbService gameDbService;
@@ -30,6 +36,8 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     public synchronized Pair<List<Game>, Integer> getJoinableGames(int version) throws RemoteException {
 
+        LOGGER.info("Getting joinable games.");
+
         try {
             //If it has already received joinable games one time, let wait until notify
             if (version >= this.lobbyVersion) {
@@ -42,6 +50,8 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                     games.add(game);
                 }
             }
+
+            LOGGER.info("Found joinable games.");
 
             return new Pair<>(games, version);
         } catch (Exception e) {
@@ -65,8 +75,13 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
             throws RemoteException {
         //TODO extend with password (if time)
 
+        LOGGER.log(Level.INFO, "createNewGame @Server");
+
+
         //TODO CHECK IF NAME IS UNIQUE!
         lobby.addGame(new Game(gameName, gameSize, initPlayer));
+        LOGGER.log(Level.INFO, "New game added to list");
+
         lobbyUpdated();
 
         return true;
@@ -128,6 +143,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private void lobbyUpdated() {
         lobbyVersion++;
+        LOGGER.log(Level.INFO, "lobbyUpdated method");
+
         notifyAll();
+
+        LOGGER.log(Level.INFO, "Notified everybody");
+
     }
 }
