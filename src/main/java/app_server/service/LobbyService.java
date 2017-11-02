@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LobbyService.class.getName());
 
 
     private Lobby lobby;
