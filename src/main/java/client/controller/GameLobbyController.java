@@ -33,7 +33,7 @@ public class GameLobbyController implements Observer{
     }
 
     /**
-     * Called by button in GameLobby view //TODO
+     * Called by button in GameLobby view
      */
     @FXML
     public void leaveGame() {
