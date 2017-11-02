@@ -37,6 +37,8 @@ public class Game implements Serializable {
 
     private int joinedPlayers;
 
+    private int version;
+
     //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
@@ -45,6 +47,17 @@ public class Game implements Serializable {
         this.playerList = new ArrayList<>();
         this.clockwise = true;
         this.state = State.WAITING;
+        this.version = 0;
+        playerList.add(initialPlayer);
+    }
+
+    public Game(String gameName, int gameSize, Player initialPlayer, int version) {
+        this.gameName = gameName;
+        this.gameSize = gameSize;
+        this.playerList = new ArrayList<>();
+        this.clockwise = true;
+        this.state = State.WAITING;
+        this.version = version;
         playerList.add(initialPlayer);
     }
 
@@ -76,6 +89,15 @@ public class Game implements Serializable {
 
     public void addJoinedPlayer() {
         joinedPlayers++;
+    }
+
+    public void makeCopy(Game serverSideGame) {
+        this.gameName = serverSideGame.gameName;
+        this.gameSize = serverSideGame.gameSize;
+        this.playerList = serverSideGame.playerList;
+        this.clockwise = serverSideGame.clockwise;
+        this.state = serverSideGame.state;
+        this.version = serverSideGame.version;
     }
 
     public enum State {
@@ -147,6 +169,14 @@ public class Game implements Serializable {
 
     public void setJoinedPlayers(int joinedPlayers) {
         this.joinedPlayers = joinedPlayers;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @Override

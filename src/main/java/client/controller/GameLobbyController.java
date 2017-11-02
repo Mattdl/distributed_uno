@@ -19,7 +19,6 @@ public class GameLobbyController {
 
     private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
 
-
     private Game currentGame;
 
     private GameLobbyService gameLobbyService;

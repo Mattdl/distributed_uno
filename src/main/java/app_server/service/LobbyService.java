@@ -95,7 +95,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public String joinGame(Player player, String gameName) throws RemoteException {
+    public synchronized String joinGame(Player player, String gameName) throws RemoteException {
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
@@ -120,7 +120,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public String leaveGame(Player player, String gameName) throws RemoteException {
+    public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
@@ -141,7 +141,22 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         }
     }
 
-    private void lobbyUpdated() {
+    @Override
+    public synchronized Game getGameLobbyInfo(int clientVersion, String gameName) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+        try {
+            if (clientVersion >= game.getVersion()) {
+                wait();
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            LOGGER.severe("Could not find the requested game for lobby info!");
+        }
+        return null;
+    }
+
+    private synchronized void lobbyUpdated() {
         lobby.updateVersion();
         LOGGER.log(Level.INFO, "lobbyUpdated method");
 
