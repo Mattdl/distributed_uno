@@ -21,7 +21,7 @@ public class LeaveGameService extends Service<String> {
         return new Task<String>() {
             @Override
             protected String call() throws Exception {
-                Registry myRegistry = LocateRegistry.getRegistry("localhost", 1200);
+                Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
 
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
 
