@@ -32,7 +32,7 @@ public class GameController {
     @FXML
     public void initialize() {
 
-        alert = new Alert(Alert.AlertType.INFORMATION);
+        alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Welcome to UNO");
         alert.setHeaderText("yoU kNOw, it's UNO");
         alert.setContentText("Waiting for all players to join...");
