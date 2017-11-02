@@ -46,14 +46,14 @@ public class LobbyController implements Observer {
     public void initialize() {
 
         //Don't show if succesfully logged in or registered
-        /*
+
         if (loginMsg != null) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Welcome to UNO");
             alert.setHeaderText("Join the lobby!");
             alert.setContentText(loginMsg);
-            alert.showAndWait();
-        }*/
+            alert.show();
+        }
 
         lobbyService = new LobbyService(lobby);
         lobbyService.start();

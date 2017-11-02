@@ -1,5 +1,6 @@
 package client.service.lobby;
 
+import client.Main;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Player;
@@ -31,7 +32,7 @@ public class CreateGameService extends Service<Boolean> {
             @Override
             protected Boolean call() throws Exception {
 
-                Registry myRegistry = LocateRegistry.getRegistry("localhost", 1200);
+                Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
 
                 boolean successful = lobbyService.createNewGame(initPlayer, name, size, password);
