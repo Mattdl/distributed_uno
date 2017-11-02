@@ -40,6 +40,6 @@ public class Player implements Serializable {
     }
 
     public boolean equals(Player player){
-        return this.name == player.name;
+        return this.name.equals(player.name);
     }
 }

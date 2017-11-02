@@ -98,8 +98,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         if (gameInLobby != null) {
             if (gameInLobby.isJoinable()) {
+
                 gameInLobby.addPlayer(player);
-                lobbyUpdated();
+                gameUpdated(gameInLobby);
+
                 return null;
             } else {
                 return "Could not join the game...";
@@ -119,25 +121,35 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
-        String msg = "Trying to remove PLAYER "+player.getName()+" from GAME "+gameName;
-        LOGGER.log(Level.INFO, msg);
+        LOGGER.log(Level.INFO, "Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
 
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
+            LOGGER.log(Level.INFO,"gameInLobby is found, and != null");
             if (gameInLobby.getPlayerList().size() <= 1) {
+                LOGGER.log(Level.INFO,"Last player leaves, removing game");
+
+
                 lobby.getGameList().remove(gameInLobby);
-                lobbyUpdated();
+                gameUpdated(gameInLobby);
+
+                LOGGER.log(Level.INFO,"Game removed");
+
                 return null;
             } else {
                 if (gameInLobby.removePlayer(player)) {
-                    lobbyUpdated();
+                    LOGGER.log(Level.INFO,"Player removed");
+
+                    gameUpdated(gameInLobby);
                     return null;
                 } else {
+                    LOGGER.log(Level.INFO,"Player could not be removed");
                     return "Player could not be found in Game playerlist...";
                 }
             }
         } else {
+            LOGGER.log(Level.INFO,"Could not find game, gameInLobby is null");
             return "Game could not be found in the lobby...";
         }
     }
@@ -159,6 +171,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
             LOGGER.severe("Could not find the requested game for lobby info!");
         }
         return null;
+    }
+
+    private synchronized void gameUpdated(Game game) {
+        game.updateVersion();
+        lobbyUpdated();
     }
 
     private synchronized void lobbyUpdated() {

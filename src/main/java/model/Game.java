@@ -8,9 +8,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //@DatabaseTable(tableName = "game")
 public class Game extends Observable implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(Game.class.getName());
 
     //@DatabaseField(generatedId = true)
     //private int id;
@@ -77,19 +81,27 @@ public class Game extends Observable implements Serializable {
         return playerList.size() < gameSize;
     }
 
-    public boolean removePlayer(Player player) {
+    public synchronized boolean removePlayer(Player player) {
+        LOGGER.log(Level.INFO,"Removing player from game");
+
         int i = 0;
 
-        while (!playerList.get(i).equals(player) && i < playerList.size()) {
+        while ( i < playerList.size()) {
+            //LOGGER.log(Level.INFO,"In the while");
+
+            if(playerList.get(i).equals(player)){
+                playerList.remove(i);
+                LOGGER.log(Level.INFO, "Removed player: {0}", player);
+
+                setChanged();
+                notifyObservers();
+                return true;
+            }
             i++;
         }
-        if (i < playerList.size()) {
-            playerList.remove(i);
 
-            setChanged();
-            notifyObservers();
-            return true;
-        }
+        LOGGER.log(Level.INFO, "Did not find player = {0}", player);
+
         return false;
     }
 
@@ -110,6 +122,10 @@ public class Game extends Observable implements Serializable {
 
         setChanged();
         notifyObservers();
+    }
+
+    public void updateVersion() {
+        this.version++;
     }
 
     public enum State {
