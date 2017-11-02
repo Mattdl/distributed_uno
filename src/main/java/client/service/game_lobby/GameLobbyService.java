@@ -30,4 +30,20 @@ public class GameLobbyService extends Service<Void> {
             }
         };
     }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
+    }
+
+    public boolean isInGameLobby() {
+        return inGameLobby;
+    }
+
+    public void setInGameLobby(boolean inGameLobby) {
+        this.inGameLobby = inGameLobby;
+    }
 }

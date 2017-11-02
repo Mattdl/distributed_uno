@@ -1,7 +1,9 @@
 package client.controller;
 
 import client.Main;
+import client.service.game_lobby.GameLobbyService;
 import client.service.game_lobby.LeaveGameService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -20,32 +22,38 @@ public class GameLobbyController {
 
     private Game currentGame;
 
-    private List<Player> playersInLobby;
+    private GameLobbyService gameLobbyService;
 
     @FXML
     public void initialize() {
-        
+        gameLobbyService = new GameLobbyService(currentGame);
+        gameLobbyService.start();
     }
 
     /**
      * Called by button in GameLobby view //TODO
      */
     @FXML
-    public void leaveGame(){
+    public void leaveGame() {
         LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameName());
         leaveGameService.setOnSucceeded(event -> {
             String failMsg = (String) event.getSource().getValue();
 
-            if(failMsg == null) {
+            if (failMsg == null) {
+                gameLobbyService.setInGameLobby(false);
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToLobbyScene(stage, null);
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("UNO");
-                alert.setHeaderText("Failed to leave the game");
-                alert.setContentText(failMsg);
-                alert.showAndWait();
+            } else {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("UNO");
+                        alert.setHeaderText("Failed to leave the game");
+                        alert.setContentText(failMsg);
+                        alert.showAndWait();
+                    }
+                });
             }
         });
         leaveGameService.start();
