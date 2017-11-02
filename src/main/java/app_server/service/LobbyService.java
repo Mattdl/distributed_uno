@@ -16,40 +16,43 @@ import java.util.logging.Logger;
 
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(LobbyService.class.getName());
 
 
     private Lobby lobby;
     //private GameDbService gameDbService;
-    private int lobbyVersion;
 
     public LobbyService(Lobby lobby) throws RemoteException {
         this.lobby = lobby;
-        this.lobbyVersion = 0;
     }
 
     /**
-     * First method called to init joinable games
+     * First method called to init joinable games. We pass a Lobby object that is serializable, but only with the
+     * joinable games. We don't want to pass ALL the games, as this is redundant information for the client.
      *
      * @return
      * @throws RemoteException
      */
-    public synchronized Pair<List<Game>, Integer> getJoinableGames(int version) throws RemoteException {
+    public synchronized Lobby getJoinableGames(int version) throws RemoteException {
+
+        LOGGER.info("Getting joinable games.");
 
         try {
             //If it has already received joinable games one time, let wait until notify
-            if (version >= this.lobbyVersion) {
+            if (version >= this.lobby.getVersion()) {
                 wait();
             }
 
-            List<Game> games = new LinkedList<>();
+            List<Game> joinableGames = new LinkedList<>();
             for (Game game : lobby.getGameList()) {
                 if (game.isJoinable()) {
-                    games.add(game);
+                    joinableGames.add(game);
                 }
             }
 
-            return new Pair<>(games, version);
+            LOGGER.info("Found joinable games.");
+
+            return new Lobby(joinableGames, lobby.getVersion());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -110,6 +113,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     /**
      * Method that makes a client leave a game. If it was the last client, the game is removed.
+     *
      * @param player
      * @param gameName
      * @return
@@ -141,7 +145,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     }
 
     private void lobbyUpdated() {
-        lobbyVersion++;
+        lobby.updateVersion();
         LOGGER.log(Level.INFO, "lobbyUpdated method");
 
         notifyAll();

@@ -148,5 +148,19 @@ public class Game implements Serializable {
     public void setJoinedPlayers(int joinedPlayers) {
         this.joinedPlayers = joinedPlayers;
     }
+
+    @Override
+    public String toString() {
+        return "Game{" +
+                "state=" + state +
+                ", clockwise=" + clockwise +
+                ", playerList=" + playerList +
+                ", deck=" + deck +
+                ", moves=" + moves +
+                ", gameName='" + gameName + '\'' +
+                ", gameSize=" + gameSize +
+                ", joinedPlayers=" + joinedPlayers +
+                '}';
+    }
 }
 

@@ -9,8 +9,12 @@ import model.Lobby;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.logging.Logger;
 
 public class AppServer {
+
+    private static final Logger LOGGER = Logger.getLogger(AppServer.class.getName());
+
     final String DB_IP = "localhost";
     final int DB_PORT = 1200;
 
@@ -35,14 +39,14 @@ public class AppServer {
         }
 
 
-        System.out.println("system is ready");
+        LOGGER.info("system is ready");
     }
 
     /**
      * Method to initialise a new lobby, must be filled with games later on from database
      */
     private void initData(){
-        lobby = new Lobby();
+        lobby = new Lobby(0);
         //TODO connect with db
     }
 

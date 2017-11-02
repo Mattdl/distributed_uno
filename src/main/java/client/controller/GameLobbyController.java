@@ -30,8 +30,6 @@ public class GameLobbyController {
     @FXML
     public void initialize() {
 
-
-
     }
 
     /**

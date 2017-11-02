@@ -3,7 +3,7 @@ package model;
 import java.io.Serializable;
 import java.util.List;
 
-public class Player implements Serializable{
+public class Player implements Serializable {
     private String name;
     private String password;
     private List<Card> hand;
