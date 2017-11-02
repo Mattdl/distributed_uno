@@ -7,10 +7,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import model.Game;
 import model.Player;
 
+import java.awt.event.ActionEvent;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
@@ -28,6 +30,9 @@ public class GameLobbyController implements Observer{
     public GameLobbyController(Game game) {
         this.currentGame = game;
     }
+
+    @FXML
+    Button leaveGameButton;
 
 
     @FXML
@@ -50,7 +55,7 @@ public class GameLobbyController implements Observer{
             LOGGER.log(Level.INFO, failMsg);
             if(failMsg == null) {
                 gameLobbyService.setInGameLobby(false);
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                Stage stage = (Stage) leaveGameButton.getScene().getWindow();
                 switchToLobbyScene(stage, null);
             } else {
                 Platform.runLater(new Runnable() {
