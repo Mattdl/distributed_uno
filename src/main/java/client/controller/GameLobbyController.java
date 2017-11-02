@@ -22,14 +22,20 @@ public class GameLobbyController {
 
     private List<Player> playersInLobby;
 
+    public GameLobbyController(Game game) {
+        this.currentGame = game;
+    }
+
+
     @FXML
     public void initialize() {
+
 
 
     }
 
     /**
-     * Called by button in GameLobby view //TODO
+     * Called by button in GameLobby view
      */
     @FXML
     public void leaveGame(){
