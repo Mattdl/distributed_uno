@@ -3,6 +3,7 @@ package client.controller;
 import client.Main;
 import client.service.lobby.JoinGameService;
 import client.service.lobby.LobbyService;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -10,6 +11,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
@@ -35,7 +37,7 @@ public class LobbyController implements Observer {
     // private VBox vboxEntryList;
 
     @FXML
-    private BorderPane container;
+    private TilePane centerContainer;
 
     public LobbyController() {
         this.lobby = new Lobby(-1);
@@ -63,22 +65,29 @@ public class LobbyController implements Observer {
     public void update(Observable o, Object arg) {
         LOGGER.info("Model is updated, updating view");
 
-        VBox vboxEntryList = new VBox();
-        vboxEntryList.getChildren().add(new Text("Lobby"));
-        LOGGER.info("VBOX initiated");
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                VBox vboxEntryList = new VBox();
+                vboxEntryList.getChildren().add(new Text("Lobby"));
+                LOGGER.info("VBOX initiated");
 
-        for (Game game : lobby.getGameList()) {
-            vboxEntryList.getChildren().add(createGameEntry(game));
-        }
-        LOGGER.info("Game entries initiated");
+                for (Game game : lobby.getGameList()) {
+                    vboxEntryList.getChildren().add(createGameEntry(game));
+                }
+                LOGGER.info("Game entries initiated");
+
+                //Set the list to the container view
+                centerContainer.getChildren().clear();
+                LOGGER.info("Children cleared");
+
+                centerContainer.getChildren().add(vboxEntryList);
+                LOGGER.info("Set to container view");
 
 
-        //Set the list to the container view
-        container.getChildren().add(vboxEntryList);
-        LOGGER.info("Set to container view");
-
-
-        LOGGER.info("View updated!");
+                LOGGER.info("View updated!");
+            }
+        });
     }
 
     /**
