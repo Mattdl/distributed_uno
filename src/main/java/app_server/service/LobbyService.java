@@ -1,7 +1,5 @@
 package app_server.service;
 
-import client.controller.LobbyController;
-import javafx.util.Pair;
 import model.Game;
 import model.Lobby;
 import model.Player;
@@ -95,13 +93,15 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public String joinGame(Player player, String gameName) throws RemoteException {
+    public synchronized String joinGame(Player player, String gameName) throws RemoteException {
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
             if (gameInLobby.isJoinable()) {
+
                 gameInLobby.addPlayer(player);
-                lobbyUpdated();
+                gameUpdated(gameInLobby);
+
                 return null;
             } else {
                 return "Could not join the game...";
@@ -120,31 +120,65 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public String leaveGame(Player player, String gameName) throws RemoteException {
+    public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
+        LOGGER.log(Level.INFO, "Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
+
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
+            LOGGER.log(Level.INFO,"gameInLobby is found, and != null");
             if (gameInLobby.getPlayerList().size() <= 1) {
-                LOGGER.log(Level.INFO, "Last player here");
-                //gameInLobby.removePlayer(player);
+                LOGGER.log(Level.INFO,"Last player leaves, removing game");
+
+
                 lobby.getGameList().remove(gameInLobby);
-                lobbyUpdated();
+                gameUpdated(gameInLobby);
+
+                LOGGER.log(Level.INFO,"Game removed");
+
                 return null;
             } else {
                 if (gameInLobby.removePlayer(player)) {
-                    LOGGER.log(Level.INFO, "Still players in the game so just removing player");
-                    lobbyUpdated();
+                    LOGGER.log(Level.INFO,"Player removed");
+
+                    gameUpdated(gameInLobby);
                     return null;
                 } else {
+                    LOGGER.log(Level.INFO,"Player could not be removed");
                     return "Player could not be found in Game playerlist...";
                 }
             }
         } else {
+            LOGGER.log(Level.INFO,"Could not find game, gameInLobby is null");
             return "Game could not be found in the lobby...";
         }
     }
 
-    private void lobbyUpdated() {
+    @Override
+    public synchronized Game getGameLobbyInfo(int clientVersion, String gameName) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+        try {
+            //Use while here, because otherwise for every total Lobby update, it will continue...
+            while (clientVersion >= game.getVersion()) {
+                wait();
+            }
+
+            //TODO only return lightweight version of Game
+            return game;
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.severe("Could not find the requested game for lobby info!");
+        }
+        return null;
+    }
+
+    private synchronized void gameUpdated(Game game) {
+        game.updateVersion();
+        lobbyUpdated();
+    }
+
+    private synchronized void lobbyUpdated() {
         lobby.updateVersion();
         LOGGER.log(Level.INFO, "lobbyUpdated method");
 

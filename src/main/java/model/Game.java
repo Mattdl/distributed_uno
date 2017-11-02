@@ -1,6 +1,5 @@
 package model;
 
-import client.controller.LobbyController;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -8,14 +7,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Observable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //@DatabaseTable(tableName = "game")
-public class Game implements Serializable {
+public class Game extends Observable implements Serializable {
 
-    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
-
+    private static final Logger LOGGER = Logger.getLogger(Game.class.getName());
 
     //@DatabaseField(generatedId = true)
     //private int id;
@@ -43,6 +42,8 @@ public class Game implements Serializable {
 
     private int joinedPlayers;
 
+    private int version;
+
     //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
@@ -51,6 +52,17 @@ public class Game implements Serializable {
         this.playerList = new ArrayList<>();
         this.clockwise = true;
         this.state = State.WAITING;
+        this.version = 0;
+        playerList.add(initialPlayer);
+    }
+
+    public Game(String gameName, int gameSize, Player initialPlayer, int version) {
+        this.gameName = gameName;
+        this.gameSize = gameSize;
+        this.playerList = new ArrayList<>();
+        this.clockwise = true;
+        this.state = State.WAITING;
+        this.version = version;
         playerList.add(initialPlayer);
     }
 
@@ -61,32 +73,59 @@ public class Game implements Serializable {
      */
     public void addPlayer(Player player) {
         playerList.add(player);
+        setChanged();
+        notifyObservers();
     }
 
     public boolean isJoinable() {
         return playerList.size() < gameSize;
     }
 
-    public boolean removePlayer(Player player) {
+    public synchronized boolean removePlayer(Player player) {
+        LOGGER.log(Level.INFO,"Removing player from game");
+
         int i = 0;
 
-        LOGGER.log(Level.INFO, "removePlayer method");
+        while ( i < playerList.size()) {
+            //LOGGER.log(Level.INFO,"In the while");
 
+            if(playerList.get(i).equals(player)){
+                playerList.remove(i);
+                LOGGER.log(Level.INFO, "Removed player: {0}", player);
 
-        while (!playerList.get(i).equals(player) && i < playerList.size()) {
+                setChanged();
+                notifyObservers();
+                return true;
+            }
             i++;
-            LOGGER.log(Level.INFO, "Looping... "+i);
+        }
 
-        }
-        if (i <= playerList.size()) {
-            playerList.remove(i);
-            return true;
-        }
+        LOGGER.log(Level.INFO, "Did not find player = {0}", player);
+
         return false;
     }
 
     public void addJoinedPlayer() {
         joinedPlayers++;
+
+        setChanged();
+        notifyObservers();
+    }
+
+    public void makeCopy(Game serverSideGame) {
+        this.gameName = serverSideGame.gameName;
+        this.gameSize = serverSideGame.gameSize;
+        this.playerList = serverSideGame.playerList;
+        this.clockwise = serverSideGame.clockwise;
+        this.state = serverSideGame.state;
+        this.version = serverSideGame.version;
+
+        setChanged();
+        notifyObservers();
+    }
+
+    public void updateVersion() {
+        this.version++;
     }
 
     public enum State {
@@ -158,6 +197,14 @@ public class Game implements Serializable {
 
     public void setJoinedPlayers(int joinedPlayers) {
         this.joinedPlayers = joinedPlayers;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 
     @Override

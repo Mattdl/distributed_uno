@@ -1,26 +1,46 @@
 package client.controller;
 
 import client.Main;
+import client.service.game_lobby.GameLobbyService;
 import client.service.game_lobby.LeaveGameService;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
 import model.Player;
 
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GameLobbyController {
+public class GameLobbyController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
 
-
     private Game currentGame;
 
-    private List<Player> playersInLobby;
+    private GameLobbyService gameLobbyService;
+
+    @FXML
+    private VBox currentPlayersVBox;
+
+    @FXML
+    private Button leaveGameButton;
+
+    @FXML
+    private Text gameNameText;
+
+    @FXML
+    private Text numberOfPlayersText;
 
     public GameLobbyController(Game game) {
         this.currentGame = game;
@@ -29,34 +49,69 @@ public class GameLobbyController {
 
     @FXML
     public void initialize() {
+        currentGame.addObserver(this);
+        gameLobbyService = new GameLobbyService(currentGame);
+        gameLobbyService.start();
 
+        gameNameText.setText(currentGame.getGameName());
     }
 
     /**
      * Called by button in GameLobby view
      */
     @FXML
-    public void leaveGame(){
+    public void leaveGame() {
+        LOGGER.log(Level.INFO, "Called leaveGame method in GameLobbyController");
+
         LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameName());
         leaveGameService.setOnSucceeded(event -> {
-            String failMsg = (String) event.getSource().getValue();
 
-            if(failMsg == null) {
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            String failMsg = (String) event.getSource().getValue();
+            LOGGER.log(Level.INFO, failMsg);
+
+            if (failMsg == null) {
+
+                gameLobbyService.setInGameLobby(false);
+                Stage stage = (Stage) leaveGameButton.getScene().getWindow();
                 switchToLobbyScene(stage, null);
-            }
-            else{
-                Alert alert = new Alert(Alert.AlertType.WARNING);
-                alert.setTitle("UNO");
-                alert.setHeaderText("Failed to leave the game");
-                alert.setContentText(failMsg);
-                alert.showAndWait();
+
+            } else {
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        Alert alert = new Alert(Alert.AlertType.WARNING);
+                        alert.setTitle("UNO");
+                        alert.setHeaderText("Failed to leave the game");
+                        alert.setContentText(failMsg);
+                        alert.showAndWait();
+                    }
+                });
             }
         });
         leaveGameService.start();
     }
 
-/*    private void switchToGameScene(Stage stage, Object o) {
+    @Override
+    public void update(Observable o, Object arg) {
+
+        //TODO update UI
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                //Set Playerlist
+                currentPlayersVBox.getChildren().clear();
+                for (Player p : currentGame.getPlayerList()) {
+                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
+                }
+
+                //Set playercount
+                numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
+            }
+        });
+    }
+
+    /*    private void switchToGameScene(Stage stage, Object o) {
         LOGGER.log(Level.INFO, "switching To GameScene");
 
         stage.setScene(Main.sceneFactory.getGameScene(o.toString()));
