@@ -1,6 +1,7 @@
 package client;
 
 import client.controller.GameController;
+import client.controller.GameLobbyController;
 import client.controller.LobbyController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -95,9 +96,28 @@ public class SceneFactory {
         return null;
     }
 
-    public Scene getGameLobbyScene(String msg) {
+    public Scene getGameLobbyScene(Game game) {
         try {
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/gameLobby.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("layout/gameLobby.fxml"));
+
+            //To pass parameters between controllers
+            fxmlLoader.setControllerFactory(new Callback<Class<?>, Object>() {
+                @Override
+                public Object call(Class<?> controllerClass) {
+                    if (controllerClass == GameLobbyController.class) {
+                        GameLobbyController gameLobbyController= new GameLobbyController(game);
+                        return gameLobbyController;
+                    } else {
+                        try {
+                            return controllerClass.newInstance();
+                        } catch (Exception exc) {
+                            throw new RuntimeException(exc);
+                        }
+                    }
+                }
+            });
+
+            Parent root = fxmlLoader.load();
 
             return new Scene(root, WIDTH, HEIGHT);
         }catch (Exception e){

@@ -12,6 +12,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.Game;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -50,7 +51,6 @@ public class CreateGameController {
 
         createGameService.setOnSucceeded(event1 -> {
             boolean successful = (boolean) event1.getSource().getValue();
-
             String msg1 = "Boolean: " + successful;
             LOGGER.log(Level.INFO, msg1);
 
@@ -60,7 +60,7 @@ public class CreateGameController {
                 LOGGER.log(Level.INFO, msg);
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameLobbyScene(stage, msg);
+                switchToGameLobbyScene(stage, new Game(name,playerCount,Main.currentPlayer));
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 LOGGER.log(Level.INFO, "Could not create game");
@@ -84,10 +84,10 @@ public class CreateGameController {
         LOGGER.log(Level.INFO, "switched To LobbyScene");
     }
 
-    private void switchToGameLobbyScene(Stage stage, String msg) {
+    private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene");
 
-        stage.setScene(Main.sceneFactory.getGameLobbyScene(msg));
+        stage.setScene(Main.sceneFactory.getGameLobbyScene(game));
 
         LOGGER.log(Level.INFO, "switched To GameLobbyScene");
     }
