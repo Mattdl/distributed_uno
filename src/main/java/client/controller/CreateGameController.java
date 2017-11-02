@@ -52,28 +52,39 @@ public class CreateGameController {
 
             if (successful) {
                 String msg = "Created game with success";
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                LOGGER.log(Level.INFO, msg);
 
-                //TODO if you create a new game: go to GameLobbyScene
-                switchToLobbyScene(stage, msg);
+                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                switchToGameLobbyScene(stage, msg);
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
+                LOGGER.log(Level.INFO, "Could not create game");
+
                 alert.setTitle("UNO");
                 alert.setHeaderText("Could not create game");
                 alert.setContentText("Try a different name.");
                 alert.showAndWait();
+
+                //TODO: switch back to lobby if failed? switchToLobbyScene(stage, msg);
             }
         });
         createGameService.start();
     }
 
-    //TODO if you create a new game: go to GameLobbyScene instead!!!
     private void switchToLobbyScene(Stage stage, String msg) {
         LOGGER.log(Level.INFO, "switching To LobbyScene");
 
         stage.setScene(Main.sceneFactory.getLobbyScene(msg));
 
         LOGGER.log(Level.INFO, "switched To LobbyScene");
+    }
+
+    private void switchToGameLobbyScene(Stage stage, String msg) {
+        LOGGER.log(Level.INFO, "switching To GameLobbyScene");
+
+        stage.setScene(Main.sceneFactory.getGameLobbyScene(msg));
+
+        LOGGER.log(Level.INFO, "switched To GameLobbyScene");
     }
 
 }

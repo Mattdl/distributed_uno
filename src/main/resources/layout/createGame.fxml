@@ -29,7 +29,7 @@
             <HBox prefHeight="40.0" prefWidth="300.0">
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password     " />
-                  <PasswordField fx:id="password" promptText="Optioneel" />
+                  <PasswordField fx:id="passwordField" promptText="Optioneel" />
                </children>
             </HBox>
             <HBox>

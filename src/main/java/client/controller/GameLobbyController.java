@@ -1,15 +1,26 @@
 package client.controller;
 
+import client.Main;
 import client.service.game_lobby.LeaveGameService;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import model.Game;
+import model.Player;
+
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GameLobbyController {
 
+    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+
+
     private Game currentGame;
+
+    private List<Player> playersInLobby;
 
     @FXML
     public void initialize() {
@@ -41,6 +52,18 @@ public class GameLobbyController {
     }
 
     private void switchToGameScene(Stage stage, Object o) {
-        //TODO
+        LOGGER.log(Level.INFO, "switching To GameScene");
+
+        stage.setScene(Main.sceneFactory.getGameScene(o.toString()));
+
+        LOGGER.log(Level.INFO, "switched To GameScene");
+    }
+
+    private void switchToLobbyScene(Stage stage, String msg) {
+        LOGGER.log(Level.INFO, "switching To LobbyScene");
+
+        stage.setScene(Main.sceneFactory.getLobbyScene(msg));
+
+        LOGGER.log(Level.INFO, "switched To LobbyScene");
     }
 }
