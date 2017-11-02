@@ -1,6 +1,5 @@
 package app_server.service;
 
-import db_server.GameDbService;
 import model.Game;
 import model.Lobby;
 import model.Move;
@@ -12,10 +11,28 @@ import java.rmi.server.UnicastRemoteObject;
 public class GameService extends UnicastRemoteObject implements GameStub {
 
     private Lobby lobby;
-    private GameDbService gameDbService;
+    //private GameDbService gameDbService;
 
     public GameService(Lobby lobby) throws RemoteException {
         this.lobby = lobby;
+    }
+
+    @Override
+    public synchronized boolean hasEverybodyJoined(String gameName) throws RemoteException {
+        try {
+            Game game = lobby.findGame(gameName);
+            game.addJoinedPlayer();
+            if (game.getJoinedPlayers() < game.getPlayerList().size()) {
+                wait();
+            }
+            else{
+                notifyAll();
+            }
+            return true;
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
