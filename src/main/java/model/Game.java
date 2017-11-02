@@ -1,5 +1,6 @@
 package model;
 
+import client.controller.LobbyController;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -7,9 +8,14 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //@DatabaseTable(tableName = "game")
 public class Game implements Serializable {
+
+    private static final Logger LOGGER = Logger.getLogger(LobbyController.class.getName());
+
 
     //@DatabaseField(generatedId = true)
     //private int id;
@@ -64,10 +70,15 @@ public class Game implements Serializable {
     public boolean removePlayer(Player player) {
         int i = 0;
 
+        LOGGER.log(Level.INFO, "removePlayer method");
+
+
         while (!playerList.get(i).equals(player) && i < playerList.size()) {
             i++;
+            LOGGER.log(Level.INFO, "Looping... "+i);
+
         }
-        if (i < playerList.size()) {
+        if (i <= playerList.size()) {
             playerList.remove(i);
             return true;
         }

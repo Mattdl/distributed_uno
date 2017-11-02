@@ -125,11 +125,14 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         if (gameInLobby != null) {
             if (gameInLobby.getPlayerList().size() <= 1) {
+                LOGGER.log(Level.INFO, "Last player here");
+                //gameInLobby.removePlayer(player);
                 lobby.getGameList().remove(gameInLobby);
                 lobbyUpdated();
                 return null;
             } else {
                 if (gameInLobby.removePlayer(player)) {
+                    LOGGER.log(Level.INFO, "Still players in the game so just removing player");
                     lobbyUpdated();
                     return null;
                 } else {
