@@ -34,6 +34,8 @@ public class Game {
     //@DatabaseField
     private int gameSize;
 
+    private int joinedPlayers;
+
     //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
@@ -69,6 +71,10 @@ public class Game {
             return true;
         }
         return false;
+    }
+
+    public void addJoinedPlayer() {
+        joinedPlayers++;
     }
 
     public enum State {
@@ -132,6 +138,14 @@ public class Game {
 
     public void setGameSize(int gameSize) {
         this.gameSize = gameSize;
+    }
+
+    public int getJoinedPlayers() {
+        return joinedPlayers;
+    }
+
+    public void setJoinedPlayers(int joinedPlayers) {
+        this.joinedPlayers = joinedPlayers;
     }
 }
 

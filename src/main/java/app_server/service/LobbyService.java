@@ -1,6 +1,5 @@
 package app_server.service;
 
-import db_server.GameDbService;
 import javafx.util.Pair;
 import model.Game;
 import model.Lobby;
@@ -83,9 +82,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public String joinGame(Player player, String gameName) throws RemoteException {
-        int index = lobby.findGameIndex(gameName);
-
-        Game gameInLobby = lobby.getGameList().get(index);
+        Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
             if (gameInLobby.isJoinable()) {
@@ -100,15 +97,20 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         }
     }
 
+    /**
+     * Method that makes a client leave a game. If it was the last client, the game is removed.
+     * @param player
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public String leaveGame(Player player, String gameName) throws RemoteException {
-        int index = lobby.findGameIndex(gameName);
-
-        Game gameInLobby = lobby.getGameList().get(index);
+        Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
             if (gameInLobby.getPlayerList().size() <= 1) {
-                lobby.getGameList().remove(index);
+                lobby.getGameList().remove(gameInLobby);
                 lobbyUpdated();
                 return null;
             } else {

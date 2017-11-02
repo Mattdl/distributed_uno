@@ -1,16 +1,19 @@
 package client;
 
+import client.controller.GameController;
 import client.controller.LobbyController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.util.Callback;
+import model.Game;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class SceneFactory {
 
-    private static final Logger LOGGER = Logger.getLogger( SceneFactory.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(SceneFactory.class.getName());
 
     private final int WIDTH;
     private final int HEIGHT;
@@ -24,9 +27,9 @@ public class SceneFactory {
         try {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/login.fxml"));
             return new Scene(root, WIDTH, HEIGHT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE,"Could not load login.fxml");
+            LOGGER.log(Level.SEVERE, "Could not load login.fxml");
         }
         return null;
     }
@@ -42,9 +45,9 @@ public class SceneFactory {
             //lobbyController.setLoginMsg(msg);
 
             return new Scene(root, WIDTH, HEIGHT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE,"Could not load lobby.fxml");
+            LOGGER.log(Level.SEVERE, "Could not load lobby.fxml");
         }
         return null;
     }
@@ -54,21 +57,40 @@ public class SceneFactory {
             Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/createGame.fxml"));
 
             return new Scene(root, WIDTH, HEIGHT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE,"Could not load createGame.fxml");
+            LOGGER.log(Level.SEVERE, "Could not load createGame.fxml");
         }
         return null;
     }
 
-    public Scene getGameScene(String msg) {
+    public Scene getGameScene(Game game) {
         try {
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("layout/game.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("layout/game.fxml"));
+
+            //To pass parameters between controllers
+            fxmlLoader.setControllerFactory(new Callback<Class<?>, Object>() {
+                @Override
+                public Object call(Class<?> controllerClass) {
+                    if (controllerClass == GameController.class) {
+                        GameController gameController = new GameController(game);
+                        return gameController;
+                    } else {
+                        try {
+                            return controllerClass.newInstance();
+                        } catch (Exception exc) {
+                            throw new RuntimeException(exc);
+                        }
+                    }
+                }
+            });
+
+            Parent root = fxmlLoader.load();
 
             return new Scene(root, WIDTH, HEIGHT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE,"Could not load game.fxml");
+            LOGGER.log(Level.SEVERE, "Could not load game.fxml");
         }
         return null;
     }
