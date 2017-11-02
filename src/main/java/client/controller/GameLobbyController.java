@@ -22,21 +22,29 @@ public class GameLobbyController {
 
     private List<Player> playersInLobby;
 
+    public GameLobbyController(Game game) {
+        this.currentGame = game;
+    }
+
+
     @FXML
     public void initialize() {
+
 
 
     }
 
     /**
-     * Called by button in GameLobby view //TODO
+     * Called by button in GameLobby view
      */
     @FXML
     public void leaveGame(){
+        LOGGER.log(Level.INFO, "Called leaveGame method in GameLobbyController");
+
         LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameName());
         leaveGameService.setOnSucceeded(event -> {
             String failMsg = (String) event.getSource().getValue();
-
+            LOGGER.log(Level.INFO, failMsg);
             if(failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToLobbyScene(stage, null);

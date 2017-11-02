@@ -117,6 +117,9 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public String leaveGame(Player player, String gameName) throws RemoteException {
+        String msg = "Trying to remove PLAYER "+player.getName()+" from GAME "+gameName;
+        LOGGER.log(Level.INFO, msg);
+
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {

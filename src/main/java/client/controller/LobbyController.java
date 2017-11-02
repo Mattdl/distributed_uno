@@ -114,10 +114,10 @@ public class LobbyController implements Observer {
         LOGGER.log(Level.INFO, "switched To GameScene");
     }
 
-    private void switchToGameLobbyScene(Stage stage, String msg) {
+    private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene");
 
-        stage.setScene(Main.sceneFactory.getGameLobbyScene(msg));
+        stage.setScene(Main.sceneFactory.getGameLobbyScene(game));
 
         LOGGER.log(Level.INFO, "switched To GameLobbyScene");
     }
@@ -137,7 +137,7 @@ public class LobbyController implements Observer {
             String failMsg = (String) event1.getSource().getValue();
             if(failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameLobbyScene(stage, null);
+                switchToGameLobbyScene(stage, lobby.findGame(gameName));
             }
             else{
                 Alert alert = new Alert(Alert.AlertType.WARNING);
