@@ -89,7 +89,7 @@ public class LoginController {
             String msg;
             if (isSuccessful) {
                 Main.currentPlayer = new Player(username);
-                msg = "Successfully logged in with username " + username; //TODO
+                msg = "Successfully logged in as " + username; //TODO
                 LOGGER.log(Level.INFO, "Login attempt was SUCCESSFUL");
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
