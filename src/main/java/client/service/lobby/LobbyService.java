@@ -1,5 +1,6 @@
 package client.service.lobby;
 
+import client.Main;
 import dispatcher.Dispatcher;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
@@ -35,7 +36,7 @@ public class LobbyService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
 
-                Registry myRegistry = LocateRegistry.getRegistry("localhost", 1200);
+                Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
 
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
                 int version = -1;
