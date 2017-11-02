@@ -75,6 +75,9 @@ public class SceneFactory {
                 public Object call(Class<?> controllerClass) {
                     if (controllerClass == GameController.class) {
                         GameController gameController = new GameController(game);
+
+                        LOGGER.log(Level.INFO, "SceneFactory GameController created with parameters");
+
                         return gameController;
                     } else {
                         try {
@@ -106,6 +109,9 @@ public class SceneFactory {
                 public Object call(Class<?> controllerClass) {
                     if (controllerClass == GameLobbyController.class) {
                         GameLobbyController gameLobbyController= new GameLobbyController(game);
+
+                        LOGGER.log(Level.INFO, "SceneFactory GameLobbyController created with parameters");
+
                         return gameLobbyController;
                     } else {
                         try {

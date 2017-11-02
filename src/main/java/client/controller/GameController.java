@@ -24,8 +24,6 @@ public class GameController {
 
     private Game game;
 
-    private Alert alert;
-
     @FXML
     private ListView<Card> handListView;
 
@@ -58,9 +56,12 @@ public class GameController {
             }
         });
         checkPlayersService.start();
+        LOGGER.log(Level.INFO, "CheckPlayerService started");
+
 
         //Used to create ListView with images of cards in hand (UNTESTED)
 
+        //Platform.runLater(() -> {
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
 
@@ -75,11 +76,17 @@ public class GameController {
                 }
             }
         });
+        //});
+
+        LOGGER.log(Level.INFO, "Initalize method ended.");
+
     }
 
     private void displayServerInfo(String msg) {
+        LOGGER.log(Level.INFO, "Starting setText thread");
         Platform.runLater(() -> {
             serverInfoText.setText(msg);
+            LOGGER.log(Level.INFO, "Server info text is placed!");
         });
     }
 
