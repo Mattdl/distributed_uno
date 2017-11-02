@@ -58,4 +58,17 @@ public class Lobby extends Observable implements Serializable {
     public void setVersion(int version) {
         this.version = version;
     }
+
+    public void updateVersion() {
+        this.version++;
+    }
+
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("VERSION = " + version + "; GAMES = ");
+        for(Game g:gameList){
+            sb.append(g + ", ");
+        }
+        return sb.toString();
+    }
 }

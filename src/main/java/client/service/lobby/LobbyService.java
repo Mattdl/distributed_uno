@@ -42,11 +42,11 @@ public class LobbyService extends Service<Void> {
                 int version = -1;
 
                 while(isInLobby){
-                    Pair<List<Game>,Integer> ret = lobbyService.getJoinableGames(version);
+                    Lobby retLobby = lobbyService.getJoinableGames(version);
 
-                    version = ret.getValue();
-                    lobby.setGameList(ret.getKey());
-                    LOGGER.log(Level.INFO,"Received gamelist: {0}, version = {1}", ret.getKey());
+                    version = retLobby.getVersion();
+                    lobby = retLobby;
+                    LOGGER.log(Level.INFO,"Received gamelist: {0}", retLobby);
                 }
 
                 return null;

@@ -38,7 +38,7 @@ public class LobbyController implements Observer {
     private BorderPane container;
 
     public LobbyController() {
-        this.lobby = new Lobby();
+        this.lobby = new Lobby(-1);
         lobby.addObserver(this);
     }
 

@@ -21,11 +21,9 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private Lobby lobby;
     //private GameDbService gameDbService;
-    private int lobbyVersion;
 
     public LobbyService(Lobby lobby) throws RemoteException {
         this.lobby = lobby;
-        this.lobbyVersion = 0;
     }
 
     /**
@@ -41,7 +39,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         try {
             //If it has already received joinable games one time, let wait until notify
-            if (version >= this.lobbyVersion) {
+            if (version >= this.lobby.getVersion()) {
                 wait();
             }
 
@@ -144,7 +142,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     }
 
     private void lobbyUpdated() {
-        lobbyVersion++;
+        lobby.updateVersion();
         LOGGER.log(Level.INFO, "lobbyUpdated method");
 
         notifyAll();

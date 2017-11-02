@@ -46,7 +46,7 @@ public class AppServer {
      * Method to initialise a new lobby, must be filled with games later on from database
      */
     private void initData(){
-        lobby = new Lobby();
+        lobby = new Lobby(0);
         //TODO connect with db
     }
 
