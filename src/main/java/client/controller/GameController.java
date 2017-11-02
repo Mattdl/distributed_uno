@@ -1,6 +1,7 @@
 package client.controller;
 
 
+import client.service.game.CheckPlayersService;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -37,8 +38,21 @@ public class GameController {
         alert.setContentText("Waiting for all players to join...");
         alert.showAndWait();
 
+        CheckPlayersService checkPlayersService = new CheckPlayersService(game);
+        checkPlayersService.setOnSucceeded(event -> {
+            boolean successful = (boolean) event.getSource().getValue();
 
-       //Used to create ListView with images of cards in hand (UNTESTED)
+            if (successful) {
+                alert.close();
+                displayConfirmationDialog();
+            } else {
+                alert.close();
+                displayFailureDialog();
+            }
+        });
+        checkPlayersService.start();
+
+        //Used to create ListView with images of cards in hand (UNTESTED)
 
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
@@ -56,6 +70,22 @@ public class GameController {
         });
 
 
+    }
+
+    private void displayFailureDialog() {
+        alert= new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Say goodbye to UNO");
+        alert.setHeaderText("There seems to be a problem");
+        alert.setContentText("Not all players could join the game");
+        alert.showAndWait();
+    }
+
+    private void displayConfirmationDialog() {
+        alert= new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Welcome to UNO");
+        alert.setHeaderText("yoU kNOw, it's UNO");
+        alert.setContentText("Waiting for all players to join...");
+        alert.showAndWait();
     }
 
 

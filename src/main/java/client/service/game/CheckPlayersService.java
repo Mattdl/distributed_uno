@@ -12,7 +12,7 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CheckPlayersService extends Service<Void> {
+public class CheckPlayersService extends Service<Boolean> {
 
     private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
 
@@ -24,10 +24,10 @@ public class CheckPlayersService extends Service<Void> {
     }
 
     @Override
-    protected Task<Void> createTask() {
-        return new Task<Void>() {
+    protected Task<Boolean> createTask() {
+        return new Task<Boolean>() {
             @Override
-            protected Void call() throws Exception {
+            protected Boolean call() throws Exception {
                 LOGGER.log(Level.INFO, "Starting Task: CheckPlayersService");
 
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
@@ -37,7 +37,7 @@ public class CheckPlayersService extends Service<Void> {
 
                 LOGGER.log(Level.INFO, "CheckPlayersService result = {0}", successful);
 
-                return null;
+                return successful;
             }
         };
     }
