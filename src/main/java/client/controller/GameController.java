@@ -2,12 +2,15 @@ package client.controller;
 
 
 import client.service.game.CheckPlayersService;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import model.Card;
 import model.Game;
 
@@ -19,10 +22,7 @@ public class GameController {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
-
     private Game game;
-
-    private Alert alert;
 
     @FXML
     private ListView<Card> handListView;
@@ -30,6 +30,8 @@ public class GameController {
     @FXML
     private ImageView lastCardPlayed;
 
+    @FXML
+    private Text serverInfoText;
 
     public GameController(Game game) {
         this.game = game;
@@ -38,11 +40,7 @@ public class GameController {
     @FXML
     public void initialize() {
 
-        alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle("Welcome to UNO");
-        alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");
-        alert.showAndWait();
+        displayServerInfo("Waiting for all players to join...");
 
         LOGGER.log(Level.INFO, "Everybody's waiting to start");
 
@@ -52,17 +50,18 @@ public class GameController {
             boolean successful = (boolean) event.getSource().getValue();
 
             if (successful) {
-                alert.close();
-                displayConfirmationDialog();
+                displayServerInfo("Everybody is ready to play!");
             } else {
-                alert.close();
-                displayFailureDialog();
+                displayServerInfo("The game could not start, we lost someone...");
             }
         });
         checkPlayersService.start();
+        LOGGER.log(Level.INFO, "CheckPlayerService started");
+
 
         //Used to create ListView with images of cards in hand (UNTESTED)
 
+        //Platform.runLater(() -> {
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
 
@@ -77,25 +76,64 @@ public class GameController {
                 }
             }
         });
+        //});
 
+        LOGGER.log(Level.INFO, "Initalize method ended.");
 
     }
 
-    private void displayFailureDialog() {
-        alert= new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Say goodbye to UNO");
-        alert.setHeaderText("There seems to be a problem");
-        alert.setContentText("Not all players could join the game");
-        alert.showAndWait();
+    private void displayServerInfo(String msg) {
+        LOGGER.log(Level.INFO, "Starting setText thread");
+        Platform.runLater(() -> {
+            serverInfoText.setText(msg);
+            LOGGER.log(Level.INFO, "Server info text is placed!");
+        });
     }
 
-    private void displayConfirmationDialog() {
-        alert= new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Welcome to UNO");
-        alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");
-        alert.showAndWait();
+    /*
+    private void displayInitGameFailDialog() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                serverInfoText.setText("Waiting for all players to join...");
+                alert.close();
+                alert = new Alert(Alert.AlertType.ERROR);
+                alert.setX(getStageCenterX());
+                alert.setY(getStageCenterY());
+                alert.setTitle("Say goodbye to UNO");
+                alert.setHeaderText("There seems to be a problem");
+                alert.setContentText("Not all players could join the game");
+                alert.showAndWait();
+
+            }
+        });
     }
+
+    private void displayInitGameConfirmDialog() {
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                alert.close();
+                alert = new Alert(Alert.AlertType.CONFIRMATION);
+                alert.setX(getStageCenterX());
+                alert.setY(getStageCenterY());
+                alert.setTitle("Welcome to UNO");
+                alert.setHeaderText("Let's get started!");
+                alert.setContentText("All players are in, can you beat them?");
+                alert.showAndWait();
+            }
+        });
+    }
+
+    private int getStageCenterX() {
+        Stage stage = (Stage) lastCardPlayed.getScene().getWindow();
+        return (int) (stage.getX() + stage.getWidth() / 2);
+    }
+
+    private int getStageCenterY() {
+        Stage stage = (Stage) lastCardPlayed.getScene().getWindow();
+        return (int) (stage.getY() + stage.getHeight() / 2);
+    }*/
 
 
     //Solution found on the net to update cardview, need to implement and extend listener

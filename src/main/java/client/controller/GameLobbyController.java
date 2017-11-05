@@ -94,26 +94,32 @@ public class GameLobbyController implements Observer {
     @Override
     public void update(Observable o, Object arg) {
 
-        //TODO update UI
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
+        if (currentGame.isStartable()) {
+            //Go to the game scene
+            //TODO countdown before starting
+            LOGGER.info("Game is startable");
+            Stage stage = (Stage) leaveGameButton.getScene().getWindow();
+            switchToGameScene(stage, currentGame);
 
-                //Set Playerlist
-                currentPlayersVBox.getChildren().clear();
-                for (Player p : currentGame.getPlayerList()) {
-                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
+        } else {
+
+            //Update UI
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+
+                    //Set Playerlist
+                    currentPlayersVBox.getChildren().clear();
+                    for (Player p : currentGame.getPlayerList()) {
+                        currentPlayersVBox.getChildren().add(new Text(p.getName()));
+                    }
+
+                    //Set playercount
+                    numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
                 }
+            });
 
-                //Set playercount
-                numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
-
-                if(!currentGame.isJoinable()){
-                    Stage stage = (Stage) leaveGameButton.getScene().getWindow();
-                    switchToGameScene(stage, currentGame);
-                }
-            }
-        });
+        }
     }
 
     private void switchToGameScene(Stage stage, Game game) {

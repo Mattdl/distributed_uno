@@ -81,6 +81,10 @@ public class Game extends Observable implements Serializable {
         return playerList.size() < gameSize;
     }
 
+    public boolean isStartable() {
+        return playerList.size() == gameSize;
+    }
+
     public synchronized boolean removePlayer(Player player) {
         LOGGER.log(Level.INFO,"Removing player from game");
 
