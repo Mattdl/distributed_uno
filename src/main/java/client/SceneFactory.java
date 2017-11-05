@@ -3,9 +3,12 @@ package client;
 import client.controller.GameController;
 import client.controller.GameLobbyController;
 import client.controller.LobbyController;
+import client.controller.WinnerController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import model.Game;
 
@@ -129,6 +132,41 @@ public class SceneFactory {
         }catch (Exception e){
             e.printStackTrace();
             LOGGER.log(Level.SEVERE,"Could not load gameLobby.fxml");
+        }
+        return null;
+    }
+
+    public Scene getWinnerScene(Stage stage, Game game) {
+        try {
+
+            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("layout/winner.fxml"));
+
+            //To pass parameters between controllers
+            fxmlLoader.setControllerFactory(new Callback<Class<?>, Object>() {
+                @Override
+                public Object call(Class<?> controllerClass) {
+                    if (controllerClass == WinnerController.class) {
+                        WinnerController winnerController = new WinnerController(stage, game);
+
+                        LOGGER.log(Level.INFO, "SceneFactory winnerController created with parameters");
+
+                        return winnerController;
+                    } else {
+                        try {
+                            return controllerClass.newInstance();
+                        } catch (Exception exc) {
+                            throw new RuntimeException(exc);
+                        }
+                    }
+                }
+            });
+
+            Parent root = fxmlLoader.load();
+
+            return new Scene(root, WIDTH*0.75, HEIGHT*0.75);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LOGGER.log(Level.SEVERE, "Could not load winner.fxml");
         }
         return null;
     }

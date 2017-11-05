@@ -1,23 +1,36 @@
 package client.controller;
 
 
+import client.Main;
 import client.service.game.CheckPlayersService;
+import client.service.game_lobby.LeaveGameService;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.stage.Modality;
+import javafx.stage.Popup;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import model.Card;
 import model.Game;
 
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
 public class GameController {
 
-    private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
 
     private Game game;
@@ -29,6 +42,9 @@ public class GameController {
 
     @FXML
     private ImageView lastCardPlayed;
+
+    @FXML
+    private Button endGameButton;
 
 
     public GameController(Game game) {
@@ -123,5 +139,34 @@ public class GameController {
             }
         });
     }*/
+
+   @FXML
+   public void eindeSpel(){
+       //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
+       Stage stage = (Stage) endGameButton.getScene().getWindow();
+       switchToWinnerScene(stage, null);
+
+
+   }
+
+    private void switchToWinnerScene(Stage stage, String msg){
+        LOGGER.log(Level.INFO, "switching To WinnerScene");
+
+        Stage popup = new Stage();
+        popup.initModality(Modality.APPLICATION_MODAL);
+        popup.setResizable(false);
+        popup.initStyle(StageStyle.TRANSPARENT);
+        popup.setTitle("Winner Screen");
+
+
+        popup.setScene(Main.sceneFactory.getWinnerScene(stage, game));
+        popup.show();
+
+        //stage.setScene(Main.sceneFactory.getWinnerScene(game));
+
+
+
+        LOGGER.log(Level.INFO, "switched To WinnerScene");
+    }
 
 }
