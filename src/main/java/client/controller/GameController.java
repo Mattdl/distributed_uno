@@ -178,20 +178,17 @@ public class GameController implements Observer {
         });
     }*/
 
-   //TODO
-   @FXML
-   public void drawCard(){
+    //TODO
+    @FXML
+    public void drawCard(ActionEvent event){
 
-   }
+    }
 
-   @FXML
-   public void eindeSpel(){
-       //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
+    //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
+    public void eindeSpel(){
        Stage stage = (Stage) endGameButton.getScene().getWindow();
        switchToWinnerScene(stage, null);
-
-
-   }
+    }
 
     private void switchToWinnerScene(Stage stage, String msg){
         LOGGER.log(Level.INFO, "switching To WinnerScene");
