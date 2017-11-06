@@ -208,6 +208,8 @@ public class Game extends Observable implements Serializable {
 
     public void setPlayerList(List<Player> playerList) {
         this.playerList = playerList;
+        setChanged();
+        notifyObservers();
     }
 
     public List<Card> getDeck() {

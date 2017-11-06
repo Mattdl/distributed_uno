@@ -5,6 +5,7 @@ import client.Main;
 import client.service.game.CheckPlayersService;
 import client.service.game.FetchCurrentPlayerAndCardService;
 import client.service.game.FetchInitCardsService;
+import client.service.game.FetchPlayersInfoService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -24,7 +25,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class GameController implements Observer{
+public class GameController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
@@ -96,6 +97,8 @@ public class GameController implements Observer{
                     if (successful) {
                         alert.close();
                         displayConfirmationDialog();
+
+                        runGame();
                     } else {
                         alert.close();
                         displayFailureDialog();
@@ -103,7 +106,7 @@ public class GameController implements Observer{
                 });
 
                 //First RMI init call
-                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game,true);
+                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game, true);
                 currentPlayerCall.setOnSucceeded(event -> {
                     succeededInitCalls++;
                     if (succeededInitCalls >= initCallCount) {
@@ -123,10 +126,27 @@ public class GameController implements Observer{
                 cardsCall.start();
 
                 //Third RMI call
-
-
+                FetchPlayersInfoService playerListCall = new FetchPlayersInfoService(game, true);
+                playerListCall.setOnSucceeded(event -> {
+                    succeededInitCalls++;
+                    if (succeededInitCalls >= initCallCount) {
+                        checkPlayersService.start();
+                    }
+                });
+                playerListCall.start();
             }
         });
+    }
+
+    /**
+     * Method for when the game is actually playing after it is initialized
+     */
+    private void runGame() {
+        FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
+        fetchPlayersInfoService.start();
+
+        FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
+        currentPlayerAndCardService.start();
     }
 
     @Override
