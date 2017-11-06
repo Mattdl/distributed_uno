@@ -202,12 +202,11 @@ public class Game extends Observable implements Serializable {
         this.version = version;
     }
 
-    /**
-     * Adds move to the game's moveList and removes the played card from the player's hand
-     * @param move
-     */
     public void addMove(Move move){
         moves.add(move);
+    }
+
+    public void removeCardFromPlayerHand(Move move){
         move.getPlayer().removeCard(move.getCard());
     }
 

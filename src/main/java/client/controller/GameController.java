@@ -5,6 +5,8 @@ import client.Main;
 import client.service.game.CheckPlayersService;
 import client.service.game_lobby.LeaveGameService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -77,6 +79,8 @@ public class GameController {
 
         //Used to create ListView with images of cards in hand (UNTESTED)
 
+        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+        handListView = new ListView<>(observableList);
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
 

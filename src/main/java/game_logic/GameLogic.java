@@ -44,7 +44,7 @@ public class GameLogic {
      * @param move
      */
     public void gameUpdate(Game game, Move move){
-            //Adds move to moveList and removes card from player's hand
+            //Adds move to the game's moveList
             game.addMove(move);
             switch (move.getCard().getCardType()){
                 //Change direction
@@ -72,6 +72,9 @@ public class GameLogic {
                     game.setCurrentPlayer(game.getNextPlayer());
                     break;
             }
+
+            //Remove card from player's hand
+            game.removeCardFromPlayerHand(move);
 
     }
 }
