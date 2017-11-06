@@ -38,6 +38,11 @@ public class GameLogic {
         return false;
     }
 
+    /**
+     * Processing played move
+     * @param game
+     * @param move
+     */
     public void gameUpdate(Game game, Move move){
             //Adds move to moveList and removes card from player's hand
             game.addMove(move);
