@@ -16,4 +16,6 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     public GameService(Lobby lobby) throws RemoteException {
         this.lobby = lobby;
     }
+
+
 }
