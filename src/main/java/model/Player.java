@@ -7,6 +7,7 @@ public class Player implements Serializable {
     private String name;
     private String password;
     private List<Card> hand;
+    private int handSize; //used on server for lightweight Player object
     //private String token;
 
 
@@ -19,7 +20,17 @@ public class Player implements Serializable {
         this.password = password;
     }
 
-    public void addCard(Card card){
+    /**
+     * Lightweight constructor used at server side
+     * @param name
+     * @param handSize
+     */
+    public Player(String name, int handSize) {
+        this.name = name;
+        this.handSize = handSize;
+    }
+
+    public void addCard(Card card) {
         hand.add(card);
     }
 
@@ -39,7 +50,7 @@ public class Player implements Serializable {
         return password;
     }
 
-    public boolean equals(Player player){
+    public boolean equals(Player player) {
         return this.name.equals(player.name);
     }
 }

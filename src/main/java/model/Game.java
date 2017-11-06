@@ -2,6 +2,7 @@ package model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -140,6 +141,29 @@ public class Game extends Observable implements Serializable {
 
     public void updateVersion() {
         this.version++;
+    }
+
+    public Card getLastPlayedCard() {
+        return this.moves.get(moves.size() - 1).getCard();
+    }
+
+    /**
+     * Method used by client to add the last played card to the game.
+     *
+     * @param card
+     */
+    public void setLastPlayedCard(Card card) {
+        moves.add(new Move(null, card));
+        setChanged();
+        notifyObservers();
+    }
+
+    public List<Player> getLightPlayerList() {
+        List<Player> ret = new LinkedList<>();
+        for (Player p : playerList) {
+            ret.add(new Player(p.getName(), p.getHand().size()));
+        }
+        return ret;
     }
 
 

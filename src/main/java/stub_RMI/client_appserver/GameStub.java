@@ -14,11 +14,9 @@ public interface GameStub extends Remote {
 
     List<Card> initCards(String gameName, Player player) throws RemoteException;
 
-    Player getCurrentPlayer(String gameName) throws RemoteException;
-
-    Card getLastPlayedCard(String gameName) throws RemoteException;
-
-    List<Player> getUpdatedPlayers(String gameName, Player client) throws RemoteException;
+    List<Player> getPlayerUpdates(String gameName, Player client) throws RemoteException;
 
     Card playMove(String gameName, Card card) throws RemoteException;
+
+    Move getCurrentPlayerAndLastCard(String gameName, boolean init);
 }

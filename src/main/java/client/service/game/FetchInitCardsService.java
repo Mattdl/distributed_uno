@@ -38,3 +38,4 @@ public class FetchInitCardsService extends Service<Boolean> {
             }
         };
     }
+}

@@ -4,17 +4,20 @@ import client.Main;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Game;
-import model.Player;
-import stub_RMI.client_appserver.GameLobbyStub;
+import model.Move;
 import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class FetchCurrentPlayerService extends Service<Boolean> {
+/**
+ * Service for the client to fetch the current player (the player who's turn it is) and the last played card from the
+ * server.
+ */
+public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
     private Game game;
 
-    public FetchCurrentPlayerService(Game game) {
+    public FetchCurrentPlayerAndCardService(Game game) {
         this.game = game;
     }
 
@@ -28,11 +31,14 @@ public class FetchCurrentPlayerService extends Service<Boolean> {
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
                 //RMI call
-                Player currentPlayer = gameService.getCurrentPlayer(game.getGameName());
+                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName());
 
-                game.setCurrentPlayer(currentPlayer);
+                boolean isSuccessful = ret != null;
 
-                boolean isSuccessful = currentPlayer != null;
+                if (isSuccessful) {
+                    game.setCurrentPlayer(ret.getPlayer());
+                    game.setLastPlayedCard(ret.getCard());
+                }
 
                 return isSuccessful;
             }

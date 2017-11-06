@@ -3,7 +3,8 @@ package client.controller;
 
 import client.Main;
 import client.service.game.CheckPlayersService;
-import client.service.game.FetchCurrentPlayerService;
+import client.service.game.FetchCurrentPlayerAndCardService;
+import client.service.game.FetchInitCardsService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,11 +18,13 @@ import javafx.stage.StageStyle;
 import model.Card;
 import model.Game;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class GameController {
+public class GameController implements Observer{
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
@@ -43,6 +46,7 @@ public class GameController {
 
     public GameController(Game game) {
         this.game = game;
+        game.addObserver(this);
     }
 
     @FXML
@@ -99,7 +103,7 @@ public class GameController {
                 });
 
                 //First RMI init call
-                FetchCurrentPlayerService currentPlayerCall = new FetchCurrentPlayerService(game);
+                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game);
                 currentPlayerCall.setOnSucceeded(event -> {
                     succeededInitCalls++;
                     if (succeededInitCalls >= initCallCount) {
@@ -109,11 +113,22 @@ public class GameController {
                 currentPlayerCall.start();
 
                 //Second RMI init call
-
+                FetchInitCardsService cardsCall = new FetchInitCardsService(game);
+                cardsCall.setOnSucceeded(event -> {
+                    succeededInitCalls++;
+                    if (succeededInitCalls >= initCallCount) {
+                        checkPlayersService.start();
+                    }
+                });
+                cardsCall.start();
             }
         });
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+
+    }
 
     private void displayFailureDialog() {
         alert = new Alert(Alert.AlertType.ERROR);

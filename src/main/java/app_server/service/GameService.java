@@ -37,37 +37,58 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
     /**
-     * RMI call to get the starting player of the Game.
-     * @param gameName
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized Player getCurrentPlayer(String gameName) throws RemoteException {
-        Game game = lobby.findGame(gameName);
-
-        return game.getCurrentPlayer();
-    }
-
-    /**
+     * -    * RMI call to get the current player of the Game and the last played card
      *
      * @param gameName
      * @return
+     */
+    @Override
+    public synchronized Move getCurrentPlayerAndLastCard(String gameName, boolean init) {
+        try {
+            Game game = lobby.findGame(gameName);
+
+            if (!init) {
+                wait();
+            }
+
+            return new Move(game.getCurrentPlayer(), game.getLastPlayedCard());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * RMI call to give back the list of players and their updated values.
+     *
+     * @param gameName
+     * @param client
+     * @return
      * @throws RemoteException
      */
     @Override
-    public synchronized Card getLastPlayedCard(String gameName) throws RemoteException {
-        return null;
+    public synchronized List<Player> getPlayerUpdates(String gameName, Player client) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+        return game.getLightPlayerList();
     }
 
-    @Override
-    public synchronized List<Player> getUpdatedPlayers(String gameName, Player client) throws RemoteException {
-        return null;
-    }
-
+    /**
+     * Updates the game on the application server and notifies all client RMI calls to fetch info for the game.
+     *
+     * @param gameName
+     * @param card
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public synchronized Card playMove(String gameName, Card card) throws RemoteException {
         Game game = lobby.findGame(gameName);
+
+        //TODO update game
+
+        //TODO notify all
+
         return null;
     }
 }
