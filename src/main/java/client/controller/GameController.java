@@ -89,12 +89,15 @@ public class GameController implements Observer {
 
             @Override
             public void run() {
+                LOGGER.info("Performing initServices.");
 
                 CheckPlayersService checkPlayersService = new CheckPlayersService(game);
                 checkPlayersService.setOnSucceeded(event -> {
                     boolean successful = (boolean) event.getSource().getValue();
 
                     if (successful) {
+                        LOGGER.info("Successful initialization");
+
                         alert.close();
                         displayConfirmationDialog();
 
@@ -142,6 +145,8 @@ public class GameController implements Observer {
      * Method for when the game is actually playing after it is initialized
      */
     private void runGame() {
+        LOGGER.info("Running game!");
+
         FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
         fetchPlayersInfoService.start();
 

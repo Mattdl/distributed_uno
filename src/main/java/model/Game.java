@@ -168,6 +168,7 @@ public class Game extends Observable implements Serializable {
 
     /**
      * Method called by FetchInitCardService of client
+     *
      * @param cards
      * @param currentPlayer
      */
@@ -175,6 +176,33 @@ public class Game extends Observable implements Serializable {
         currentPlayer.setHand(cards);
         setChanged();
         notifyObservers();
+    }
+
+    /**
+     * Method to draw the cards from the deck and give them initially to a player
+     *
+     * @param amountOfCards
+     * @param player
+     */
+    public void givePlayerInitHand(int amountOfCards, Player player) {
+        LOGGER.info("Entering givePlayerInitHand.");
+        List<Card> drawnCards = this.deck.subList(deck.size() - amountOfCards, deck.size());
+
+        LOGGER.log(Level.INFO, "Drawn {0} cards", drawnCards.size());
+
+        player.setHand(drawnCards);
+        deck.remove(drawnCards);
+
+        LOGGER.info("Leaving givePlayerInitHand.");
+    }
+
+    /**
+     * Method to draw first card from the deck.
+     */
+    public void drawFirstCard() {
+        Card firstCard = deck.get(deck.size() - 1);
+        moves.add(new Move(null, firstCard));
+        deck.remove(firstCard);
     }
 
 

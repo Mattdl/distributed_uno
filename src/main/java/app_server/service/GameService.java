@@ -1,5 +1,6 @@
 package app_server.service;
 
+import app_server.AppServer;
 import model.Card;
 import model.Game;
 import model.Lobby;
@@ -10,8 +11,12 @@ import stub_RMI.client_appserver.GameStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class GameService extends UnicastRemoteObject implements GameStub {
+
+    private static final Logger LOGGER = Logger.getLogger(GameService.class.getName());
+
 
     private Lobby lobby;
     //private GameDbService gameDbService;
@@ -31,19 +36,34 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      */
     @Override
     public List<Card> initCards(String gameName, Player player) throws RemoteException {
+        LOGGER.info("In InitCard method");
+
         Game game = lobby.findGame(gameName);
 
-        return game.findPlayer(player).getHand();
+        if (game != null) {
+            LOGGER.info("Found game");
+            Player retPlayer = game.findPlayer(player);
+            if (retPlayer != null) {
+                LOGGER.info("Returning hand");
+
+                game.givePlayerInitHand(7,retPlayer);
+
+                return retPlayer.getHand();
+            }
+        }
+        return null;
     }
 
     /**
-     * -    * RMI call to get the current player of the Game and the last played card
+     * RMI call to get the current player of the Game and the last played card
      *
      * @param gameName
      * @return
      */
     @Override
-    public synchronized Move getCurrentPlayerAndLastCard(String gameName, boolean init) {
+    public synchronized Move getCurrentPlayerAndLastCard(String gameName, boolean init) throws RemoteException {
+        LOGGER.info("In getCurrentPlayerAndLastCard method");
+
         try {
             Game game = lobby.findGame(gameName);
 
@@ -51,7 +71,15 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 wait();
             }
 
-            return new Move(game.getCurrentPlayer(), game.getLastPlayedCard());
+            if (game != null) {
+                LOGGER.info("Found game");
+
+                if(game.getLastPlayedCard() == null){
+                    game.drawFirstCard();
+                }
+
+                return new Move(game.getCurrentPlayer(), game.getLastPlayedCard());
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,14 +95,16 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Player> getPlayerUpdates(String gameName, Player client) throws RemoteException {
+    public synchronized List<Player> getPlayerUpdates(String gameName, Player client, boolean init) throws RemoteException {
         try {
             Game game = lobby.findGame(gameName);
 
-            wait();
+            if (!init) {
+                wait();
+            }
 
             return game.getLightPlayerList();
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
