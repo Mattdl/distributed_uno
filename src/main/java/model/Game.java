@@ -4,10 +4,7 @@ import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Observable;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,8 +25,10 @@ public class Game extends Observable implements Serializable {
     //@DatabaseField(foreign = true)
     private List<Player> playerList;
 
+    private Player currentPlayer;
+
     //@DatabaseField(foreign = true)
-    private List<Card> deck;
+    private LinkedList<Card> deck;
 
     //@DatabaseField(foreign = true)
     private List<Move> moves;
@@ -163,14 +162,6 @@ public class Game extends Observable implements Serializable {
         this.playerList = playerList;
     }
 
-    public List<Card> getDeck() {
-        return deck;
-    }
-
-    public void setDeck(List<Card> deck) {
-        this.deck = deck;
-    }
-
     public List<Move> getMoves() {
         return moves;
     }
@@ -210,6 +201,48 @@ public class Game extends Observable implements Serializable {
     public void setVersion(int version) {
         this.version = version;
     }
+
+    /**
+     * Adds move to the game's moveList and removes the played card from the player's hand
+     * @param move
+     */
+    public void addMove(Move move){
+        moves.add(move);
+        move.getPlayer().removeCard(move.getCard());
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player player) {
+        this.currentPlayer = player;
+    }
+
+    /**
+     * Returns next player
+     * @return
+     */
+    public Player getNextPlayer(){
+        if(clockwise) return playerList.get((playerList.indexOf(currentPlayer) + 1)%playerList.size());
+        else return playerList.get((playerList.indexOf(currentPlayer) - 1)%playerList.size());
+    }
+
+    /**
+     * Returns next player with certain amount, used for skipping players
+     * @param amount
+     * @return
+     */
+    public Player getNextPlayer(int amount){
+        if(clockwise) return playerList.get((playerList.indexOf(currentPlayer) + amount)%playerList.size());
+        else return playerList.get((playerList.indexOf(currentPlayer) - amount)%playerList.size());
+    }
+
+    public void drawCards(Player player, int amount){
+        for(int i=0;i<amount;i++) player.addCard(deck.pollFirst());
+    }
+
+
 
     @Override
     public String toString() {

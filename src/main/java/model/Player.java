@@ -42,4 +42,8 @@ public class Player implements Serializable {
     public boolean equals(Player player){
         return this.name.equals(player.name);
     }
+
+    public void removeCard(Card card){
+        hand.remove(card);
+    }
 }
