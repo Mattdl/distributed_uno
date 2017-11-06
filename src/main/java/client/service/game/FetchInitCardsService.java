@@ -30,9 +30,12 @@ public class FetchInitCardsService extends Service<Boolean> {
 
                 //RMI call
                 List<Card> cards = gameService.initCards(game.getGameName(), Main.currentPlayer);
-                Main.currentPlayer.setHand(cards);
 
                 boolean isSuccessful = cards != null;
+
+                if(isSuccessful){
+                    game.setCurrentPlayerHand(cards, Main.currentPlayer);
+                }
 
                 return isSuccessful;
             }

@@ -31,7 +31,7 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
                 //RMI call
-                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName());
+                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName(), true);
 
                 boolean isSuccessful = ret != null;
 

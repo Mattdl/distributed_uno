@@ -166,6 +166,17 @@ public class Game extends Observable implements Serializable {
         return ret;
     }
 
+    /**
+     * Method called by FetchInitCardService of client
+     * @param cards
+     * @param currentPlayer
+     */
+    public void setCurrentPlayerHand(List<Card> cards, Player currentPlayer) {
+        currentPlayer.setHand(cards);
+        setChanged();
+        notifyObservers();
+    }
+
 
     public enum State {
         WAITING,

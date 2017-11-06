@@ -68,9 +68,16 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      */
     @Override
     public synchronized List<Player> getPlayerUpdates(String gameName, Player client) throws RemoteException {
-        Game game = lobby.findGame(gameName);
+        try {
+            Game game = lobby.findGame(gameName);
 
-        return game.getLightPlayerList();
+            wait();
+
+            return game.getLightPlayerList();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
