@@ -1,5 +1,6 @@
 package app_server;
 
+import app_server.service.GameLobbyService;
 import app_server.service.GameService;
 import app_server.service.LobbyService;
 import app_server.service.LoginService;
@@ -32,6 +33,8 @@ public class AppServer {
 
             registry.rebind("GameService", new GameService(lobby));
 
+            registry.rebind("GameLobbyService", new GameLobbyService(lobby));
+
             registry.rebind("LobbyService", new LobbyService(lobby));
 
         } catch (Exception e) {
@@ -45,12 +48,12 @@ public class AppServer {
     /**
      * Method to initialise a new lobby, must be filled with games later on from database
      */
-    private void initData(){
+    private void initData() {
         lobby = new Lobby(0);
         //TODO connect with db
     }
 
-    private GameDbService registerClientRMI(){
+    private GameDbService registerClientRMI() {
 
         try {
             Registry myRegistry = LocateRegistry.getRegistry(DB_IP, DB_PORT);
@@ -59,7 +62,7 @@ public class AppServer {
 
             return gameDbService;
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

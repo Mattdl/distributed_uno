@@ -4,6 +4,7 @@ import client.Main;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Game;
+import stub_RMI.client_appserver.GameLobbyStub;
 import stub_RMI.client_appserver.GameStub;
 import stub_RMI.client_appserver.LobbyStub;
 
@@ -15,7 +16,6 @@ import java.util.logging.Logger;
 public class CheckPlayersService extends Service<Boolean> {
 
     private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
-
 
     private Game game;
 
@@ -31,7 +31,7 @@ public class CheckPlayersService extends Service<Boolean> {
                 LOGGER.log(Level.INFO, "Starting Task: CheckPlayersService");
 
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
-                GameStub gameService = (GameStub) myRegistry.lookup("GameService");
+                GameLobbyStub gameService = (GameLobbyStub) myRegistry.lookup("GameLobbyService");
 
                 boolean successful = gameService.hasEverybodyJoined(game.getGameName());
 
