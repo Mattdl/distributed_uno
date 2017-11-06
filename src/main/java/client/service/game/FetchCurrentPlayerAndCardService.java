@@ -16,9 +16,13 @@ import java.rmi.registry.Registry;
  */
 public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
     private Game game;
+    private boolean isInit;
+    private boolean isPlaying;
 
-    public FetchCurrentPlayerAndCardService(Game game) {
+    public FetchCurrentPlayerAndCardService(Game game, boolean isInit) {
         this.game = game;
+        this.isInit = isInit;
+        isPlaying = true;
     }
 
     @Override
@@ -30,15 +34,20 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
-                //RMI call
-                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName(), true);
+                boolean isSuccessful;
 
-                boolean isSuccessful = ret != null;
+                //must only be performed once for the initialization
+                do {
+                    //RMI call
+                    Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName(), true);
 
-                if (isSuccessful) {
-                    game.setCurrentPlayer(ret.getPlayer());
-                    game.setLastPlayedCard(ret.getCard());
-                }
+                    isSuccessful = ret != null;
+
+                    if (isSuccessful) {
+                        game.setCurrentPlayer(ret.getPlayer());
+                        game.setLastPlayedCard(ret.getCard());
+                    }
+                } while (!isInit && isPlaying);
 
                 return isSuccessful;
             }

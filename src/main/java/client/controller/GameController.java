@@ -103,7 +103,7 @@ public class GameController implements Observer{
                 });
 
                 //First RMI init call
-                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game);
+                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game,true);
                 currentPlayerCall.setOnSucceeded(event -> {
                     succeededInitCalls++;
                     if (succeededInitCalls >= initCallCount) {
@@ -121,6 +121,10 @@ public class GameController implements Observer{
                     }
                 });
                 cardsCall.start();
+
+                //Third RMI call
+
+
             }
         });
     }
