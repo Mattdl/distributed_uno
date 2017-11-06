@@ -18,22 +18,29 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.Card;
 import model.Game;
+import model.Player;
 
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public class GameController {
+public class GameController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
+    private int currentPlayerIndex;
 
     private Game game;
 
@@ -48,6 +55,18 @@ public class GameController {
     @FXML
     private Button endGameButton;
 
+    @FXML
+    private Text player2info;
+
+    @FXML
+    private Text player3info;
+
+    @FXML
+    private Text player4info;
+
+    @FXML
+    private Button drawCardButton;
+
 
     public GameController(Game game) {
         this.game = game;
@@ -55,6 +74,21 @@ public class GameController {
 
     @FXML
     public void initialize() {
+
+        game.addObserver(this);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                currentPlayerIndex = game.getPlayerList().indexOf(Main.currentPlayer);
+                if(game.getGameSize() == 2){
+                    player3info.setVisible(false);
+                    player4info.setVisible(false);
+                }
+                if(game.getGameSize() == 3)
+                    player4info.setVisible(false);
+            }
+        });
 
         alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Welcome to UNO");
@@ -80,7 +114,7 @@ public class GameController {
         //Used to create ListView with images of cards in hand (UNTESTED)
 
         ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
-        handListView = new ListView<>(observableList);
+        handListView.setItems(observableList);
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
 
@@ -144,6 +178,12 @@ public class GameController {
         });
     }*/
 
+   //TODO
+   @FXML
+   public void drawCard(){
+
+   }
+
    @FXML
    public void eindeSpel(){
        //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
@@ -173,4 +213,30 @@ public class GameController {
         LOGGER.log(Level.INFO, "switched To WinnerScene");
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        //Update UI
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+                //UNTESTED
+                List<Card> hand = Main.currentPlayer.getHand();
+                ObservableList<Card> observableHand = FXCollections.observableArrayList(hand);
+                handListView.setItems(observableHand);
+
+                List<Player> playerList = game.getPlayerList();
+
+                //Update last played card image
+                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+
+                //Set player2info (= next player in playerslist)
+                player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).handSize() + " cards");
+
+                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
+
+                player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
+                }
+        });
+    }
 }

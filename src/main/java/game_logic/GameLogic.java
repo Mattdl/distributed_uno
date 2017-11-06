@@ -10,7 +10,7 @@ public class GameLogic {
     }
 
     /**
-     *
+     *Used for client and serverside
      * @param cardPlayed (card that players wants to play)
      * @param topCard (last card played)
      * @return
@@ -39,7 +39,7 @@ public class GameLogic {
     }
 
     /**
-     * Processing played move
+     * Processing played move, only for server
      * @param game
      * @param move
      */

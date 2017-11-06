@@ -215,6 +215,10 @@ public class Game extends Observable implements Serializable {
         move.getPlayer().removeCard(move.getCard());
     }
 
+    public Card getLastPlayedCard(){
+        return moves.get(moves.size()-1).getCard();
+    }
+
     public Player getCurrentPlayer() {
         return currentPlayer;
     }
