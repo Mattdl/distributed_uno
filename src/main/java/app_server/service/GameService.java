@@ -21,7 +21,8 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
     /**
-     * RMI service to return the initial 7 cards of a player.
+     * RMI service to return the initial 7 cards of a player. Is read only and needs not to be synchronized, as a the
+     * Game object will only be adapted after initialization.
      *
      * @param gameName
      * @param player
@@ -29,7 +30,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Card> initCards(String gameName, Player player) throws RemoteException {
+    public List<Card> initCards(String gameName, Player player) throws RemoteException {
         Game game = lobby.findGame(gameName);
 
         return game.findPlayer(player).getHand();
@@ -42,19 +43,25 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized Player getStartingPlayer(String gameName) throws RemoteException {
+    public synchronized Player getCurrentPlayer(String gameName) throws RemoteException {
         Game game = lobby.findGame(gameName);
 
         return game.getCurrentPlayer();
     }
 
+    /**
+     *
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
     @Override
-    public Card getLastPlayedCard(String gameName) throws RemoteException {
+    public synchronized Card getLastPlayedCard(String gameName) throws RemoteException {
         return null;
     }
 
     @Override
-    public List<Player> getUpdatedPlayers(String gameName, Player client) throws RemoteException {
+    public synchronized List<Player> getUpdatedPlayers(String gameName, Player client) throws RemoteException {
         return null;
     }
 
