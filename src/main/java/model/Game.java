@@ -229,6 +229,8 @@ public class Game extends Observable implements Serializable {
 
     public void setCurrentPlayer(Player currentPlayer) {
         this.currentPlayer = currentPlayer;
+        setChanged();
+        notifyObservers();
     }
 
     @Override
