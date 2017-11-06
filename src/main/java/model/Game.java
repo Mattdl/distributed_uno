@@ -44,6 +44,8 @@ public class Game extends Observable implements Serializable {
 
     private int version;
 
+    private Player startingPlayer;
+
     //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
@@ -116,6 +118,18 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
+    public Player findPlayer(Player player) {
+        int i = 0;
+
+        while (i < playerList.size()) {
+            if (playerList.get(i).equals(player)) {
+                return playerList.get(i);
+            }
+            i++;
+        }
+        return null;
+    }
+
     public void makeCopy(Game serverSideGame) {
         this.gameName = serverSideGame.gameName;
         this.gameSize = serverSideGame.gameSize;
@@ -131,6 +145,7 @@ public class Game extends Observable implements Serializable {
     public void updateVersion() {
         this.version++;
     }
+
 
     public enum State {
         WAITING,

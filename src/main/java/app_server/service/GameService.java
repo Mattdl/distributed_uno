@@ -20,26 +20,38 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         this.lobby = lobby;
     }
 
+    /**
+     * RMI service to return the initial 7 cards of a player.
+     *
+     * @param gameName
+     * @param player
+     * @return
+     * @throws RemoteException
+     */
     @Override
-    public List<Card> initCards(String gameName, Player player) throws RemoteException {
+    public synchronized List<Card> initCards(String gameName, Player player) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+        return game.findPlayer(player).getHand();
+    }
+
+    @Override
+    public synchronized Player getStartingPlayer(String gameName) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+
+
+        return null;
+    }
+
+    @Override
+    public synchronized Move getLastPlayedMove(String gameName) throws RemoteException {
         Game game = lobby.findGame(gameName);
         return null;
     }
 
     @Override
-    public Player getStartingPlayer(String gameName) throws RemoteException {
-        Game game = lobby.findGame(gameName);
-        return null;
-    }
-
-    @Override
-    public Move getLastPlayedMove(String gameName) throws RemoteException {
-        Game game = lobby.findGame(gameName);
-        return null;
-    }
-
-    @Override
-    public Card playMove(String gameName, Card card) throws RemoteException {
+    public synchronized Card playMove(String gameName, Card card) throws RemoteException {
         Game game = lobby.findGame(gameName);
         return null;
     }
