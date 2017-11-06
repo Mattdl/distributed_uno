@@ -139,7 +139,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public void setDeck() {
-        this.deck = DeckBuilder.makeDeck();
+        this.deck = new DeckBuilder().makeDeck();
     }
 
     //GETTERS & SETTERS

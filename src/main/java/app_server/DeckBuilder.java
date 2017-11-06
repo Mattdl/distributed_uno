@@ -1,13 +1,14 @@
 package app_server;
 
-import dispatcher.Dispatcher;
-import javafx.scene.image.Image;
+import javafx.embed.swing.SwingFXUtils;
 import model.Card;
 
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class DeckBuilder {
@@ -18,7 +19,7 @@ public class DeckBuilder {
      * Generates a shuffled deck containing each colored card twice and each special uncolored card 4 times
      * @return Deck
      */
-    public static LinkedList<Card> makeDeck(){
+    public LinkedList<Card> makeDeck(){
         LinkedList<Card> deck = new LinkedList<>();
 
         //Generate each colored card twice
@@ -26,13 +27,20 @@ public class DeckBuilder {
             for (Card.CardColor color : Card.CardColor.values()) {
                 //Generate all numbered cards
                 for (Number number : Number.values()) {
-                    Image img = new Image("file:textures/" + number + "_" + color + ".png");
-                    /*try {
-                        img = new Image("/textures/" + number + "_" + color + ".png");
-                    } catch (IOException e) {
-                        LOGGER.info("Error loading card image");
-                    }*/
-                    deck.add(new Card(img, Card.CardType.NORMAL, color, number.getValue()));
+                   /* BufferedImage img = null;
+                    try {
+                        img = ImageIO.read(new File(getClass().getResource("/textures/" + number + "_" + color + ".png").toURI()));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        LOGGER.info("Error loading card image: "+"/textures/" + number + "_" + color + ".png");
+                    }
+                    LOGGER.log(Level.INFO,"Creating normal card");
+                    Card card = new Card(SwingFXUtils.toFXImage(img, null), Card.CardType.NORMAL, color, number.getValue());*/
+                    Card card = new Card(null, Card.CardType.NORMAL, color, number.getValue());
+                    LOGGER.log(Level.INFO,"Created normal card");
+                    deck.add(card);
+
+
                 }
                 //Generate each special colored card
                 for (Card.CardType cardType : Card.CardType.values()) {
@@ -40,19 +48,37 @@ public class DeckBuilder {
                     if (cardType == Card.CardType.NORMAL)
                         continue;
 
+                    BufferedImage img = null;
+
                     if(i==0 && (cardType == Card.CardType.PLUS4 || cardType == Card.CardType.PICK_COLOR)){
                         //Make each special uncolored card four times, once for each color only in first iteration
-                        Image img = new Image("file:textures/" + cardType + ".png");
-                        deck.add(new Card(img, cardType, null, null));
+                       /* try {
+                            img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + ".png").toURI()));
+                        } catch (Exception e) {
+                            LOGGER.info("Error loading card image :" + "/textures/" + cardType + ".png");
+                        }*/
+                        LOGGER.log(Level.INFO,"Creating PLUS4/COLOR card");
+                        //deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, null, null));
+                        deck.add(new Card(null, cardType, null, null));
+
                     }
 
-                        Image img = new Image("file:textures/" + cardType + "_" + color + ".png");
-                        deck.add(new Card(img, cardType, color, null));
+                    /*try {
+                        img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + "_" + color + ".png").toURI()));
+                    } catch (Exception e) {
+                        LOGGER.info("Error loading card image : "+"/textures/" + cardType + "_" + color + ".png");
+                    }*/
+                    LOGGER.log(Level.INFO,"Creating special card: "+cardType.toString()+", "+color.toString());
+                    //deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, color, null));
+                    Card card = new Card(null, cardType, color, null);
+                    LOGGER.log(Level.INFO,"Created special card");
+                    deck.add(card);
+
                 }
             }
         }
 
-
+        LOGGER.log(Level.INFO, "Deck created");
         Collections.shuffle(deck);
         return deck;
     }

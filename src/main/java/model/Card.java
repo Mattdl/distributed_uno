@@ -9,7 +9,7 @@ public class Card implements Serializable {
     private Image image;
     private CardType cardType;
     private CardColor color;
-    private int value;
+    private Integer value;
 
     public Card(Image image, CardType cardType, CardColor color, Integer value) {
         this.image = image;
