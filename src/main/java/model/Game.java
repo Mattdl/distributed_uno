@@ -1,11 +1,7 @@
 package model;
 
-import com.j256.ormlite.field.DatabaseField;
-import com.j256.ormlite.table.DatabaseTable;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Observable;
 import java.util.logging.Level;
@@ -44,9 +40,7 @@ public class Game extends Observable implements Serializable {
 
     private int version;
 
-    private Player startingPlayer;
-
-    private boolean isInitialized;
+    private Player currentPlayer;
 
     //private String password;
 
@@ -151,8 +145,9 @@ public class Game extends Observable implements Serializable {
 
     public enum State {
         WAITING,
-        COUNTING,
-        RUNNING
+        INITALIZING,
+        READY,
+        ENDED
     }
 
     //GETTERS & SETTERS
@@ -226,6 +221,14 @@ public class Game extends Observable implements Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public Player getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public void setCurrentPlayer(Player currentPlayer) {
+        this.currentPlayer = currentPlayer;
     }
 
     @Override

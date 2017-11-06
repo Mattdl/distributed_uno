@@ -1,5 +1,6 @@
 package stub_RMI.client_appserver;
 
+import com.sun.org.apache.regexp.internal.RE;
 import model.Card;
 import model.Game;
 import model.Move;
@@ -15,7 +16,9 @@ public interface GameStub extends Remote {
 
     Player getStartingPlayer(String gameName) throws RemoteException;
 
-    Move getLastPlayedMove(String gameName) throws RemoteException;
+    Card getLastPlayedCard(String gameName) throws RemoteException;
+
+    List<Player> getUpdatedPlayers(String gameName, Player client) throws RemoteException;
 
     Card playMove(String gameName, Card card) throws RemoteException;
 }

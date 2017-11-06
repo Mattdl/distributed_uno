@@ -20,6 +20,13 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
         this.lobby = lobby;
     }
 
+    /**
+     * RMI call that is called on client side after that a player has initialized his game.
+     * It only returns true when all players in the game have joined (and thus initialized) the game.
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public synchronized boolean hasEverybodyJoined(String gameName) throws RemoteException {
         try {
