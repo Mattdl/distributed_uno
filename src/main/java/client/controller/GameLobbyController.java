@@ -113,6 +113,7 @@ public class GameLobbyController implements Observer {
                         //TODO countdown before starting
                         LOGGER.info("Game is startable");
                         Stage stage = (Stage) leaveGameButton.getScene().getWindow();
+                        currentGame.deleteObservers(); //VERY IMPORTANT!!!
                         switchToGameScene(stage, currentGame);
 
                     }

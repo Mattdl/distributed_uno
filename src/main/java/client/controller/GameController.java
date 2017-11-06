@@ -6,10 +6,10 @@ import client.service.game.CheckPlayersService;
 import client.service.game.FetchCurrentPlayerAndCardService;
 import client.service.game.FetchInitCardsService;
 import client.service.game.FetchPlayersInfoService;
+import client.service.game.InitService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -67,13 +67,11 @@ public class GameController implements Observer {
 
     public GameController(Game game) {
         this.game = game;
-        game.addObserver(this);
+        this.game.addObserver(this);
     }
 
     @FXML
     public void initialize() {
-
-        game.addObserver(this);
 
         Platform.runLater(new Runnable() {
             @Override
@@ -88,16 +86,18 @@ public class GameController implements Observer {
             }
         });
 
+        /*
         alert = new Alert(Alert.AlertType.NONE);
         alert.setTitle("Welcome to UNO");
         alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");
+        alert.setContentText("Waiting for all players to join...");*/
         LOGGER.log(Level.INFO, "Everybody's waiting to start");
 
         initServices();
 
         //Used to create ListView with images of cards in hand (UNTESTED)
 
+        /*
         ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
         handListView.setItems(observableList);
         handListView.setCellFactory(listView -> new ListCell<Card>() {
@@ -113,7 +113,7 @@ public class GameController implements Observer {
                     setGraphic(imageView);
                 }
             }
-        });
+        });*/
     }
 
     /**
@@ -121,11 +121,11 @@ public class GameController implements Observer {
      * the game.
      */
     private void initServices() {
-        Platform.runLater(new Runnable() {
+        /*Platform.runLater(new Runnable() {
             final int initCallCount = 3;
 
             @Override
-            public void run() {
+            public void run() {*/
                 LOGGER.info("Performing initServices.");
 
                 CheckPlayersService checkPlayersService = new CheckPlayersService(game);
@@ -135,16 +135,23 @@ public class GameController implements Observer {
                     if (successful) {
                         LOGGER.info("Successful initialization");
 
-                        alert.close();
-                        displayConfirmationDialog();
+                       //alert.close();
+                        //displayConfirmationDialog();
 
                         runGame();
                     } else {
-                        alert.close();
-                        displayFailureDialog();
+                        //alert.close();
+                        //displayFailureDialog();
+                        LOGGER.info("Failed initialization");
+
                     }
                 });
 
+                InitService initService=new InitService(game);
+                initService.setOnSucceeded(event -> checkPlayersService.start());
+                initService.start();
+
+                /*
                 //First RMI init call
                 FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game, true);
                 currentPlayerCall.setOnSucceeded(event -> {
@@ -174,8 +181,12 @@ public class GameController implements Observer {
                     }
                 });
                 playerListCall.start();
+                */
+
+                LOGGER.info("All init services started");
+/*
             }
-        });
+        });*/
     }
 
     /**
@@ -184,11 +195,14 @@ public class GameController implements Observer {
     private void runGame() {
         LOGGER.info("Running game!");
 
+        //TODO run game
+        /*
         FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
         fetchPlayersInfoService.start();
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
+        */
     }
 
     private void displayFailureDialog() {
@@ -269,12 +283,13 @@ public class GameController implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
+        /*
         //Update UI
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
 
-                //UNTESTED
+
                 List<Card> hand = Main.currentPlayer.getHand();
                 ObservableList<Card> observableHand = FXCollections.observableArrayList(hand);
                 handListView.setItems(observableHand);
@@ -282,15 +297,19 @@ public class GameController implements Observer {
                 List<Player> playerList = game.getPlayerList();
 
                 //Update last played card image
-                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                //TODO client must lookup the image for the card
+                //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
 
                 //Set player2info (= next player in playerslist)
+
                 player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).handSize() + " cards");
 
                 player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
 
                 player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
+
+
                 }
-        });
+        });*/
     }
 }

@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import java.io.Serializable;
 
 public class Card implements Serializable {
-    private Image image;
+    private transient Image image;
     private CardType cardType;
     private CardColor color;
     private Integer value;

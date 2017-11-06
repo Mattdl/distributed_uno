@@ -10,7 +10,10 @@ import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class GameService extends UnicastRemoteObject implements GameStub {
@@ -26,8 +29,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
     /**
-     * RMI service to return the initial 7 cards of a player. Is read only and needs not to be synchronized, as a the
-     * Game object will only be adapted after initialization.
+     * RMI service to return the initial 7 cards of a player.
      *
      * @param gameName
      * @param player
@@ -35,7 +37,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public List<Card> initCards(String gameName, Player player) throws RemoteException {
+    public synchronized List<Card> initCards(String gameName, Player player) throws RemoteException {
         LOGGER.info("In InitCard method");
 
         Game game = lobby.findGame(gameName);
@@ -44,13 +46,21 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             LOGGER.info("Found game");
             Player retPlayer = game.findPlayer(player);
             if (retPlayer != null) {
-                LOGGER.info("Returning hand");
+                LOGGER.log(Level.INFO, "Player not null for initCards: {0}", retPlayer);
 
-                game.givePlayerInitHand(7,retPlayer);
+                LinkedList<Card> ret = game.givePlayerInitHand(7);
 
-                return retPlayer.getHand();
+                LOGGER.log(Level.INFO, "Setting list of cards to hand: ", ret);
+
+                retPlayer.setHand(ret);
+
+                LOGGER.log(Level.INFO, "Player received init hand, returning : ", retPlayer.getHand());
+
+                return ret;
             }
         }
+        LOGGER.log(Level.INFO, "Returning null for hand");
+
         return null;
     }
 
@@ -74,7 +84,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             if (game != null) {
                 LOGGER.info("Found game");
 
-                if(game.getLastPlayedCard() == null){
+                //Set random starting player
+                if(game.getCurrentPlayer() == null){
+                    game.setCurrentPlayer(game.getPlayerList().get(new Random().nextInt(game.getPlayerList().size())));
+                }
+
+                //Set first card
+                if (!game.hasPlayedCards()) {
                     game.drawFirstCard();
                 }
 

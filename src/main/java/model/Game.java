@@ -57,6 +57,7 @@ public class Game extends Observable implements Serializable {
         this.clockwise = true;
         this.state = State.WAITING;
         this.version = 0;
+        this.moves = new LinkedList<>();
         playerList.add(initialPlayer);
     }
 
@@ -67,6 +68,7 @@ public class Game extends Observable implements Serializable {
         this.clockwise = true;
         this.state = State.WAITING;
         this.version = version;
+        this.moves = new LinkedList<>();
         playerList.add(initialPlayer);
     }
 
@@ -139,6 +141,7 @@ public class Game extends Observable implements Serializable {
         this.clockwise = serverSideGame.clockwise;
         this.state = serverSideGame.state;
         this.version = serverSideGame.version;
+        //this.moves = serverSideGame.moves;
 
         setChanged();
         notifyObservers();
@@ -150,6 +153,10 @@ public class Game extends Observable implements Serializable {
 
     public Card getLastPlayedCard() {
         return this.moves.get(moves.size() - 1).getCard();
+    }
+
+    public boolean hasPlayedCards() {
+        return !moves.isEmpty();
     }
 
     /**
@@ -187,24 +194,42 @@ public class Game extends Observable implements Serializable {
      * Method to draw the cards from the deck and give them initially to a player
      *
      * @param amountOfCards
-     * @param player
      */
-    public void givePlayerInitHand(int amountOfCards, Player player) {
+    public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards) {
         LOGGER.info("Entering givePlayerInitHand.");
-        List<Card> drawnCards = this.deck.subList(deck.size() - amountOfCards, deck.size());
+        //List<Card> drawnCards = this.deck.subList(deck.size() - amountOfCards, deck.size());
+        LinkedList<Card> drawnCards = new LinkedList<>();
+
+        for(int i=0;i<amountOfCards;i++){
+            LOGGER.log(Level.INFO, "First forlus");
+
+            Card card = deck.pop();
+            LOGGER.log(Level.INFO, "Middle forlus");
+
+            drawnCards.add(card);
+            LOGGER.log(Level.INFO, "Drawing/popping card: ", card);
+        }
 
         LOGGER.log(Level.INFO, "Drawn {0} cards", drawnCards.size());
+        LOGGER.log(Level.INFO, "Drawn cards={0}", drawnCards);
 
-        player.setHand(drawnCards);
-        deck.remove(drawnCards);
+
+
+        LOGGER.log(Level.INFO, "Deck before removal : {0}", deck.size());
+
+        //deck = deck.subList(0, deck.size() - amountOfCards);
+
+        //LOGGER.log(Level.INFO, "Deck after removal : {0}", deck.size());
+
 
         LOGGER.info("Leaving givePlayerInitHand.");
+        return drawnCards;
     }
 
     /**
      * Method to draw first card from the deck.
      */
-    public void drawFirstCard() {
+    public synchronized void drawFirstCard() {
         Card firstCard = deck.get(deck.size() - 1);
         moves.add(new Move(null, firstCard));
         deck.remove(firstCard);
@@ -307,38 +332,39 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
-    public void addMove(Move move){
+    public void addMove(Move move) {
         moves.add(move);
     }
 
-    public void removeCardFromPlayerHand(Move move){
+    public void removeCardFromPlayerHand(Move move) {
         move.getPlayer().removeCard(move.getCard());
     }
 
 
     /**
      * Returns next player
+     *
      * @return
      */
-    public Player getNextPlayer(){
-        if(clockwise) return playerList.get((playerList.indexOf(currentPlayer) + 1)%playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - 1)%playerList.size());
+    public Player getNextPlayer() {
+        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
+        else return playerList.get((playerList.indexOf(currentPlayer) - 1) % playerList.size());
     }
 
     /**
      * Returns next player with certain amount, used for skipping players
+     *
      * @param amount
      * @return
      */
-    public Player getNextPlayer(int amount){
-        if(clockwise) return playerList.get((playerList.indexOf(currentPlayer) + amount)%playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - amount)%playerList.size());
+    public Player getNextPlayer(int amount) {
+        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
+        else return playerList.get((playerList.indexOf(currentPlayer) - amount) % playerList.size());
     }
 
-    public void drawCards(Player player, int amount){
-        for(int i=0;i<amount;i++) player.addCard(deck.pollFirst());
+    public void drawCards(Player player, int amount) {
+        for (int i = 0; i < amount; i++) player.addCard(deck.pollFirst());
     }
-
 
 
     @Override
