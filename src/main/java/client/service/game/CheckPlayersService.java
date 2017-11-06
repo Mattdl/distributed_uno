@@ -18,17 +18,25 @@ public class CheckPlayersService extends Service<Boolean> {
     private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
 
     private Game game;
+    private int initCallsCount = 3;
 
     public CheckPlayersService(Game game) {
         this.game = game;
     }
 
+    /**
+     * Service that requests all the init RMI calls and waits until all players in the game have initialized.
+     * @return
+     */
     @Override
     protected Task<Boolean> createTask() {
         return new Task<Boolean>() {
             @Override
             protected Boolean call() throws Exception {
                 LOGGER.log(Level.INFO, "Starting Task: CheckPlayersService");
+
+                //Start other services
+
 
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameLobbyStub gameService = (GameLobbyStub) myRegistry.lookup("GameLobbyService");
