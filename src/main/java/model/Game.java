@@ -30,10 +30,8 @@ public class Game extends Observable implements Serializable {
     //@DatabaseField(foreign = true)
     private List<Player> playerList;
 
-    private Player currentPlayer;
-
     //@DatabaseField(foreign = true)
-    private List<Card> deck;
+    private LinkedList<Card> deck;
 
     //@DatabaseField(foreign = true)
     private List<Move> moves;
