@@ -35,7 +35,7 @@
                         <Image url="@/textures/UNO-Back.png" />
                      </image>
                   </ImageView>
-                  <Label text="Playername: number of cards" />
+                  <Text fx:id="player3info" layoutX="114.0" layoutY="119.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Playername: number of cards" />
                </children>
                <VBox.margin>
                   <Insets left="100.0" right="100.0" />
@@ -52,7 +52,7 @@
                   <Image url="@/textures/UNO-Back.png" />
                </image>
             </ImageView>
-            <Label text="Playername: number of cards" />
+            <Text fx:id="player2info" strokeType="OUTSIDE" strokeWidth="0.0" text="Playername: number of cards" />
          </children>
       </VBox>
    </left>
@@ -64,7 +64,7 @@
                   <Image url="@/textures/UNO-Back.png" />
                </image>
             </ImageView>
-            <Label text="Playername: number of cards" />
+            <Text fx:id="player4info" strokeType="OUTSIDE" strokeWidth="0.0" text="Playername: number of cards" />
          </children>
       </VBox>
    </right>
@@ -78,7 +78,7 @@
    <bottom>
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="109.0" prefWidth="641.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="endGameButton" mnemonicParsing="false" onAction="#eindeSpel" text="Winnaar zien" />
+            <Button fx:id="drawCardButton" mnemonicParsing="false" onAction="#drawCard" text="Draw Card" />
             <ListView fx:id="handListView" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
             <Text fx:id="serverInfoText" strokeType="OUTSIDE" strokeWidth="0.0" text="Serverinfo" />
          </children>
