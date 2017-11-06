@@ -39,8 +39,6 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     public synchronized Player getStartingPlayer(String gameName) throws RemoteException {
         Game game = lobby.findGame(gameName);
 
-
-
         return null;
     }
 

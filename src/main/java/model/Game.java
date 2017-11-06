@@ -46,6 +46,8 @@ public class Game extends Observable implements Serializable {
 
     private Player startingPlayer;
 
+    private boolean isInitialized;
+
     //private String password;
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
@@ -88,14 +90,14 @@ public class Game extends Observable implements Serializable {
     }
 
     public synchronized boolean removePlayer(Player player) {
-        LOGGER.log(Level.INFO,"Removing player from game");
+        LOGGER.log(Level.INFO, "Removing player from game");
 
         int i = 0;
 
-        while ( i < playerList.size()) {
+        while (i < playerList.size()) {
             //LOGGER.log(Level.INFO,"In the while");
 
-            if(playerList.get(i).equals(player)){
+            if (playerList.get(i).equals(player)) {
                 playerList.remove(i);
                 LOGGER.log(Level.INFO, "Removed player: {0}", player);
 
