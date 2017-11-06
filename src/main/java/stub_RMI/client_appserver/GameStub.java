@@ -11,11 +11,11 @@ import java.util.List;
 
 public interface GameStub extends Remote {
 
-    List<Card> initCards(Player player) throws RemoteException;
+    List<Card> initCards(String gameName, Player player) throws RemoteException;
 
-    Player getStartingPlayer() throws RemoteException;
+    Player getStartingPlayer(String gameName) throws RemoteException;
 
-    Move getLastPlayedMove() throws RemoteException;
+    Move getLastPlayedMove(String gameName) throws RemoteException;
 
-    Card playMove(Card card) throws RemoteException;
+    Card playMove(String gameName, Card card) throws RemoteException;
 }
