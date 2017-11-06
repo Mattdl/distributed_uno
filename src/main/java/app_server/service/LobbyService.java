@@ -76,7 +76,9 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
 
         //TODO CHECK IF NAME IS UNIQUE!
-        lobby.addGame(new Game(gameName, gameSize, initPlayer));
+        Game game = new Game(gameName, gameSize, initPlayer);
+        game.setDeck();
+        lobby.addGame(game);
         LOGGER.log(Level.INFO, "New game added to list");
 
         lobbyUpdated();

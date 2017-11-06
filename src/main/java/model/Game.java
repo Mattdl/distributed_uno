@@ -1,5 +1,6 @@
 package model;
 
+import app_server.DeckBuilder;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -135,6 +136,10 @@ public class Game extends Observable implements Serializable {
         WAITING,
         COUNTING,
         RUNNING
+    }
+
+    public void setDeck() {
+        this.deck = DeckBuilder.makeDeck();
     }
 
     //GETTERS & SETTERS
