@@ -6,6 +6,7 @@ import client.service.game.CheckPlayersService;
 import client.service.game.FetchCurrentPlayerAndCardService;
 import client.service.game.FetchPlayersInfoService;
 import client.service.game.InitService;
+import client.service.game.PlayMoveService;
 import game_logic.GameLogic;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -23,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import model.Card;
 import model.Game;
+import model.Move;
 import model.Player;
 
 import java.util.Observable;
@@ -182,29 +184,40 @@ public class GameController implements Observer {
     /**
      * Method called when player plays a card from his hand.
      *
-     * @param event
+     * @param click
      */
     @FXML
-    public void playCard(ActionEvent event) {
-
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-    }
-
-    @FXML
     public void playCard(MouseEvent click) {
+        if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
 
-        if (click.getClickCount() == 2) {
-            Card playedCard = handListView.getSelectionModel().getSelectedItem();
-            Card lastPlayedCard = game.getLastPlayedCard();
-            boolean isValidMove = gameLogic.isValidMove(playedCard,lastPlayedCard);
-            LOGGER.log(Level.INFO,"Trying to play: "+playedCard.toString()+" on "+lastPlayedCard.toString());
-            LOGGER.log(Level.INFO,"Move is valid: "+isValidMove);
-            if(!isValidMove) serverInfoText.setText("Move is not valid. Please pick another card.");
+                    if (click.getClickCount() == 2) {
+                        Card playedCard = handListView.getSelectionModel().getSelectedItem();
+                        Card lastPlayedCard = game.getLastPlayedCard();
+
+                        boolean isValidMove = gameLogic.isValidMove(playedCard, lastPlayedCard);
+
+                        LOGGER.log(Level.INFO, "Trying to play: " + playedCard.toString() + " on " + lastPlayedCard.toString());
+                        LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
+
+                        if (isValidMove) {
+                            PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
+                            playMoveService.setOnSucceeded(event -> {
+
+                                serverInfoText.setText("It is your turn, play a card!");
+
+                            });
+                            playMoveService.start();
+                        } else {
+                            serverInfoText.setText("Move is not valid. Please pick another card.");
+                        }
+                    }
+                }
+            });
+        }else{
+            serverInfoText.setText("It is not your turn...");
         }
     }
 
@@ -239,8 +252,15 @@ public class GameController implements Observer {
             @Override
             public void run() {
 
+                if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+                    serverInfoText.setText("It is your turn, play a card!");
+                }
+                else{
+                    serverInfoText.setText("It's " + );
+                }
 
-                //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
+
+                    //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
 /*
                 ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
                 handListView.setItems(observableList);
@@ -262,7 +282,7 @@ public class GameController implements Observer {
 
 
                 //Show cards as text
-                if(Main.currentPlayer.hasHand()) {
+                if (Main.currentPlayer.hasHand()) {
                     ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
                     handListView.setItems(observableList);
                     handListView.setCellFactory(listView -> new ListCell<Card>() {
@@ -282,15 +302,15 @@ public class GameController implements Observer {
 
                 //Update last played card image
                 //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
-                if(game.hasPlayedCards()) {
+                if (game.hasPlayedCards()) {
                     lastPlayedCardText.setText(game.getLastPlayedCard().toString());
                 }
 
 
                 //Set other players hand size
-                player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).getHandSize() + " cards");
-                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).getHandSize() + " cards");
-                player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).getHandSize() + " cards");
+                player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
+                player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
+                player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
 
 
             }
