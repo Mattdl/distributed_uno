@@ -72,7 +72,7 @@
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="109.0" prefWidth="641.0" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="drawCardButton" mnemonicParsing="false" onAction="#drawCard" text="Draw Card" />
-            <ListView fx:id="handListView" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
+            <ListView fx:id="handListView" onMouseClicked="#playCard" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
             <Text fx:id="serverInfoText" strokeType="OUTSIDE" strokeWidth="0.0" text="Serverinfo" />
          </children>
       </VBox>

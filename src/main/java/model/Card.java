@@ -55,4 +55,9 @@ public class Card implements Serializable {
         REVERSE,
         PICK_COLOR
     }
+
+    @Override
+    public String toString() {
+        return cardType + "_" + color + ": " + value;
+    }
 }

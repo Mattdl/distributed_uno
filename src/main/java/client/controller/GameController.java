@@ -4,6 +4,7 @@ package client.controller;
 import client.Main;
 import client.service.game.CheckPlayersService;
 import client.service.game.InitService;
+import game_logic.GameLogic;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -35,6 +37,8 @@ public class GameController implements Observer {
     private int currentPlayerIndex;
 
     private Game game;
+
+    private GameLogic gameLogic;
 
     @FXML
     private ListView<Card> handListView;
@@ -65,6 +69,7 @@ public class GameController implements Observer {
 
     public GameController(Game game) {
         this.game = game;
+        this.gameLogic = new GameLogic();
         this.game.addObserver(this);
     }
 
@@ -170,6 +175,19 @@ public class GameController implements Observer {
 
     }
 
+    @FXML
+    public void playCard(MouseEvent click) {
+
+        if (click.getClickCount() == 2) {
+            Card playedCard = handListView.getSelectionModel().getSelectedItem();
+            Card lastPlayedCard = game.getLastPlayedCard();
+            boolean isValidMove = gameLogic.isValidMove(playedCard,lastPlayedCard);
+            LOGGER.log(Level.INFO,"Trying to play: "+playedCard.toString()+" on "+lastPlayedCard.toString());
+            LOGGER.log(Level.INFO,"Move is valid: "+isValidMove);
+            if(!isValidMove) serverInfoText.setText("Move is not valid. Please pick another card.");
+        }
+    }
+
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
     public void eindeSpel(){
        Stage stage = (Stage) endGameButton.getScene().getWindow();
@@ -234,7 +252,7 @@ public class GameController implements Observer {
                             if (card == null) {
                                 setText(null);
                             } else {
-                                if(card != null) setText(card.getCardType().toString() + "_" + card.getColor().toString() + ": " + card.getValue());
+                                setText(card.toString());
                             }
                         }
                     });
@@ -245,8 +263,7 @@ public class GameController implements Observer {
                 //Update last played card image
                 //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
                 if(game.hasPlayedCards()) {
-                    Card lastPlayedCard = game.getLastPlayedCard();
-                    lastPlayedCardText.setText(lastPlayedCard.getCardType().toString() + "_" + lastPlayedCard.getColor().toString() + ": " + lastPlayedCard.getValue());
+                    lastPlayedCardText.setText(game.getLastPlayedCard().toString());
                 }
 
 

@@ -21,8 +21,13 @@ public class GameLogic {
 
         switch (topCard.getCardType()){
             //Only unvalid if value AND color is different when previous card is a normal card
-            case NORMAL: if(cardPlayed.getValue() != topCard.getValue() && cardPlayed.getColor() != topCard.getColor()) return false;
-                        return true;
+            case NORMAL:
+                //Workaround for Integer null values
+                if(cardPlayed.getValue()==null){
+                    if(cardPlayed.getColor() != topCard.getColor()) return false;
+                }
+                else if(!cardPlayed.getValue().equals(topCard.getValue()) && cardPlayed.getColor() != topCard.getColor()) return false;
+                return true;
             //If CardType or Color is equal to previous card, move is valid
             case PLUS2:
             case SKIP:
