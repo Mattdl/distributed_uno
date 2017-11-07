@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
@@ -70,6 +71,9 @@ public class GameController implements Observer {
 
     @FXML
     private Text serverInfoText;
+
+    @FXML
+    private Text currentPlayerText;
 
     public GameController(Game game) {
         this.game = game;
