@@ -216,7 +216,7 @@ public class Game extends Observable implements Serializable {
         LinkedList<Card> drawnCards = new LinkedList<>();
 
         for (int i = 0; i < amountOfCards; i++) {
-            Card card = deck.pop();
+            Card card = deck.pollFirst();
             drawnCards.add(card);
         }
 
@@ -234,7 +234,7 @@ public class Game extends Observable implements Serializable {
      * Method to draw first card from the deck.
      */
     public synchronized void drawFirstCard() {
-        Card firstCard = deck.get(deck.size() - 1);
+        Card firstCard = deck.pollFirst();
         moves.add(new Move(null, firstCard));
         deck.remove(firstCard);
     }
@@ -344,17 +344,6 @@ public class Game extends Observable implements Serializable {
         move.getPlayer().removeCard(move.getCard());
     }
 
-
-    /**
-     * Returns next player
-     *
-     * @return
-     */
-    public Player getNextPlayer() {
-        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - 1) % playerList.size());
-    }
-
     /**
      * Returns next player with certain amount, used for skipping players
      *
@@ -374,7 +363,8 @@ public class Game extends Observable implements Serializable {
     }
 
     public void drawCards(Player player, int amount) {
-        for (int i = 0; i < amount; i++) player.addCard(deck.pollFirst());
+        for (int i = 0; i < amount; i++)
+            player.addCard(deck.pollFirst());
     }
 
 

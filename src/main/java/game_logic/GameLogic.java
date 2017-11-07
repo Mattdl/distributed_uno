@@ -52,38 +52,45 @@ public class GameLogic {
      */
     public Card gameUpdate(Game game, Move move) {
 
-        //Adds move to the game's moveList
-        game.addMove(move);
+        if(move.getCard() !=null) {
+            //Adds move to the game's moveList
+            game.addMove(move);
 
-        //Remove card from player's hand
-        game.removeCardFromPlayerHand(move);
+            //Remove card from player's hand
+            game.removeCardFromPlayerHand(move);
 
 
-        switch (move.getCard().getCardType()) {
-            //Change direction
-            case REVERSE:
-                game.setClockwise(!game.isClockwise());
-                game.setCurrentPlayer(game.getNextPlayer());
-                break;
-            //Next player draws 2 cards and skips turn
-            case PLUS2:
-                game.drawCards(game.getNextPlayer(), 2);
-                game.setCurrentPlayer(game.getNextPlayer(2));
-                break;
-            //Next player draws 4 cards and skips turn
-            case PLUS4:
-                game.drawCards(game.getNextPlayer(), 4);
-                game.setCurrentPlayer(game.getNextPlayer(2));
-                break;
-            //Skips next player
-            case SKIP:
-                game.setCurrentPlayer(game.getNextPlayer(2));
-                break;
-            //Sets next player
-            case NORMAL:
-            case PICK_COLOR:
-                game.setCurrentPlayer(game.getNextPlayer());
-                break;
+            switch (move.getCard().getCardType()) {
+                //Change direction
+                case REVERSE:
+                    game.setClockwise(!game.isClockwise());
+                    game.setCurrentPlayer(game.getNextPlayer(1));
+                    break;
+                //Next player draws 2 cards and skips turn
+                case PLUS2:
+                    game.drawCards(game.getNextPlayer(1), 2);
+                    game.setCurrentPlayer(game.getNextPlayer(2));
+                    break;
+                //Next player draws 4 cards and skips turn
+                case PLUS4:
+                    game.drawCards(game.getNextPlayer(1), 4);
+                    game.setCurrentPlayer(game.getNextPlayer(2));
+                    break;
+                //Skips next player
+                case SKIP:
+                    game.setCurrentPlayer(game.getNextPlayer(2));
+                    break;
+                //Sets next player
+                case NORMAL:
+                case PICK_COLOR:
+                    game.setCurrentPlayer(game.getNextPlayer(1));
+                    break;
+            }
+            return null;
+        }
+        else{
+            Card drawnCard =;
+            game.drawCards();
         }
     }
 }
