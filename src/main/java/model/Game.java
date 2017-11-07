@@ -122,7 +122,7 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
-    public Player findPlayer(Player player) {
+    public synchronized Player findPlayer(Player player) {
         int i = 0;
 
         while (i < playerList.size()) {

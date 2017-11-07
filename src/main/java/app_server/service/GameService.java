@@ -71,6 +71,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         for (Player player : game.getPlayerList()) {
             if (player.getHand().isEmpty()) {
+                LOGGER.log(Level.INFO, "Distributing cards for player = {0}", player);
                 game.givePlayerInitHand(7, player);
                 LOGGER.log(Level.INFO, "Player hand distributed = {0}", player.getHand());
             }

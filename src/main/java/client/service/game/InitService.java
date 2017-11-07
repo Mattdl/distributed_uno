@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Service that makes the first RMI calls to setup the game for the client.
+ */
 public class InitService extends Service<Boolean> {
 
     private static final Logger LOGGER = Logger.getLogger(InitService.class.getName());
@@ -41,10 +44,10 @@ public class InitService extends Service<Boolean> {
                 boolean isSuccessful = cards != null;
 
                 if (isSuccessful) {
-                    LOGGER.log(Level.INFO,"Retrieved init cards = {0}",cards);
+                    LOGGER.log(Level.INFO, "Retrieved init cards = {0}", cards);
                     game.setCurrentPlayerHand(cards, Main.currentPlayer);
-                }else{
-                    LOGGER.log(Level.INFO,"Retrieved null for cards");
+                } else {
+                    LOGGER.log(Level.INFO, "Retrieved null for cards");
                 }
 
                 //Get current player and top card
@@ -53,8 +56,8 @@ public class InitService extends Service<Boolean> {
                 isSuccessful = ret != null;
 
                 if (isSuccessful) {
-                    LOGGER.log(Level.INFO,"Retrieved init player = {0}",ret.getPlayer());
-                    LOGGER.log(Level.INFO,"Retrieved init card = {0}",ret.getCard());
+                    LOGGER.log(Level.INFO, "Retrieved init player = {0}", ret.getPlayer());
+                    LOGGER.log(Level.INFO, "Retrieved init card = {0}", ret.getCard());
 
                     game.setCurrentPlayer(ret.getPlayer());
                     game.setLastPlayedCard(ret.getCard());
@@ -66,12 +69,12 @@ public class InitService extends Service<Boolean> {
                 isSuccessful = retList != null;
 
                 if (isSuccessful) {
-                    LOGGER.log(Level.INFO,"Retrieved game Player list = {0}",retList);
+                    LOGGER.log(Level.INFO, "Retrieved game Player list = {0}", retList);
 
                     game.setPlayerList(retList);
                 }
 
-                LOGGER.log(Level.INFO,"Finished the InitService");
+                LOGGER.log(Level.INFO, "Finished the InitService");
 
                 return true;
             }

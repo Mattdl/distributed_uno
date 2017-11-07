@@ -21,7 +21,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.util.Callback;
 import model.Card;
 import model.Game;
 import model.Player;
@@ -37,12 +36,9 @@ public class GameController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
-    private int succeededInitCalls = 0;
     private int currentPlayerIndex;
 
     private Game game;
-
-    private Alert alert;
 
     @FXML
     private ListView<Card> handListView;
@@ -65,6 +61,8 @@ public class GameController implements Observer {
     @FXML
     private Button drawCardButton;
 
+    @FXML
+    private Text serverInfoText;
 
     public GameController(Game game) {
         this.game = game;
@@ -89,11 +87,6 @@ public class GameController implements Observer {
             }
         });
 
-        /*
-        alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle("Welcome to UNO");
-        alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");*/
         LOGGER.log(Level.INFO, "Everybody's waiting to start");
 
         initServices();
@@ -125,8 +118,6 @@ public class GameController implements Observer {
      */
     private void initServices() {
         Platform.runLater(new Runnable() {
-            final int initCallCount = 3;
-
             @Override
             public void run() {
                 LOGGER.info("Performing initServices.");
@@ -138,15 +129,13 @@ public class GameController implements Observer {
                     if (successful) {
                         LOGGER.info("Successful initialization");
 
-                       //alert.close();
-                        //displayConfirmationDialog();
-
+                        serverInfoText.setText("Game successfully initialized, all players ready to start!");
                         runGame();
+
                     } else {
-                        //alert.close();
-                        //displayFailureDialog();
                         LOGGER.info("Failed initialization");
 
+                        serverInfoText.setText("Game failed initialization...");
                     }
                 });
 
@@ -203,7 +192,6 @@ public class GameController implements Observer {
 
         //stage.setScene(Main.sceneFactory.getWinnerScene(game));
 
-
         LOGGER.log(Level.INFO, "switched To WinnerScene");
     }
 
@@ -255,7 +243,7 @@ public class GameController implements Observer {
 
                 //Update last played card image
                 //TODO client must lookup the image for the card
-//                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
 
                 //Set player2info (= next player in playerslist)
 /*

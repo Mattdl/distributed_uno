@@ -13,17 +13,18 @@ import java.util.logging.Logger;
 
 public class DeckBuilder {
 
-    private static final Logger LOGGER = Logger.getLogger(DeckBuilder.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(DeckBuilder.class.getName());
 
     /**
      * Generates a shuffled deck containing each colored card twice and each special uncolored card 4 times
+     *
      * @return Deck
      */
-    public LinkedList<Card> makeDeck(){
+    public LinkedList<Card> makeDeck() {
         LinkedList<Card> deck = new LinkedList<>();
 
         //Generate each colored card twice
-        for(int i = 0; i < 2; i++) {
+        for (int i = 0; i < 2; i++) {
             for (Card.CardColor color : Card.CardColor.values()) {
                 //Generate all numbered cards
                 for (Number number : Number.values()) {
@@ -32,11 +33,11 @@ public class DeckBuilder {
                         img = ImageIO.read(new File(getClass().getResource("/textures/" + number + "_" + color + ".png").toURI()));
                     } catch (Exception e) {
                         e.printStackTrace();
-                        LOGGER.info("Error loading card image: "+"/textures/" + number + "_" + color + ".png");
+                        LOGGER.info("Error loading card image: " + "/textures/" + number + "_" + color + ".png");
                     }
-                    LOGGER.log(Level.INFO,"Creating normal card");
+                    //LOGGER.log(Level.INFO,"Creating normal card");
                     Card card = new Card(SwingFXUtils.toFXImage(img, null), Card.CardType.NORMAL, color, number.getValue());
-                    LOGGER.log(Level.INFO,"Created normal card");
+                    //LOGGER.log(Level.INFO,"Created normal card");
                     deck.add(card);
 
 
@@ -49,38 +50,39 @@ public class DeckBuilder {
 
                     BufferedImage img = null;
 
-                    if(i==0 && (cardType == Card.CardType.PLUS4 || cardType == Card.CardType.PICK_COLOR)){
+                    if (i == 0 && (cardType == Card.CardType.PLUS4 || cardType == Card.CardType.PICK_COLOR)) {
                         //Make each special uncolored card four times, once for each color only in first iteration
                         try {
                             img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + ".png").toURI()));
                         } catch (Exception e) {
                             LOGGER.info("Error loading card image :" + "/textures/" + cardType + ".png");
                         }
-                        LOGGER.log(Level.INFO,"Creating PLUS4/COLOR card");
+                        //LOGGER.log(Level.INFO,"Creating PLUS4/COLOR card");
                         deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, null, null));
                     }
 
-                    if(cardType == Card.CardType.PLUS2 || cardType == Card.CardType.SKIP || cardType == Card.CardType.REVERSE) {
+                    if (cardType == Card.CardType.PLUS2 || cardType == Card.CardType.SKIP || cardType == Card.CardType.REVERSE) {
                         try {
                             img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + "_" + color + ".png").toURI()));
                         } catch (Exception e) {
                             LOGGER.info("Error loading card image : " + "/textures/" + cardType + "_" + color + ".png");
                         }
-                        LOGGER.log(Level.INFO, "Creating special card: " + cardType.toString() + ", " + color.toString());
+                        //LOGGER.log(Level.INFO, "Creating special card: " + cardType.toString() + ", " + color.toString());
                         deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, color, null));
                     }
                 }
             }
         }
 
-        LOGGER.log(Level.INFO, "Deck size: "+deck.size());
+        LOGGER.log(Level.INFO, "Deck builded with deck size: " + deck.size());
 
         Collections.shuffle(deck);
+
         return deck;
     }
 
 
-    public enum Number{
+    public enum Number {
         ZERO(0), ONE(1), TWO(2), THREE(3), FOUR(4), FIVE(5), SIX(6), SEVEN(7), EIGHT(8), NINE(9);
 
         private final int value;
