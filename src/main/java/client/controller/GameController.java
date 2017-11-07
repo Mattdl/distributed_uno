@@ -64,6 +64,8 @@ public class GameController implements Observer {
     @FXML
     private Button drawCardButton;
 
+    @FXML
+    private Text serverInfoText;
 
     public GameController(Game game) {
         this.game = game;
@@ -124,8 +126,6 @@ public class GameController implements Observer {
      */
     private void initServices() {
         Platform.runLater(new Runnable() {
-            final int initCallCount = 3;
-
             @Override
             public void run() {
                 LOGGER.info("Performing initServices.");
@@ -137,15 +137,13 @@ public class GameController implements Observer {
                     if (successful) {
                         LOGGER.info("Successful initialization");
 
-                       //alert.close();
-                        //displayConfirmationDialog();
-
+                        serverInfoText.setText("Game successfully initialized, all players ready to start!");
                         runGame();
+
                     } else {
-                        //alert.close();
-                        //displayFailureDialog();
                         LOGGER.info("Failed initialization");
 
+                        serverInfoText.setText("Game failed initialization...");
                     }
                 });
 
