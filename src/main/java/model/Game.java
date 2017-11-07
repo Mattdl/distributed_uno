@@ -236,7 +236,6 @@ public class Game extends Observable implements Serializable {
     public synchronized void drawFirstCard() {
         Card firstCard = deck.pollFirst();
         moves.add(new Move(null, firstCard));
-        deck.remove(firstCard);
     }
 
     public void addMove(Move move) {
@@ -271,7 +270,7 @@ public class Game extends Observable implements Serializable {
      * @param player
      * @param amount
      */
-    public void drawCards(Player player, int amount) {
+    public Card drawCards(Player player, int amount) {
         for (int i = 0; i < amount; i++)
             player.addCard(deck.pollFirst());
     }

@@ -89,8 +89,7 @@ public class GameLogic {
             return null;
         }
         else{
-            Card drawnCard =;
-            game.drawCards();
+            game.drawCards(move.getPlayer(),1);
         }
     }
 }
