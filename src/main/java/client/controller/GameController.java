@@ -40,8 +40,6 @@ public class GameController implements Observer {
 
     private Game game;
 
-    private Alert alert;
-
     @FXML
     private ListView<Card> handListView;
 
@@ -89,11 +87,6 @@ public class GameController implements Observer {
             }
         });
 
-        /*
-        alert = new Alert(Alert.AlertType.NONE);
-        alert.setTitle("Welcome to UNO");
-        alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");*/
         LOGGER.log(Level.INFO, "Everybody's waiting to start");
 
         initServices();
