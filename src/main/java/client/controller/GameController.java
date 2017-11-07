@@ -250,21 +250,10 @@ public class GameController implements Observer {
                 }
 
 
-                //Set player2info (= next player in playerslist)
-
-
-                LOGGER.log(Level.INFO, "Playerlist: "+playerList);
-                LOGGER.log(Level.INFO, "Playerlist size: "+playerList.size());
-                LOGGER.log(Level.INFO,"currentplayerindex: "+currentPlayerIndex);
-                LOGGER.log(Level.INFO, "calculated position: "+(currentPlayerIndex+1)%playerList.size());
-                LOGGER.log(Level.INFO, "Found player: "+playerList.get((currentPlayerIndex+1)%playerList.size()));
-
-                if(playerList.get((currentPlayerIndex+1)%playerList.size())!=null)
-                    player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).getHandSize() + " cards");
-
-//                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
-
-  //              player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
+                //Set other players hand size
+                player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).getHandSize() + " cards");
+                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).getHandSize() + " cards");
+                player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).getHandSize() + " cards");
 
 
                 }
