@@ -29,11 +29,12 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
     /**
-     * RMI service to return the initial 7 cards of a player.
+     * RMI service to return the initial 7 cards of a player. If one of the players does not have a hand yet,
+     * hands are distributed to all players that do not have a hand yet.
      *
      * @param gameName
-     * @param player
-     * @return
+     * @param player   The player to request the hand of
+     * @return The hand of the player
      * @throws RemoteException
      */
     @Override
@@ -52,11 +53,6 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                     distributeHandsToPlayers(game);
                 }
 
-                //LinkedList<Card> ret = game.givePlayerInitHand(7,retPlayer);
-
-                //LOGGER.log(Level.INFO, "Setting list of cards to hand: ", ret);
-                //LOGGER.log(Level.INFO, "Player received init hand, returning : ", retPlayer.getHand());
-
                 return retPlayer.getHand();
             }
         }
@@ -65,6 +61,11 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         return null;
     }
 
+    /**
+     * Method that distributes a set of cards (a hand) to all players that don't have a hand.
+     *
+     * @param game
+     */
     private synchronized void distributeHandsToPlayers(Game game) {
         LOGGER.log(Level.INFO, "distributeHandsToPlayers");
 
@@ -78,7 +79,8 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
     /**
-     * RMI call to get the current player of the Game and the last played card
+     * RMI call to get the current player of the Game and the last played card. If no initial or starting player is assigned,
+     * assign a random initial player to the game. The method also provides the first card for a new game.
      *
      * @param gameName
      * @return
@@ -91,11 +93,12 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             Game game = lobby.findGame(gameName);
 
             if (!init) {
+                LOGGER.info("WAITING in getCurrentPlayerAndLastCard until move is played.");
                 wait();
+                LOGGER.info("CONTINUE in getCurrentPlayerAndLastCard, move is played.");
             }
 
             if (game != null) {
-                LOGGER.info("Found game");
 
                 //Set random starting player
                 if (game.getCurrentPlayer() == null) {
@@ -109,6 +112,9 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
                 return new Move(game.getCurrentPlayer(), game.getLastPlayedCard());
             }
+
+            LOGGER.info("Game not found in getCurrentPlayerAndLastCard");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
