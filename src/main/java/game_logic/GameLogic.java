@@ -1,10 +1,16 @@
 package game_logic;
 
+import client.controller.GameController;
 import model.Card;
 import model.Game;
 import model.Move;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class GameLogic {
+
+    private static final Logger LOGGER = Logger.getLogger(GameLogic.class.getName());
 
     public GameLogic() {
     }
@@ -51,8 +57,9 @@ public class GameLogic {
      * @param move
      */
     public Card gameUpdate(Game game, Move move) {
+        LOGGER.info("Entering gameUpdate in GAME LOGIC");
 
-        if(move.getCard() !=null) {
+        if (move.getCard() != null) {
             //Adds move to the game's moveList
             game.addMove(move);
 
@@ -87,9 +94,13 @@ public class GameLogic {
                     break;
             }
             return null;
-        }
-        else{
-            game.drawCards(move.getPlayer(),1);
+        } else {
+            Card drawnCard = game.drawCard(move.getPlayer());
+
+            LOGGER.log(Level.INFO, "Drawn card for player, card = {0}, player = {1}",
+                    new Object[]{drawnCard, move.getPlayer()});
+
+            return drawnCard;
         }
     }
 }

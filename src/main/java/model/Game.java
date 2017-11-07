@@ -247,6 +247,29 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
+     * Draw cards from the deck for the player. The card is added to the hand of the player.
+     *
+     * @param player
+     * @param amount
+     */
+    public void drawCards(Player player, int amount) {
+        for (int i = 0; i < amount; i++)
+            player.addCard(deck.pollFirst());
+    }
+
+    /**
+     * Draw card from the deck for the player. The card is added to the hand of the player.
+     *
+     * @param player
+     * @return the drawn card
+     */
+    public Card drawCard(Player player) {
+        Card ret = deck.pollFirst();
+        player.addCard(ret);
+        return ret;
+    }
+
+    /**
      * Returns next player with certain amount, used for skipping players
      *
      * @param amount
@@ -262,17 +285,6 @@ public class Game extends Observable implements Serializable {
             }
             return playerList.get(newIndex % playerList.size());
         }
-    }
-
-    /**
-     * Draw cards from the deck for the player. The card is added to the hand of the player.
-     *
-     * @param player
-     * @param amount
-     */
-    public Card drawCards(Player player, int amount) {
-        for (int i = 0; i < amount; i++)
-            player.addCard(deck.pollFirst());
     }
 
 
