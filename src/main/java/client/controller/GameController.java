@@ -200,7 +200,6 @@ public class GameController implements Observer {
 
         //stage.setScene(Main.sceneFactory.getWinnerScene(game));
 
-
         LOGGER.log(Level.INFO, "switched To WinnerScene");
     }
 
@@ -220,7 +219,7 @@ public class GameController implements Observer {
 
                 //Update last played card image
                 //TODO client must lookup the image for the card
-                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
 
                 //Set player2info (= next player in playerslist)
 /*
