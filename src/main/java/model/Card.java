@@ -30,6 +30,10 @@ public class Card implements Serializable {
         return color;
     }
 
+    public void setColor(CardColor color) {
+        this.color = color;
+    }
+
     public Integer getValue() {
         return value;
     }

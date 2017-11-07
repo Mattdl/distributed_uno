@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
@@ -45,6 +46,9 @@ public class GameController implements Observer {
     private GameLogic gameLogic;
 
     private Boolean isGameFinished;
+
+    @FXML
+    private ChoiceBox<Card.CardColor> colorChoiceBox;
 
     @FXML
     private ListView<Card> handListView;
@@ -108,22 +112,11 @@ public class GameController implements Observer {
         //Used to create ListView with images of cards in hand (UNTESTED)
 
 
-/*        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
-        handListView.setItems(observableList);
-        handListView.setCellFactory(listView -> new ListCell<Card>() {
-            private ImageView imageView = new ImageView();
 
-            @Override
-            public void updateItem(Card card, boolean empty) {
-                super.updateItem(card, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    imageView.setImage(card.getImage());
-                    setGraphic(imageView);
-                }
-            }
-        });*/
+        //Set choicebox values
+        ObservableList<Card.CardColor> availableChoices = FXCollections.observableArrayList(Card.CardColor.BLUE, Card.CardColor.GREEN, Card.CardColor.RED, Card.CardColor.YELLOW);
+        colorChoiceBox.setItems(availableChoices);
+        colorChoiceBox.setValue(Card.CardColor.YELLOW);
     }
 
     /**
@@ -226,6 +219,10 @@ public class GameController implements Observer {
                         LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
 
                         if (isValidMove) {
+                            if(playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR){
+                                playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
+                            }
+
                             PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
                             playMoveService.setOnSucceeded(event -> {
 

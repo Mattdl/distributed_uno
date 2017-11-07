@@ -71,7 +71,16 @@
    <bottom>
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="109.0" prefWidth="641.0" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="drawCardButton" mnemonicParsing="false" onAction="#drawCard" text="Draw Card" />
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <Button fx:id="drawCardButton" mnemonicParsing="false" onAction="#drawCard" text="Draw Card" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <ChoiceBox fx:id="colorChoiceBox" maxWidth="-Infinity" prefHeight="31.0" prefWidth="85.0">
+                     <opaqueInsets>
+                        <Insets left="100.0" />
+                     </opaqueInsets></ChoiceBox>
+               </children>
+            </HBox>
             <ListView fx:id="handListView" onMouseClicked="#playCard" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>

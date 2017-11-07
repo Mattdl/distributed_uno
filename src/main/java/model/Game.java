@@ -332,7 +332,7 @@ public class Game extends Observable implements Serializable {
      * @param move
      */
     public void addCardToDeckBottom(Move move) {
-        deck.push(move.getCard());
+        deck.add(move.getCard());
     }
 
     public Move getLastMove() {
