@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Player implements Serializable {
@@ -13,11 +14,13 @@ public class Player implements Serializable {
 
     public Player(String name) {
         this.name = name;
+        this.hand = new LinkedList<>();
     }
 
     public Player(String name, String password) {
         this.name = name;
         this.password = password;
+        this.hand = new LinkedList<>();
     }
 
     /**
@@ -60,5 +63,15 @@ public class Player implements Serializable {
 
     public int handSize(){
         return hand.size();
+    }
+
+    @Override
+    public String toString() {
+        return "Player{" +
+                "name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", hand=" + hand +
+                ", handSize=" + handSize +
+                '}';
     }
 }

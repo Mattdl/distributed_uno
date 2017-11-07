@@ -170,11 +170,26 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
+    /**
+     * Method used by server to make lightweight Player-objects to return over RMI to client
+     *
+     * @return
+     */
     public List<Player> getLightPlayerList() {
+        LOGGER.info("Entering getLightPlayerList");
+
         List<Player> ret = new LinkedList<>();
+
         for (Player p : playerList) {
-            ret.add(new Player(p.getName(), p.getHand().size()));
+            Player lightPlayer = new Player(p.getName(), p.getHand().size());
+
+            LOGGER.log(Level.INFO, "Made light player object = {0}", lightPlayer);
+
+            ret.add(lightPlayer);
         }
+
+        LOGGER.info("Leaving getLightPlayerList");
+
         return ret;
     }
 
@@ -195,34 +210,23 @@ public class Game extends Observable implements Serializable {
      *
      * @param amountOfCards
      */
-    public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards) {
+    public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards, Player player) {
         LOGGER.info("Entering givePlayerInitHand.");
-        //List<Card> drawnCards = this.deck.subList(deck.size() - amountOfCards, deck.size());
+
         LinkedList<Card> drawnCards = new LinkedList<>();
 
-        for(int i=0;i<amountOfCards;i++){
-            LOGGER.log(Level.INFO, "First forlus");
-
+        for (int i = 0; i < amountOfCards; i++) {
             Card card = deck.pop();
-            LOGGER.log(Level.INFO, "Middle forlus");
-
             drawnCards.add(card);
-            LOGGER.log(Level.INFO, "Drawing/popping card: ", card);
         }
 
-        LOGGER.log(Level.INFO, "Drawn {0} cards", drawnCards.size());
-        LOGGER.log(Level.INFO, "Drawn cards={0}", drawnCards);
+        LOGGER.log(Level.INFO, "Drawn cards for player hand={0}", drawnCards);
+        LOGGER.log(Level.INFO, "Deck size : {0}", deck.size());
 
+        player.setHand(drawnCards);
 
+        LOGGER.info("Set hand to player. Leaving givePlayerInitHand.");
 
-        LOGGER.log(Level.INFO, "Deck before removal : {0}", deck.size());
-
-        //deck = deck.subList(0, deck.size() - amountOfCards);
-
-        //LOGGER.log(Level.INFO, "Deck after removal : {0}", deck.size());
-
-
-        LOGGER.info("Leaving givePlayerInitHand.");
         return drawnCards;
     }
 

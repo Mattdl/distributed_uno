@@ -123,11 +123,11 @@ public class GameController implements Observer {
      * the game.
      */
     private void initServices() {
-        /*Platform.runLater(new Runnable() {
+        Platform.runLater(new Runnable() {
             final int initCallCount = 3;
 
             @Override
-            public void run() {*/
+            public void run() {
                 LOGGER.info("Performing initServices.");
 
                 CheckPlayersService checkPlayersService = new CheckPlayersService(game);
@@ -153,42 +153,10 @@ public class GameController implements Observer {
                 initService.setOnSucceeded(event -> checkPlayersService.start());
                 initService.start();
 
-                /*
-                //First RMI init call
-                FetchCurrentPlayerAndCardService currentPlayerCall = new FetchCurrentPlayerAndCardService(game, true);
-                currentPlayerCall.setOnSucceeded(event -> {
-                    succeededInitCalls++;
-                    if (succeededInitCalls >= initCallCount) {
-                        checkPlayersService.start();
-                    }
-                });
-                currentPlayerCall.start();
-
-                //Second RMI init call
-                FetchInitCardsService cardsCall = new FetchInitCardsService(game);
-                cardsCall.setOnSucceeded(event -> {
-                    succeededInitCalls++;
-                    if (succeededInitCalls >= initCallCount) {
-                        checkPlayersService.start();
-                    }
-                });
-                cardsCall.start();
-
-                //Third RMI call
-                FetchPlayersInfoService playerListCall = new FetchPlayersInfoService(game, true);
-                playerListCall.setOnSucceeded(event -> {
-                    succeededInitCalls++;
-                    if (succeededInitCalls >= initCallCount) {
-                        checkPlayersService.start();
-                    }
-                });
-                playerListCall.start();
-                */
-
                 LOGGER.info("All init services started");
-/*
+
             }
-        });*/
+        });
     }
 
     /**
@@ -206,51 +174,6 @@ public class GameController implements Observer {
         currentPlayerAndCardService.start();
         */
     }
-
-    private void displayFailureDialog() {
-        alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Say goodbye to UNO");
-        alert.setHeaderText("There seems to be a problem");
-        alert.setContentText("Not all players could join the game");
-        alert.showAndWait();
-    }
-
-    private void displayConfirmationDialog() {
-        alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Welcome to UNO");
-        alert.setHeaderText("yoU kNOw, it's UNO");
-        alert.setContentText("Waiting for all players to join...");
-        alert.showAndWait();
-    }
-
-
-    //Solution found on the net to update cardview, need to implement and extend listener
-
-   /* @Override
-    public void cardDrawn(final Card card)
-    {
-        Platform.runLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                handListView.getItems().add(card);
-            }
-        });
-    }
-
-    @Override
-    public void cardPlayed(final Card card)
-    {
-        Platform.runLater(new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                handListView.getItems().remove(card);
-            }
-        });
-    }*/
 
     //TODO
     @FXML
