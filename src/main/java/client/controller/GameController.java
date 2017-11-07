@@ -210,6 +210,8 @@ public class GameController implements Observer {
                             PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
                             playMoveService.setOnSucceeded(event -> {
 
+                                game.removeCardFromPlayerHand(new Move(Main.currentPlayer, playedCard));
+
                                 LOGGER.info("Move successfully passed to server!");
                                 serverInfoText.setText("Move is passed to server, enjoy!");
                             });

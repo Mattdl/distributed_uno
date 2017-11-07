@@ -258,6 +258,9 @@ public class Game extends Observable implements Serializable {
 
     public void removeCardFromPlayerHand(Move move) {
         move.getPlayer().removeCard(move.getCard());
+
+        setChanged();
+        notifyObservers();
     }
 
     /**
