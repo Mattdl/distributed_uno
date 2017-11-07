@@ -14,7 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
@@ -44,6 +43,8 @@ public class GameController implements Observer {
     private Game game;
 
     private GameLogic gameLogic;
+
+    private boolean isGameFinished;
 
     @FXML
     private ListView<Card> handListView;
@@ -79,6 +80,7 @@ public class GameController implements Observer {
         this.game = game;
         this.gameLogic = new GameLogic();
         this.game.addObserver(this);
+        this.isGameFinished = false;
     }
 
     @FXML
@@ -229,7 +231,7 @@ public class GameController implements Observer {
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
-    public void eindeSpel() {
+    public void gameFinished() {
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
     }
@@ -259,16 +261,27 @@ public class GameController implements Observer {
             @Override
             public void run() {
 
-                if (game.getCurrentPlayer() != null) {
-                    if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
-                        currentPlayerText.setText("It is your turn, play a card!");
-                    } else {
-                        currentPlayerText.setText("It's the turn of player " + game.getCurrentPlayer());
+                List<Player> playerList = game.getPlayerList();
+
+                for (Player player : playerList) {
+                    if (player.getHandSize() == 0) {
+                        isGameFinished = true;
+                        gameFinished();
                     }
                 }
 
+                if (!isGameFinished) {
 
-                //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
+                    if (game.getCurrentPlayer() != null) {
+                        if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+                            currentPlayerText.setText("It is your turn, play a card!");
+                        } else {
+                            currentPlayerText.setText("It's the turn of player " + game.getCurrentPlayer());
+                        }
+                    }
+
+
+                    //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
 /*
                 ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
                 handListView.setItems(observableList);
@@ -289,38 +302,36 @@ public class GameController implements Observer {
                 });*/
 
 
-                //Show cards as text
-                if (Main.currentPlayer.hasHand()) {
-                    ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
-                    handListView.setItems(observableList);
-                    handListView.setCellFactory(listView -> new ListCell<Card>() {
-                        @Override
-                        public void updateItem(Card card, boolean empty) {
-                            super.updateItem(card, empty);
-                            if (card == null) {
-                                setText(null);
-                            } else {
-                                setText(card.toString());
+                    //Show cards as text
+                    if (Main.currentPlayer.hasHand()) {
+                        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+                        handListView.setItems(observableList);
+                        handListView.setCellFactory(listView -> new ListCell<Card>() {
+                            @Override
+                            public void updateItem(Card card, boolean empty) {
+                                super.updateItem(card, empty);
+                                if (card == null) {
+                                    setText(null);
+                                } else {
+                                    setText(card.toString());
+                                }
                             }
-                        }
-                    });
+                        });
+                    }
+
+                    //Update last played card image
+                    //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                    if (game.hasPlayedCards()) {
+                        lastPlayedCardText.setText(game.getLastPlayedCard().toString());
+                    }
+
+
+                    //Set other players hand size
+                    player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
+                    player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
+                    player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
+
                 }
-
-                List<Player> playerList = game.getPlayerList();
-
-                //Update last played card image
-                //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
-                if (game.hasPlayedCards()) {
-                    lastPlayedCardText.setText(game.getLastPlayedCard().toString());
-                }
-
-
-                //Set other players hand size
-                player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
-                player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
-                player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
-
-
             }
         });
     }
