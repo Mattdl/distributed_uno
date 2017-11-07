@@ -3,6 +3,8 @@ package client.controller;
 
 import client.Main;
 import client.service.game.CheckPlayersService;
+import client.service.game.FetchCurrentPlayerAndCardService;
+import client.service.game.FetchPlayersInfoService;
 import client.service.game.InitService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -151,13 +153,12 @@ public class GameController implements Observer {
         LOGGER.info("Running game!");
 
         //TODO run game
-        /*
         FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
         fetchPlayersInfoService.start();
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
-        */
+
     }
 
     //TODO
