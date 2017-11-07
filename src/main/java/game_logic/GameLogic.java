@@ -96,9 +96,11 @@ public class GameLogic {
             }
             return null;
         } else {
+
+            //Draw a card for a player and add the card to his hand
             Card drawnCard = game.drawCardForPlayer(move.getPlayer());
 
-            move.setCard(drawnCard);
+            move.setDrawnCard(drawnCard);
             game.addMove(move);
 
             LOGGER.log(Level.INFO, "Drawn card for player, card = {0}, player = {1}",

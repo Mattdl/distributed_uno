@@ -41,4 +41,14 @@ public class Move implements Serializable {
     public void setHasDrawnCard(boolean hasDrawnCard) {
         this.hasDrawnCard = hasDrawnCard;
     }
+
+    /**
+     * Called when a Move object get's a drawn Card assigned.
+     *
+     * @param drawnCard
+     */
+    public void setDrawnCard(Card drawnCard) {
+        this.card = drawnCard;
+        hasDrawnCard = true;
+    }
 }
