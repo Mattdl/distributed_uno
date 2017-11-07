@@ -43,18 +43,18 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         Game game = lobby.findGame(gameName);
 
         if (game != null) {
-            LOGGER.info("Found game");
+            LOGGER.info("Found game for initCards");
             Player retPlayer = game.findPlayer(player);
             if (retPlayer != null) {
                 LOGGER.log(Level.INFO, "Player not null for initCards: {0}", retPlayer);
 
                 LinkedList<Card> ret = game.givePlayerInitHand(7);
 
-                LOGGER.log(Level.INFO, "Setting list of cards to hand: ", ret);
+                //LOGGER.log(Level.INFO, "Setting list of cards to hand: ", ret);
 
                 retPlayer.setHand(ret);
 
-                LOGGER.log(Level.INFO, "Player received init hand, returning : ", retPlayer.getHand());
+                //LOGGER.log(Level.INFO, "Player received init hand, returning : ", retPlayer.getHand());
 
                 return ret;
             }

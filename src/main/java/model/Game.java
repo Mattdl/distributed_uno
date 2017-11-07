@@ -197,32 +197,18 @@ public class Game extends Observable implements Serializable {
      */
     public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards) {
         LOGGER.info("Entering givePlayerInitHand.");
-        //List<Card> drawnCards = this.deck.subList(deck.size() - amountOfCards, deck.size());
+
         LinkedList<Card> drawnCards = new LinkedList<>();
 
         for(int i=0;i<amountOfCards;i++){
-            LOGGER.log(Level.INFO, "First forlus");
-
             Card card = deck.pop();
-            LOGGER.log(Level.INFO, "Middle forlus");
-
             drawnCards.add(card);
-            LOGGER.log(Level.INFO, "Drawing/popping card: ", card);
         }
 
-        LOGGER.log(Level.INFO, "Drawn {0} cards", drawnCards.size());
-        LOGGER.log(Level.INFO, "Drawn cards={0}", drawnCards);
-
-
-
-        LOGGER.log(Level.INFO, "Deck before removal : {0}", deck.size());
-
-        //deck = deck.subList(0, deck.size() - amountOfCards);
-
-        //LOGGER.log(Level.INFO, "Deck after removal : {0}", deck.size());
-
-
+        LOGGER.log(Level.INFO, "Drawn cards for player hand={0}", drawnCards);
+        LOGGER.log(Level.INFO, "Deck size : {0}", deck.size());
         LOGGER.info("Leaving givePlayerInitHand.");
+
         return drawnCards;
     }
 
