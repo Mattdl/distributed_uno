@@ -92,6 +92,7 @@ public class LobbyController implements Observer {
 
     /**
      * Creates a list entry for the VBOX
+     *
      * @param game
      * @return
      */
@@ -133,11 +134,11 @@ public class LobbyController implements Observer {
     }
 
     private void switchToGameLobbyScene(Stage stage, Game game) {
-        LOGGER.log(Level.INFO, "switching To GameLobbyScene");
+        LOGGER.log(Level.INFO, "switching To GameLobbyScene, with currentGame = {0}", game);
 
         stage.setScene(Main.sceneFactory.getGameLobbyScene(game));
 
-        LOGGER.log(Level.INFO, "switched To GameLobbyScene");
+        LOGGER.log(Level.INFO, "switched To GameLobbyScene, with currentGame = {0}", game);
     }
 
     @FXML
@@ -156,8 +157,7 @@ public class LobbyController implements Observer {
             if (failMsg == null) {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToGameLobbyScene(stage, lobby.findGame(gameName));
-            }
-            else{
+            } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("UNO");
                 alert.setHeaderText("Joining is not possible");

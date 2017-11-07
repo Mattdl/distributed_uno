@@ -111,9 +111,9 @@ public class SceneFactory {
                 @Override
                 public Object call(Class<?> controllerClass) {
                     if (controllerClass == GameLobbyController.class) {
-                        GameLobbyController gameLobbyController= new GameLobbyController(game);
+                        GameLobbyController gameLobbyController = new GameLobbyController(game);
 
-                        LOGGER.log(Level.INFO, "SceneFactory GameLobbyController created with parameters");
+                        LOGGER.log(Level.INFO, "SceneFactory GameLobbyController created with game = {0}", game);
 
                         return gameLobbyController;
                     } else {
@@ -129,9 +129,9 @@ public class SceneFactory {
             Parent root = fxmlLoader.load();
 
             return new Scene(root, WIDTH, HEIGHT);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            LOGGER.log(Level.SEVERE,"Could not load gameLobby.fxml");
+            LOGGER.log(Level.SEVERE, "Could not load gameLobby.fxml");
         }
         return null;
     }
@@ -163,7 +163,7 @@ public class SceneFactory {
 
             Parent root = fxmlLoader.load();
 
-            return new Scene(root, WIDTH*0.75, HEIGHT*0.75);
+            return new Scene(root, WIDTH * 0.75, HEIGHT * 0.75);
         } catch (Exception e) {
             e.printStackTrace();
             LOGGER.log(Level.SEVERE, "Could not load winner.fxml");

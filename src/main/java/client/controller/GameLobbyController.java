@@ -49,6 +49,7 @@ public class GameLobbyController implements Observer {
 
     @FXML
     public void initialize() {
+        LOGGER.log(Level.INFO, "Initializing GameLobbyController, Currentgame={0}", currentGame);
         currentGame.addObserver(this);
         gameLobbyService = new GameLobbyService(currentGame);
         gameLobbyService.start();
@@ -94,31 +95,31 @@ public class GameLobbyController implements Observer {
     @Override
     public void update(Observable o, Object arg) {
 
-            //Update UI
-            Platform.runLater(new Runnable() {
-                @Override
-                public void run() {
+        //Update UI
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
 
-                    //Set Playerlist
-                    currentPlayersVBox.getChildren().clear();
-                    for (Player p : currentGame.getPlayerList()) {
-                        currentPlayersVBox.getChildren().add(new Text(p.getName()));
-                    }
-
-                    //Set playercount
-                    numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
-
-                    if (currentGame.isStartable()) {
-                        //Go to the game scene
-                        //TODO countdown before starting
-                        LOGGER.info("Game is startable");
-                        Stage stage = (Stage) leaveGameButton.getScene().getWindow();
-                        currentGame.deleteObservers(); //VERY IMPORTANT!!!
-                        switchToGameScene(stage, currentGame);
-
-                    }
+                //Set Playerlist
+                currentPlayersVBox.getChildren().clear();
+                for (Player p : currentGame.getPlayerList()) {
+                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
                 }
-            });
+
+                //Set playercount
+                numberOfPlayersText.setText(currentGame.getPlayerList().size() + " of " + currentGame.getGameSize());
+
+                if (currentGame.isStartable()) {
+                    //Go to the game scene
+                    //TODO countdown before starting
+                    LOGGER.info("Game is startable");
+                    Stage stage = (Stage) leaveGameButton.getScene().getWindow();
+                    currentGame.deleteObservers(); //VERY IMPORTANT!!!
+                    switchToGameScene(stage, currentGame);
+
+                }
+            }
+        });
 
     }
 

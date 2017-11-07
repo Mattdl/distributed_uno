@@ -164,23 +164,41 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         if (game != null) {
             LOGGER.info("Game found in playMove");
-            if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
 
-                //Update Game
-                gameLogic.gameUpdate(game, move);
-                LOGGER.info("Game updated");
+            //If the move is a played Card
+            if (move.getCard() != null) {
+                LOGGER.info("Card is not null in playMove");
 
-                //Notify everybody that game has updated
-                notifyAll();
-                LOGGER.info("in playMove: notified everybody!");
+                if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
+                    LOGGER.info("Card is not null in playMove");
+                    return updateGame(game, move);
+                }
+                LOGGER.log(Level.SEVERE, "In playMove: NO VALID CARD PLAYED, topcard = {0}, played card = {1}",
+                        new Object[]{game.getLastPlayedCard(), move.getCard()});
+            } else {
+                //If the move is a drawn card
+                LOGGER.info("Card is null in playMove");
 
+                return updateGame(game, move);
             }
-            LOGGER.log(Level.SEVERE, "In playMove: NO VALID CARD PLAYED, topcard = {0}, played card = {1}",
-                    new Object[]{game.getLastPlayedCard(), move.getCard()});
         }
 
         LOGGER.info("Game not found in playMove");
 
         return null;
+    }
+
+    private synchronized Card updateGame(Game game, Move move) {
+        LOGGER.info("Entering updateGame");
+
+        //Update Game
+        Card ret = gameLogic.gameUpdate(game, move);
+        LOGGER.info("Game updated");
+
+        //Notify everybody that game has updated
+        notifyAll();
+        LOGGER.info("updateGame: notified everybody!");
+
+        return ret;
     }
 }

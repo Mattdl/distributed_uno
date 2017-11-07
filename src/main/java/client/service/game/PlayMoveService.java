@@ -41,6 +41,8 @@ public class PlayMoveService extends Service<Boolean> {
                 if (drawnCard == null) {
                     LOGGER.info("Returned drawn Card is null");
                 } else {
+                    LOGGER.log(Level.INFO, "Returned drawn Card = {0}", drawnCard);
+
                     game.setDrawnCardForPlayer(drawnCard, Main.currentPlayer);
                 }
 

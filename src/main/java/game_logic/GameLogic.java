@@ -22,17 +22,19 @@ public class GameLogic {
      * @return
      */
     public boolean isValidMove(Card cardPlayed, Card topCard) {
+        LOGGER.info("Entering isValidMove");
+
         //Plus4 and PickColor can be played anytime
         if (cardPlayed.getCardType() == Card.CardType.PLUS4 || cardPlayed.getCardType() == Card.CardType.PICK_COLOR)
             return true;
 
-        switch (topCard.getCardType()){
+        switch (topCard.getCardType()) {
             case NORMAL:
                 //Workaround for Integer null values
-                if(cardPlayed.getValue()==null){
-                    if(cardPlayed.getColor() != topCard.getColor()) return false;
-                }
-                else if(!cardPlayed.getValue().equals(topCard.getValue()) && cardPlayed.getColor() != topCard.getColor()) return false;
+                if (cardPlayed.getValue() == null) {
+                    if (cardPlayed.getColor() != topCard.getColor()) return false;
+                } else if (!cardPlayed.getValue().equals(topCard.getValue()) && cardPlayed.getColor() != topCard.getColor())
+                    return false;
                 return true;
             //If CardType or Color is equal to previous card, move is valid
             case PLUS2:
@@ -105,6 +107,9 @@ public class GameLogic {
 
             //Add to game history
             game.addMove(move);
+
+            // Set turn to next player
+            game.setCurrentPlayer(game.getNextPlayer(1));
 
             LOGGER.log(Level.INFO, "Drawn card for player, card = {0}, player = {1}",
                     new Object[]{drawnCard, move.getPlayer()});
