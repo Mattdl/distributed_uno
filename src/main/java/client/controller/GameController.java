@@ -76,7 +76,9 @@ public class GameController implements Observer {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                currentPlayerIndex = game.getPlayerList().indexOf(Main.currentPlayer);
+                for(Player player : game.getPlayerList())
+                    if(player.equals(Main.currentPlayer))
+                        currentPlayerIndex = game.getPlayerList().indexOf(player);
                 if (game.getGameSize() == 2) {
                     player3info.setVisible(false);
                     player4info.setVisible(false);
@@ -97,8 +99,8 @@ public class GameController implements Observer {
 
         //Used to create ListView with images of cards in hand (UNTESTED)
 
-        /*
-        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+
+/*        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
         handListView.setItems(observableList);
         handListView.setCellFactory(listView -> new ListCell<Card>() {
             private ImageView imageView = new ImageView();
@@ -283,7 +285,6 @@ public class GameController implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        /*
         //Update UI
         Platform.runLater(new Runnable() {
             @Override
@@ -298,18 +299,26 @@ public class GameController implements Observer {
 
                 //Update last played card image
                 //TODO client must lookup the image for the card
-                //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
 
                 //Set player2info (= next player in playerslist)
+/*
+
+                LOGGER.log(Level.INFO, "Playerlist: "+playerList);
+                LOGGER.log(Level.INFO, "Playerlist size: "+playerList.size());
+                LOGGER.log(Level.INFO,"currentplayerindex: "+currentPlayerIndex);
+                LOGGER.log(Level.INFO, "calculated position: "+(currentPlayerIndex+1)%playerList.size());
+                LOGGER.log(Level.INFO, "Found player: "+playerList.get((currentPlayerIndex+1)%playerList.size()));
+
 
                 player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).handSize() + " cards");
 
                 player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
 
                 player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
-
+ppan*/
 
                 }
-        });*/
+        });
     }
 }
