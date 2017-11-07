@@ -297,7 +297,7 @@ public class GameController implements Observer {
                         if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
                             currentPlayerText.setText("It is your turn, play a card!");
                         } else {
-                            currentPlayerText.setText("It's the turn of player " + game.getCurrentPlayer());
+                            currentPlayerText.setText("It's the turn of player " + game.getCurrentPlayer().getName());
                         }
                     }
 

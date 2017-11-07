@@ -23,6 +23,10 @@ public class PlayMoveService extends Service<Boolean> {
     public PlayMoveService(Game game, Move playedMove) {
         this.game = game;
         this.playedMove = playedMove;
+
+        if (playedMove.getCard() == null) {
+            playedMove.setHasDrawnCard(true);
+        }
     }
 
     @Override

@@ -134,6 +134,9 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      */
     @Override
     public synchronized List<Player> getPlayerUpdates(String gameName, Player client, boolean init) throws RemoteException {
+
+        LOGGER.info("Entering getPlayerUpdates");
+
         try {
             Game game = lobby.findGame(gameName);
 
@@ -141,9 +144,17 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 wait();
             }
 
-            return game.getLightPlayerList();
+            if (game != null) {
+                LOGGER.info("Found game in getPlayerUpdates");
+
+                return game.getLightPlayerList();
+            }
+
+            LOGGER.log(Level.SEVERE, "Could not find game '{0}'in getPlayerUpdates", gameName);
+
         } catch (Exception e) {
             e.printStackTrace();
+            LOGGER.severe("Error in getPlayerUpdates");
         }
         return null;
     }
@@ -173,6 +184,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                     LOGGER.info("Card is not null in playMove");
                     return updateGame(game, move);
                 }
+
                 LOGGER.log(Level.SEVERE, "In playMove: NO VALID CARD PLAYED, topcard = {0}, played card = {1}",
                         new Object[]{game.getLastPlayedCard(), move.getCard()});
             } else {
@@ -191,14 +203,23 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     private synchronized Card updateGame(Game game, Move move) {
         LOGGER.info("Entering updateGame");
 
-        //Update Game
-        Card ret = gameLogic.gameUpdate(game, move);
-        LOGGER.info("Game updated");
+        Player serverPlayer = game.findPlayer(move.getPlayer());
 
-        //Notify everybody that game has updated
-        notifyAll();
-        LOGGER.info("updateGame: notified everybody!");
+        if (serverPlayer != null) {
+            move.setPlayer(serverPlayer);
 
-        return ret;
+            //Update Game
+            Card ret = gameLogic.gameUpdate(game, move);
+            LOGGER.info("Game updated");
+
+            //Notify everybody that game has updated
+            notifyAll();
+            LOGGER.info("updateGame: notified everybody!");
+
+            return ret;
+        }
+        LOGGER.info("Player not found!");
+
+        return null;
     }
 }

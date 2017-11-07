@@ -151,8 +151,26 @@ public class Game extends Observable implements Serializable {
         this.version++;
     }
 
+    /**
+     * Finds the last played card that is not a Drawn Card move.
+     *
+     * @return
+     */
     public Card getLastPlayedCard() {
-        return this.moves.get(moves.size() - 1).getCard();
+        int i = moves.size() - 1;
+
+        while (i >= 0) {
+            Move move = moves.get(i);
+            if (!move.isHasDrawnCard() && move.getCard() != null) {
+                LOGGER.log(Level.INFO, "Last played card is on deck is {0}", move.getCard());
+                return move.getCard();
+            }
+            i--;
+        }
+
+        LOGGER.log(Level.SEVERE, "No last played card found!!");
+
+        return null;
     }
 
     public boolean hasPlayedCards() {
@@ -281,8 +299,12 @@ public class Game extends Observable implements Serializable {
      * @return the drawn card
      */
     public Card drawCardForPlayer(Player player) {
+        LOGGER.log(Level.INFO, "Entering drawCardForPlayer, before: decksize = {0}, playerhand size = {1}",
+                new Object[]{deck.size(), player.getHand().size()});
         Card ret = deck.pollFirst();
         player.addCard(ret);
+        LOGGER.log(Level.INFO, "Entering drawCardForPlayer, after: decksize = {0}, playerhand size = {1}",
+                new Object[]{deck.size(), player.getHand().size()});
         return ret;
     }
 
@@ -311,6 +333,10 @@ public class Game extends Observable implements Serializable {
      */
     public void addCardToDeckBottom(Move move) {
         deck.push(move.getCard());
+    }
+
+    public Move getLastMove() {
+        return moves.get(moves.size() - 1);
     }
 
 
@@ -346,8 +372,14 @@ public class Game extends Observable implements Serializable {
         return playerList;
     }
 
+    /**
+     * Method called by client to set the lighweight PlayerList
+     *
+     * @param playerList
+     */
     public void setPlayerList(List<Player> playerList) {
         this.playerList = playerList;
+
         setChanged();
         notifyObservers();
     }
