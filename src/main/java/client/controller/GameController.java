@@ -36,7 +36,6 @@ public class GameController implements Observer {
 
     private static final Logger LOGGER = Logger.getLogger(GameController.class.getName());
 
-    private int succeededInitCalls = 0;
     private int currentPlayerIndex;
 
     private Game game;
