@@ -239,6 +239,43 @@ public class Game extends Observable implements Serializable {
         deck.remove(firstCard);
     }
 
+    public void addMove(Move move) {
+        moves.add(move);
+    }
+
+    public void removeCardFromPlayerHand(Move move) {
+        move.getPlayer().removeCard(move.getCard());
+    }
+
+    /**
+     * Returns next player with certain amount, used for skipping players
+     *
+     * @param amount
+     * @return
+     */
+    public Player getNextPlayer(int amount) {
+        if (clockwise)
+            return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
+        else {
+            int newIndex = playerList.indexOf(currentPlayer) - amount;
+            if (newIndex < 0) {
+                newIndex += playerList.size();
+            }
+            return playerList.get(newIndex % playerList.size());
+        }
+    }
+
+    /**
+     * Draw cards from the deck for the player. The card is added to the hand of the player.
+     *
+     * @param player
+     * @param amount
+     */
+    public void drawCards(Player player, int amount) {
+        for (int i = 0; i < amount; i++)
+            player.addCard(deck.pollFirst());
+    }
+
 
     public enum State {
         WAITING,
@@ -334,37 +371,6 @@ public class Game extends Observable implements Serializable {
         this.currentPlayer = currentPlayer;
         setChanged();
         notifyObservers();
-    }
-
-    public void addMove(Move move) {
-        moves.add(move);
-    }
-
-    public void removeCardFromPlayerHand(Move move) {
-        move.getPlayer().removeCard(move.getCard());
-    }
-
-    /**
-     * Returns next player with certain amount, used for skipping players
-     *
-     * @param amount
-     * @return
-     */
-    public Player getNextPlayer(int amount) {
-        if (clockwise)
-            return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
-        else {
-            int newIndex = playerList.indexOf(currentPlayer) - amount;
-            if (newIndex < 0) {
-                newIndex += playerList.size();
-            }
-            return playerList.get(newIndex % playerList.size());
-        }
-    }
-
-    public void drawCards(Player player, int amount) {
-        for (int i = 0; i < amount; i++)
-            player.addCard(deck.pollFirst());
     }
 
 
