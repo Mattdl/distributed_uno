@@ -210,11 +210,12 @@ public class GameController implements Observer {
                             PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
                             playMoveService.setOnSucceeded(event -> {
 
-                                serverInfoText.setText("It is your turn, play a card!");
-
+                                LOGGER.info("Move successfully passed to server!");
+                                serverInfoText.setText("Move is passed to server, enjoy!");
                             });
                             playMoveService.start();
                         } else {
+                            LOGGER.info("Unvalid move");
                             serverInfoText.setText("Move is not valid. Please pick another card.");
                         }
                     }
