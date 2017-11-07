@@ -170,6 +170,11 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
+    /**
+     * Method used by server to make lightweight Player-objects to return over RMI to client
+     *
+     * @return
+     */
     public List<Player> getLightPlayerList() {
         List<Player> ret = new LinkedList<>();
         for (Player p : playerList) {
@@ -200,7 +205,7 @@ public class Game extends Observable implements Serializable {
 
         LinkedList<Card> drawnCards = new LinkedList<>();
 
-        for(int i=0;i<amountOfCards;i++){
+        for (int i = 0; i < amountOfCards; i++) {
             Card card = deck.pop();
             drawnCards.add(card);
         }
