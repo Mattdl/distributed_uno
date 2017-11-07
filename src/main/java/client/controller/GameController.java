@@ -220,7 +220,7 @@ public class GameController implements Observer {
                     }
                 }
             });
-        }else{
+        } else {
             serverInfoText.setText("It is not your turn...");
         }
     }
@@ -256,15 +256,16 @@ public class GameController implements Observer {
             @Override
             public void run() {
 
-                if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
-                    serverInfoText.setText("It is your turn, play a card!");
-                }
-                else{
-                    serverInfoText.setText("It's " + );
+                if (game.getCurrentPlayer() != null) {
+                    if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+                        currentPlayerText.setText("It is your turn, play a card!");
+                    } else {
+                        currentPlayerText.setText("It's the turn of player " + game.getCurrentPlayer());
+                    }
                 }
 
 
-                    //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
+                //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
 /*
                 ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
                 handListView.setItems(observableList);
