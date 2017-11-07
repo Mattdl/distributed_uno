@@ -48,20 +48,33 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             if (retPlayer != null) {
                 LOGGER.log(Level.INFO, "Player not null for initCards: {0}", retPlayer);
 
-                LinkedList<Card> ret = game.givePlayerInitHand(7);
+                if (retPlayer.getHand().isEmpty()) {
+                    distributeHandsToPlayers(game);
+                }
+
+                //LinkedList<Card> ret = game.givePlayerInitHand(7,retPlayer);
 
                 //LOGGER.log(Level.INFO, "Setting list of cards to hand: ", ret);
-
-                retPlayer.setHand(ret);
-
                 //LOGGER.log(Level.INFO, "Player received init hand, returning : ", retPlayer.getHand());
 
-                return ret;
+                return retPlayer.getHand();
             }
         }
         LOGGER.log(Level.INFO, "Returning null for hand");
 
         return null;
+    }
+
+    private synchronized void distributeHandsToPlayers(Game game) {
+        LOGGER.log(Level.INFO, "distributeHandsToPlayers");
+
+        for (Player player : game.getPlayerList()) {
+            if (player.getHand().isEmpty()) {
+                game.givePlayerInitHand(7, player);
+                LOGGER.log(Level.INFO, "Player hand distributed = {0}", player.getHand());
+            }
+            LOGGER.log(Level.INFO, "Player {0} already had a hand...", player);
+        }
     }
 
     /**
@@ -85,7 +98,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 LOGGER.info("Found game");
 
                 //Set random starting player
-                if(game.getCurrentPlayer() == null){
+                if (game.getCurrentPlayer() == null) {
                     game.setCurrentPlayer(game.getPlayerList().get(new Random().nextInt(game.getPlayerList().size())));
                 }
 

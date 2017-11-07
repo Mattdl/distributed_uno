@@ -176,10 +176,20 @@ public class Game extends Observable implements Serializable {
      * @return
      */
     public List<Player> getLightPlayerList() {
+        LOGGER.info("Entering getLightPlayerList");
+
         List<Player> ret = new LinkedList<>();
+
         for (Player p : playerList) {
-            ret.add(new Player(p.getName(), p.getHand().size()));
+            Player lightPlayer = new Player(p.getName(), p.getHand().size());
+
+            LOGGER.log(Level.INFO, "Made light player object = {0}", lightPlayer);
+
+            ret.add(lightPlayer);
         }
+
+        LOGGER.info("Leaving getLightPlayerList");
+
         return ret;
     }
 
@@ -200,7 +210,7 @@ public class Game extends Observable implements Serializable {
      *
      * @param amountOfCards
      */
-    public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards) {
+    public synchronized LinkedList<Card> givePlayerInitHand(int amountOfCards, Player player) {
         LOGGER.info("Entering givePlayerInitHand.");
 
         LinkedList<Card> drawnCards = new LinkedList<>();
@@ -212,7 +222,10 @@ public class Game extends Observable implements Serializable {
 
         LOGGER.log(Level.INFO, "Drawn cards for player hand={0}", drawnCards);
         LOGGER.log(Level.INFO, "Deck size : {0}", deck.size());
-        LOGGER.info("Leaving givePlayerInitHand.");
+
+        player.setHand(drawnCards);
+
+        LOGGER.info("Set hand to player. Leaving givePlayerInitHand.");
 
         return drawnCards;
     }
