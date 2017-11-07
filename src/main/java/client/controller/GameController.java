@@ -184,16 +184,21 @@ public class GameController implements Observer {
      */
     @FXML
     public void drawCard(ActionEvent event) {
+        LOGGER.info("Entering drawCard");
         if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
             Platform.runLater(new Runnable() {
                 @Override
                 public void run() {
+                    LOGGER.info("Running drawCard thread");
                     PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, null));
                     playMoveService.setOnSucceeded(event -> {
 
                         LOGGER.info("Draw card successfully passed to server!");
                         serverInfoText.setText("Draw card is passed to server, enjoy!");
                     });
+                    playMoveService.start();
+
+                    LOGGER.info("Ended drawCard thread");
                 }
             });
         }
