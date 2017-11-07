@@ -72,8 +72,8 @@ public class GameController implements Observer {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                for(Player player : game.getPlayerList())
-                    if(player.equals(Main.currentPlayer))
+                for (Player player : game.getPlayerList())
+                    if (player.equals(Main.currentPlayer))
                         currentPlayerIndex = game.getPlayerList().indexOf(player);
                 if (game.getGameSize() == 2) {
                     player3info.setVisible(false);
@@ -136,7 +136,7 @@ public class GameController implements Observer {
                     }
                 });
 
-                InitService initService=new InitService(game);
+                InitService initService = new InitService(game);
                 initService.setOnSucceeded(event -> checkPlayersService.start());
                 initService.start();
 
@@ -158,19 +158,32 @@ public class GameController implements Observer {
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
+    }
+
+    /**
+     * Method called when a player draws a card.
+     *
+     * @param event
+     */
+    @FXML
+    public void drawCard(ActionEvent event) {
 
     }
 
-    //TODO
+    /**
+     * Method called when player plays a card from his hand.
+     *
+     * @param event
+     */
     @FXML
-    public void drawCard(ActionEvent event){
+    public void playCard(ActionEvent event) {
 
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
-    public void eindeSpel(){
-       Stage stage = (Stage) endGameButton.getScene().getWindow();
-       switchToWinnerScene(stage, null);
+    public void eindeSpel() {
+        Stage stage = (Stage) endGameButton.getScene().getWindow();
+        switchToWinnerScene(stage, null);
     }
 
     private void switchToWinnerScene(Stage stage, String msg) {
@@ -226,7 +239,7 @@ public class GameController implements Observer {
                 player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
 ppan*/
 
-                }
+            }
         });
     }
 }
