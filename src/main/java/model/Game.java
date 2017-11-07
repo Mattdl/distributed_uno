@@ -287,6 +287,15 @@ public class Game extends Observable implements Serializable {
         }
     }
 
+    /**
+     * Puts a card on the bottom of the deck
+     *
+     * @param move
+     */
+    public void addCardToDeckBottom(Move move) {
+        deck.push(move.getCard());
+    }
+
 
     public enum State {
         WAITING,
