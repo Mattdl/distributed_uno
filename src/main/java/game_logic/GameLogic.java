@@ -66,7 +66,6 @@ public class GameLogic {
             //Remove card from player's hand
             game.removeCardFromPlayerHand(move);
 
-
             switch (move.getCard().getCardType()) {
                 //Change direction
                 case REVERSE:
