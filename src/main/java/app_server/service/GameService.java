@@ -166,8 +166,11 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
 
                 //Update Game
-                game.addMove(move);
-                game.removeCardFromPlayerHand(move);
+                gameLogic.gameUpdate(game, move);
+
+                //game.addMove(move);
+                //game.removeCardFromPlayerHand(move);
+
 
                 //Notify everybody that game has updated
                 notifyAll();

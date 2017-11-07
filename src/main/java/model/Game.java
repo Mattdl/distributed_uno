@@ -362,8 +362,15 @@ public class Game extends Observable implements Serializable {
      * @return
      */
     public Player getNextPlayer(int amount) {
-        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - amount) % playerList.size());
+        if (clockwise)
+            return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
+        else {
+            int newIndex = playerList.indexOf(currentPlayer) - amount;
+            if (newIndex < 0) {
+                newIndex += playerList.size();
+            }
+            return playerList.get(newIndex % playerList.size());
+        }
     }
 
     public void drawCards(Player player, int amount) {
