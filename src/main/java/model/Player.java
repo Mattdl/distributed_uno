@@ -45,6 +45,10 @@ public class Player implements Serializable {
         return hand;
     }
 
+    public boolean hasHand(){
+        return !hand.isEmpty();
+    }
+
     public void setHand(List<Card> hand) {
         this.hand = hand;
     }
@@ -61,8 +65,16 @@ public class Player implements Serializable {
         hand.remove(card);
     }
 
-    public int handSize(){
+    public int handListSize(){
         return hand.size();
+    }
+
+    /**
+     * Method used for to get handsize of lightweight Player object returned by Server
+     * @return
+     */
+    public int getHandSize() {
+        return handSize;
     }
 
     @Override

@@ -68,13 +68,6 @@
          </children>
       </VBox>
    </right>
-   <center>
-      <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <ImageView fx:id="lastCardPlayed" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
-         </children>
-      </HBox>
-   </center>
    <bottom>
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="109.0" prefWidth="641.0" BorderPane.alignment="CENTER">
          <children>
@@ -84,4 +77,12 @@
          </children>
       </VBox>
    </bottom>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <ImageView fx:id="lastCardPlayed" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" />
+            <Text fx:id="lastPlayedCardText" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" />
+         </children>
+      </VBox>
+   </center>
 </BorderPane>

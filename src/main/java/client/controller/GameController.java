@@ -3,16 +3,12 @@ package client.controller;
 
 import client.Main;
 import client.service.game.CheckPlayersService;
-import client.service.game.FetchCurrentPlayerAndCardService;
-import client.service.game.FetchInitCardsService;
-import client.service.game.FetchPlayersInfoService;
 import client.service.game.InitService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -45,6 +41,9 @@ public class GameController implements Observer {
 
     @FXML
     private ImageView lastCardPlayed;
+
+    @FXML
+    private Text lastPlayedCardText;
 
     @FXML
     private Button endGameButton;
@@ -223,30 +222,36 @@ public class GameController implements Observer {
                     }
                 });*/
 
-                ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
-                handListView.setItems(observableList);
-                handListView.setCellFactory(listView -> new ListCell<Card>() {
-                    @Override
-                    public void updateItem(Card card, boolean empty) {
-                        super.updateItem(card, empty);
-                        if (card == null) {
-                            LOGGER.log(Level.INFO,"Empty card");
-                            setText(null);
-                        } else {
-                            LOGGER.log(Level.INFO,"Found card: "+card+"  ===> "+card.getColor().toString()+": "+card.getValue()+": "+card.getCardType().toString());
-                            setText(card.getColor().toString()+": "+card.getValue()+": "+card.getCardType().toString());
+
+                //Show cards as text
+                if(Main.currentPlayer.hasHand()) {
+                    ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+                    handListView.setItems(observableList);
+                    handListView.setCellFactory(listView -> new ListCell<Card>() {
+                        @Override
+                        public void updateItem(Card card, boolean empty) {
+                            super.updateItem(card, empty);
+                            if (card == null) {
+                                setText(null);
+                            } else {
+                                if(card != null) setText(card.getCardType().toString() + "_" + card.getColor().toString() + ": " + card.getValue());
+                            }
                         }
-                    }
-                });
+                    });
+                }
 
                 List<Player> playerList = game.getPlayerList();
 
                 //Update last played card image
-                //TODO client must lookup the image for the card
                 //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+                if(game.hasPlayedCards()) {
+                    Card lastPlayedCard = game.getLastPlayedCard();
+                    lastPlayedCardText.setText(lastPlayedCard.getCardType().toString() + "_" + lastPlayedCard.getColor().toString() + ": " + lastPlayedCard.getValue());
+                }
+
 
                 //Set player2info (= next player in playerslist)
-/*
+
 
                 LOGGER.log(Level.INFO, "Playerlist: "+playerList);
                 LOGGER.log(Level.INFO, "Playerlist size: "+playerList.size());
@@ -254,13 +259,13 @@ public class GameController implements Observer {
                 LOGGER.log(Level.INFO, "calculated position: "+(currentPlayerIndex+1)%playerList.size());
                 LOGGER.log(Level.INFO, "Found player: "+playerList.get((currentPlayerIndex+1)%playerList.size()));
 
+                if(playerList.get((currentPlayerIndex+1)%playerList.size())!=null)
+                    player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).getHandSize() + " cards");
 
-                player2info.setText(playerList.get((currentPlayerIndex+1)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+1)%playerList.size()).handSize() + " cards");
+//                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
 
-                player3info.setText(playerList.get((currentPlayerIndex+2)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+2)%playerList.size()).handSize() + " cards");
+  //              player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
 
-                player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).handSize() + " cards");
-ppan*/
 
                 }
         });
