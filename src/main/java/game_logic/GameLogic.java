@@ -99,8 +99,9 @@ public class GameLogic {
 
             //Draw a card for a player and add the card to his hand
             Card drawnCard = game.drawCardForPlayer(move.getPlayer());
-
             move.setDrawnCard(drawnCard);
+
+            //Add to game history
             game.addMove(move);
 
             LOGGER.log(Level.INFO, "Drawn card for player, card = {0}, player = {1}",

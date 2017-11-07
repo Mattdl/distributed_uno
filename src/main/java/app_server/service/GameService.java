@@ -163,17 +163,17 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         Game game = lobby.findGame(gameName);
 
         if (game != null) {
+            LOGGER.info("Game found in playMove");
             if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
 
                 //Update Game
                 gameLogic.gameUpdate(game, move);
-
-                //game.addMove(move);
-                //game.removeCardFromPlayerHand(move);
-
+                LOGGER.info("Game updated");
 
                 //Notify everybody that game has updated
                 notifyAll();
+                LOGGER.info("in playMove: notified everybody!");
+
             }
             LOGGER.log(Level.SEVERE, "In playMove: NO VALID CARD PLAYED, topcard = {0}, played card = {1}",
                     new Object[]{game.getLastPlayedCard(), move.getCard()});
