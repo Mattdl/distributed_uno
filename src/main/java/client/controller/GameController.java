@@ -178,6 +178,12 @@ public class GameController implements Observer {
     @FXML
     public void playCard(ActionEvent event) {
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
