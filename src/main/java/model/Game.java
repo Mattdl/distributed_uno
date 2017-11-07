@@ -171,6 +171,32 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
+     * Method called by client to draw a card
+     *
+     * @param drawnCard
+     * @param player
+     */
+    public void setDrawnCardForPlayer(Card drawnCard, Player player) {
+        player.getHand().add(drawnCard);
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Method called by FetchInitCardService of client
+     *
+     * @param cards
+     * @param currentPlayer
+     */
+    public void setCurrentPlayerHand(List<Card> cards, Player currentPlayer) {
+        currentPlayer.setHand(cards);
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
      * Method used by server to make lightweight Player-objects to return over RMI to client
      *
      * @return
@@ -191,18 +217,6 @@ public class Game extends Observable implements Serializable {
         LOGGER.info("Leaving getLightPlayerList");
 
         return ret;
-    }
-
-    /**
-     * Method called by FetchInitCardService of client
-     *
-     * @param cards
-     * @param currentPlayer
-     */
-    public void setCurrentPlayerHand(List<Card> cards, Player currentPlayer) {
-        currentPlayer.setHand(cards);
-        setChanged();
-        notifyObservers();
     }
 
     /**
