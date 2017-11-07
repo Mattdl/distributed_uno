@@ -41,8 +41,7 @@ public class PlayMoveService extends Service<Boolean> {
                 if (drawnCard == null) {
                     LOGGER.info("Returned drawn Card is null");
                 } else {
-                    //TODO for Main player or list player??
-                    game.setDrawnCardForPlayer(drawnCard,playedMove.getPlayer());
+                    game.setDrawnCardForPlayer(drawnCard, Main.currentPlayer);
                 }
 
                 return true;
