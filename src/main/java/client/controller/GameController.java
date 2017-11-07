@@ -44,7 +44,7 @@ public class GameController implements Observer {
 
     private GameLogic gameLogic;
 
-    private boolean isGameFinished;
+    private Boolean isGameFinished;
 
     @FXML
     private ListView<Card> handListView;
@@ -169,7 +169,8 @@ public class GameController implements Observer {
     private void runGame() {
         LOGGER.info("Running game!");
 
-        FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
+        //TODO Can pass this boolean object for finishing game?
+        FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false, isGameFinished);
         fetchPlayersInfoService.start();
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
@@ -246,6 +247,7 @@ public class GameController implements Observer {
     public void gameFinished() {
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
+        game.deleteObservers();
     }
 
     private void switchToWinnerScene(Stage stage, String msg) {
@@ -344,6 +346,9 @@ public class GameController implements Observer {
                     player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
                     player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
                     player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
+                }
+                else{
+                    gameFinished();
                 }
             }
         });
