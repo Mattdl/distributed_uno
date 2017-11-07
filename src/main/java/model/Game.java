@@ -263,7 +263,7 @@ public class Game extends Observable implements Serializable {
      * @param player
      * @return the drawn card
      */
-    public Card drawCard(Player player) {
+    public Card drawCardForPlayer(Player player) {
         Card ret = deck.pollFirst();
         player.addCard(ret);
         return ret;

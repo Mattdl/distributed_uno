@@ -26,6 +26,14 @@ public class Move implements Serializable {
         return card;
     }
 
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public void setCard(Card card) {
+        this.card = card;
+    }
+
     public boolean isHasDrawnCard() {
         return hasDrawnCard;
     }

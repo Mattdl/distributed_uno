@@ -1,6 +1,5 @@
 package game_logic;
 
-import client.controller.GameController;
 import model.Card;
 import model.Game;
 import model.Move;
@@ -94,7 +93,10 @@ public class GameLogic {
             }
             return null;
         } else {
-            Card drawnCard = game.drawCard(move.getPlayer());
+            Card drawnCard = game.drawCardForPlayer(move.getPlayer());
+
+            move.setCard(drawnCard);
+            game.addMove(move);
 
             LOGGER.log(Level.INFO, "Drawn card for player, card = {0}, player = {1}",
                     new Object[]{drawnCard, move.getPlayer()});
