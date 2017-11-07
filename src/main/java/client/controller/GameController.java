@@ -169,7 +169,6 @@ public class GameController implements Observer {
     private void runGame() {
         LOGGER.info("Running game!");
 
-        //TODO run game
         FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
         fetchPlayersInfoService.start();
 
@@ -184,7 +183,19 @@ public class GameController implements Observer {
      */
     @FXML
     public void drawCard(ActionEvent event) {
+        if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+            Platform.runLater(new Runnable() {
+                @Override
+                public void run() {
+                    PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, null));
+                    playMoveService.setOnSucceeded(event -> {
 
+                        LOGGER.info("Draw card successfully passed to server!");
+                        serverInfoText.setText("Draw card is passed to server, enjoy!");
+                    });
+                }
+            });
+        }
     }
 
     /**
@@ -231,6 +242,7 @@ public class GameController implements Observer {
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
+
     public void gameFinished() {
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
@@ -263,12 +275,14 @@ public class GameController implements Observer {
 
                 List<Player> playerList = game.getPlayerList();
 
+                /*
+                //TODO initially the players have no hand size...
                 for (Player player : playerList) {
                     if (player.getHandSize() == 0) {
                         isGameFinished = true;
                         gameFinished();
                     }
-                }
+                }*/
 
                 if (!isGameFinished) {
 
@@ -330,7 +344,6 @@ public class GameController implements Observer {
                     player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
                     player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
                     player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
-
                 }
             }
         });

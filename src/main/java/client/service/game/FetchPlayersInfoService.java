@@ -16,11 +16,13 @@ public class FetchPlayersInfoService extends Service<Boolean> {
     private Game game;
     private boolean isInit;
     private boolean isPlaying;
+    private Boolean isGameFinished;
 
-    public FetchPlayersInfoService(Game game, boolean isInit) {
+    public FetchPlayersInfoService(Game game, boolean isInit, Boolean isGameFinished) {
         this.game = game;
         this.isInit = isInit;
-        isPlaying = true;
+        this.isGameFinished = isGameFinished;
+        this.isPlaying = true;
     }
 
     @Override
@@ -43,6 +45,12 @@ public class FetchPlayersInfoService extends Service<Boolean> {
 
                     if (isSuccessful && isInit) {
                         game.setPlayerList(ret);
+                    }
+
+                    for (Player player : game.getPlayerList()) {
+                        if (player.getHandSize() == 0) {
+                            isGameFinished = true;
+                        }
                     }
 
                 } while (!isInit && isPlaying);
