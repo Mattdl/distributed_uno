@@ -13,6 +13,11 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Service used by the client at an initial game. It only returns true if all clients have successfully setup the game.
+ * The game is setup when all init cards, the middle card and current player are fetched,
+ * and when a player has it's own hand.
+ */
 public class CheckPlayersService extends Service<Boolean> {
 
     private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
@@ -25,6 +30,7 @@ public class CheckPlayersService extends Service<Boolean> {
 
     /**
      * Service that requests all the init RMI calls and waits until all players in the game have initialized.
+     *
      * @return
      */
     @Override

@@ -16,7 +16,7 @@ public interface GameStub extends Remote {
 
     List<Player> getPlayerUpdates(String gameName, Player client, boolean init) throws RemoteException;
 
-    Card playMove(String gameName, Card card) throws RemoteException;
+    Card playMove(String gameName, Move move) throws RemoteException;
 
     Move getCurrentPlayerAndLastCard(String gameName, boolean init) throws RemoteException;
 }

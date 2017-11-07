@@ -1,6 +1,7 @@
 package app_server.service;
 
-import app_server.AppServer;
+import app_server.DeckBuilder;
+import game_logic.GameLogic;
 import model.Card;
 import model.Game;
 import model.Lobby;
@@ -10,7 +11,6 @@ import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
@@ -20,12 +20,14 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     private static final Logger LOGGER = Logger.getLogger(GameService.class.getName());
 
+    private final GameLogic gameLogic;
 
     private Lobby lobby;
     //private GameDbService gameDbService;
 
     public GameService(Lobby lobby) throws RemoteException {
         this.lobby = lobby;
+        this.gameLogic = new GameLogic();
     }
 
     /**
@@ -148,19 +150,36 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     /**
      * Updates the game on the application server and notifies all client RMI calls to fetch info for the game.
+     * When the card parameter is null, this means that a card is drawn. In this case, a Card object will be returned
+     * to the player.
      *
      * @param gameName
-     * @param card
-     * @return
+     * @param move     the played card and the player that played it, card is null when a card is drawn
+     * @return A drawn card, when the passed card parameter is null
      * @throws RemoteException
      */
     @Override
-    public synchronized Card playMove(String gameName, Card card) throws RemoteException {
+    public synchronized Card playMove(String gameName, Move move) throws RemoteException {
         Game game = lobby.findGame(gameName);
 
-        //TODO update game
+        if (game != null) {
+            LOGGER.info("Game found in playMove");
+            if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
 
-        //TODO notify all
+                //Update Game
+                gameLogic.gameUpdate(game, move);
+                LOGGER.info("Game updated");
+
+                //Notify everybody that game has updated
+                notifyAll();
+                LOGGER.info("in playMove: notified everybody!");
+
+            }
+            LOGGER.log(Level.SEVERE, "In playMove: NO VALID CARD PLAYED, topcard = {0}, played card = {1}",
+                    new Object[]{game.getLastPlayedCard(), move.getCard()});
+        }
+
+        LOGGER.info("Game not found in playMove");
 
         return null;
     }

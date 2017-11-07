@@ -3,6 +3,8 @@ package client.controller;
 
 import client.Main;
 import client.service.game.CheckPlayersService;
+import client.service.game.FetchCurrentPlayerAndCardService;
+import client.service.game.FetchPlayersInfoService;
 import client.service.game.InitService;
 import game_logic.GameLogic;
 import javafx.application.Platform;
@@ -79,8 +81,8 @@ public class GameController implements Observer {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-                for(Player player : game.getPlayerList())
-                    if(player.equals(Main.currentPlayer))
+                for (Player player : game.getPlayerList())
+                    if (player.equals(Main.currentPlayer))
                         currentPlayerIndex = game.getPlayerList().indexOf(player);
                 if (game.getGameSize() == 2) {
                     player3info.setVisible(false);
@@ -143,7 +145,7 @@ public class GameController implements Observer {
                     }
                 });
 
-                InitService initService=new InitService(game);
+                InitService initService = new InitService(game);
                 initService.setOnSucceeded(event -> checkPlayersService.start());
                 initService.start();
 
@@ -160,19 +162,37 @@ public class GameController implements Observer {
         LOGGER.info("Running game!");
 
         //TODO run game
-        /*
         FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false);
         fetchPlayersInfoService.start();
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
-        */
     }
 
-    //TODO
+    /**
+     * Method called when a player draws a card.
+     *
+     * @param event
+     */
     @FXML
-    public void drawCard(ActionEvent event){
+    public void drawCard(ActionEvent event) {
 
+    }
+
+    /**
+     * Method called when player plays a card from his hand.
+     *
+     * @param event
+     */
+    @FXML
+    public void playCard(ActionEvent event) {
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+
+            }
+        });
     }
 
     @FXML
@@ -189,9 +209,9 @@ public class GameController implements Observer {
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
-    public void eindeSpel(){
-       Stage stage = (Stage) endGameButton.getScene().getWindow();
-       switchToWinnerScene(stage, null);
+    public void eindeSpel() {
+        Stage stage = (Stage) endGameButton.getScene().getWindow();
+        switchToWinnerScene(stage, null);
     }
 
     private void switchToWinnerScene(Stage stage, String msg) {
@@ -273,7 +293,7 @@ public class GameController implements Observer {
                 player4info.setText(playerList.get((currentPlayerIndex+3)%playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex+3)%playerList.size()).getHandSize() + " cards");
 
 
-                }
+            }
         });
     }
 }

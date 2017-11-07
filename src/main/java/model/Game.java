@@ -171,6 +171,32 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
+     * Method called by client to draw a card
+     *
+     * @param drawnCard
+     * @param player
+     */
+    public void setDrawnCardForPlayer(Card drawnCard, Player player) {
+        player.getHand().add(drawnCard);
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Method called by FetchInitCardService of client
+     *
+     * @param cards
+     * @param currentPlayer
+     */
+    public void setCurrentPlayerHand(List<Card> cards, Player currentPlayer) {
+        currentPlayer.setHand(cards);
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
      * Method used by server to make lightweight Player-objects to return over RMI to client
      *
      * @return
@@ -194,18 +220,6 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
-     * Method called by FetchInitCardService of client
-     *
-     * @param cards
-     * @param currentPlayer
-     */
-    public void setCurrentPlayerHand(List<Card> cards, Player currentPlayer) {
-        currentPlayer.setHand(cards);
-        setChanged();
-        notifyObservers();
-    }
-
-    /**
      * Method to draw the cards from the deck and give them initially to a player
      *
      * @param amountOfCards
@@ -216,7 +230,7 @@ public class Game extends Observable implements Serializable {
         LinkedList<Card> drawnCards = new LinkedList<>();
 
         for (int i = 0; i < amountOfCards; i++) {
-            Card card = deck.pop();
+            Card card = deck.pollFirst();
             drawnCards.add(card);
         }
 
@@ -234,9 +248,66 @@ public class Game extends Observable implements Serializable {
      * Method to draw first card from the deck.
      */
     public synchronized void drawFirstCard() {
-        Card firstCard = deck.get(deck.size() - 1);
+        Card firstCard = deck.pollFirst();
         moves.add(new Move(null, firstCard));
-        deck.remove(firstCard);
+    }
+
+    public void addMove(Move move) {
+        moves.add(move);
+    }
+
+    public void removeCardFromPlayerHand(Move move) {
+        move.getPlayer().removeCard(move.getCard());
+    }
+
+    /**
+     * Draw cards from the deck for the player. The card is added to the hand of the player.
+     *
+     * @param player
+     * @param amount
+     */
+    public void drawCards(Player player, int amount) {
+        for (int i = 0; i < amount; i++)
+            player.addCard(deck.pollFirst());
+    }
+
+    /**
+     * Draw card from the deck for the player. The card is added to the hand of the player.
+     *
+     * @param player
+     * @return the drawn card
+     */
+    public Card drawCardForPlayer(Player player) {
+        Card ret = deck.pollFirst();
+        player.addCard(ret);
+        return ret;
+    }
+
+    /**
+     * Returns next player with certain amount, used for skipping players
+     *
+     * @param amount
+     * @return
+     */
+    public Player getNextPlayer(int amount) {
+        if (clockwise)
+            return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
+        else {
+            int newIndex = playerList.indexOf(currentPlayer) - amount;
+            if (newIndex < 0) {
+                newIndex += playerList.size();
+            }
+            return playerList.get(newIndex % playerList.size());
+        }
+    }
+
+    /**
+     * Puts a card on the bottom of the deck
+     *
+     * @param move
+     */
+    public void addCardToDeckBottom(Move move) {
+        deck.push(move.getCard());
     }
 
 
@@ -334,40 +405,6 @@ public class Game extends Observable implements Serializable {
         this.currentPlayer = currentPlayer;
         setChanged();
         notifyObservers();
-    }
-
-    public void addMove(Move move) {
-        moves.add(move);
-    }
-
-    public void removeCardFromPlayerHand(Move move) {
-        move.getPlayer().removeCard(move.getCard());
-    }
-
-
-    /**
-     * Returns next player
-     *
-     * @return
-     */
-    public Player getNextPlayer() {
-        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + 1) % playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - 1) % playerList.size());
-    }
-
-    /**
-     * Returns next player with certain amount, used for skipping players
-     *
-     * @param amount
-     * @return
-     */
-    public Player getNextPlayer(int amount) {
-        if (clockwise) return playerList.get((playerList.indexOf(currentPlayer) + amount) % playerList.size());
-        else return playerList.get((playerList.indexOf(currentPlayer) - amount) % playerList.size());
-    }
-
-    public void drawCards(Player player, int amount) {
-        for (int i = 0; i < amount; i++) player.addCard(deck.pollFirst());
     }
 
 
