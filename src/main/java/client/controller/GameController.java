@@ -3,18 +3,13 @@ package client.controller;
 
 import client.Main;
 import client.service.game.CheckPlayersService;
-import client.service.game.FetchCurrentPlayerAndCardService;
-import client.service.game.FetchInitCardsService;
-import client.service.game.FetchPlayersInfoService;
 import client.service.game.InitService;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
