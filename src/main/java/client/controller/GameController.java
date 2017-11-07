@@ -21,6 +21,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Callback;
 import model.Card;
 import model.Game;
 import model.Player;
@@ -214,15 +215,47 @@ public class GameController implements Observer {
             public void run() {
 
 
-                List<Card> hand = Main.currentPlayer.getHand();
-                ObservableList<Card> observableHand = FXCollections.observableArrayList(hand);
-                handListView.setItems(observableHand);
+                //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
+/*
+                ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+                handListView.setItems(observableList);
+                handListView.setCellFactory(listView -> new ListCell<Card>() {
+                private ImageView imageView = new ImageView();
+
+                    @Override
+                    public void updateItem(Card card, boolean empty) {
+                        super.updateItem(card, empty);
+                        if (empty) {
+                            setGraphic(null);
+                        } else {
+                            LOGGER.log(Level.INFO,"cardImage: "+card.getImage());
+                            imageView.setImage(card.getImage());
+                            setGraphic(imageView);
+                        }
+                    }
+                });*/
+
+                ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+                handListView.setItems(observableList);
+                handListView.setCellFactory(listView -> new ListCell<Card>() {
+                    @Override
+                    public void updateItem(Card card, boolean empty) {
+                        super.updateItem(card, empty);
+                        if (card == null) {
+                            LOGGER.log(Level.INFO,"Empty card");
+                            setText(null);
+                        } else {
+                            LOGGER.log(Level.INFO,"Found card: "+card+"  ===> "+card.getColor().toString()+": "+card.getValue()+": "+card.getCardType().toString());
+                            setText(card.getColor().toString()+": "+card.getValue()+": "+card.getCardType().toString());
+                        }
+                    }
+                });
 
                 List<Player> playerList = game.getPlayerList();
 
                 //Update last played card image
                 //TODO client must lookup the image for the card
-                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
+//                lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
 
                 //Set player2info (= next player in playerslist)
 /*

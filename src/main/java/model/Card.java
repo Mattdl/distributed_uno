@@ -30,7 +30,7 @@ public class Card implements Serializable {
         return color;
     }
 
-    public int getValue() {
+    public Integer getValue() {
         return value;
     }
 
