@@ -1,6 +1,5 @@
 package app_server.service;
 
-import app_server.DeckBuilder;
 import game_logic.GameLogic;
 import model.Card;
 import model.Game;
@@ -196,6 +195,48 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         }
 
         LOGGER.info("Game not found in playMove");
+
+        return null;
+    }
+
+    /**
+     * Return plus cards if the player has received plus-cards.
+     *
+     * @param gameName
+     * @param player
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized List<Card> getPlusCards(String gameName, Player player) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+        Player serverSidePlayer = game.findPlayer(player);
+
+        try {
+
+            while ((game.getLastPlayedCard().getCardType() != Card.CardType.PLUS2
+                    || game.getLastPlayedCard().getCardType() != Card.CardType.PLUS4)
+                    && !game.isPlayerAfterLastPlayer(serverSidePlayer)) {
+                wait();
+            }
+
+            if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2) {
+                List<Card> hand = serverSidePlayer.getHand();
+                return hand.subList(hand.size() - 2, hand.size());
+            }
+
+            if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS4) {
+                List<Card> hand = serverSidePlayer.getHand();
+                return hand.subList(hand.size() - 4, hand.size());
+            }
+
+            LOGGER.log(Level.SEVERE,"NO PLUS CARDS RETURNED! For player = {0}",serverSidePlayer);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        LOGGER.log(Level.SEVERE,"Returning null for pluscards to player ={0}",serverSidePlayer);
 
         return null;
     }

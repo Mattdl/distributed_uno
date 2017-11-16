@@ -86,4 +86,8 @@ public class Player implements Serializable {
                 ", handSize=" + handSize +
                 '}';
     }
+
+    public void addCards(List<Card> cards) {
+        hand.addAll(cards);
+    }
 }

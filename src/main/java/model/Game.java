@@ -339,6 +339,34 @@ public class Game extends Observable implements Serializable {
         return moves.get(moves.size() - 1);
     }
 
+    public void addPlayerPlusCards(Player currentPlayer, List<Card> cards) {
+        Player player = findPlayer(currentPlayer);
+        player.addCards(cards);
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Checks if the currentPlayer is the turn after the last played player.
+     * Can be used to assign plus-cards to the currentPlayer
+     *
+     * @param currentPlayer
+     * @return
+     */
+    public boolean isPlayerAfterLastPlayer(Player currentPlayer) {
+
+        int currentPlayerIndex = playerList.indexOf(currentPlayer);
+
+        Player lastPlayer = getLastMove().getPlayer();
+
+        int lastPlayerIndex = playerList.indexOf(lastPlayer);
+
+        return currentPlayerIndex == lastPlayerIndex + 1 % gameSize;
+
+
+    }
+
 
     public enum State {
         WAITING,
