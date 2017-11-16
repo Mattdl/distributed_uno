@@ -53,4 +53,8 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
             }
         };
     }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
+    }
 }

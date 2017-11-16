@@ -43,7 +43,6 @@ public class GameLogic {
                 if (cardPlayed.getCardType() == topCard.getCardType() || cardPlayed.getColor() == topCard.getColor())
                     return true;
                 return false;
-            //TODO: implement colorchanging function of PLUS4 and PICK_COLOR cards!
             case PICK_COLOR:
             case PLUS4:
                 if (cardPlayed.getColor() == topCard.getColor()) return true;

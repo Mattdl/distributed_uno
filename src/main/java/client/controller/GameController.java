@@ -80,11 +80,18 @@ public class GameController implements Observer {
     @FXML
     private Text currentPlayerText;
 
+    private FetchPlayersInfoService fetchPlayersInfoService;
+
+    private FetchCurrentPlayerAndCardService currentPlayerAndCardService;
+
+    private boolean successfulGameStart;
+
     public GameController(Game game) {
         this.game = game;
         this.gameLogic = new GameLogic();
         this.game.addObserver(this);
         this.isGameFinished = false;
+        this.successfulGameStart = false;
     }
 
     @FXML
@@ -117,6 +124,7 @@ public class GameController implements Observer {
         ObservableList<Card.CardColor> availableChoices = FXCollections.observableArrayList(Card.CardColor.BLUE, Card.CardColor.GREEN, Card.CardColor.RED, Card.CardColor.YELLOW);
         colorChoiceBox.setItems(availableChoices);
         colorChoiceBox.setValue(Card.CardColor.YELLOW);
+        colorChoiceBox.setVisible(false);
     }
 
     /**
@@ -131,9 +139,9 @@ public class GameController implements Observer {
 
                 CheckPlayersService checkPlayersService = new CheckPlayersService(game);
                 checkPlayersService.setOnSucceeded(event -> {
-                    boolean successful = (boolean) event.getSource().getValue();
+                    successfulGameStart = (boolean) event.getSource().getValue();
 
-                    if (successful) {
+                    if (successfulGameStart) {
                         LOGGER.info("Successful initialization");
 
                         serverInfoText.setText("Game successfully initialized, all players ready to start!");
@@ -163,10 +171,10 @@ public class GameController implements Observer {
         LOGGER.info("Running game!");
 
         //TODO Can pass this boolean object for finishing game?
-        FetchPlayersInfoService fetchPlayersInfoService = new FetchPlayersInfoService(game, false, isGameFinished);
+        fetchPlayersInfoService = new FetchPlayersInfoService(game, false, false);
         fetchPlayersInfoService.start();
 
-        FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
+        currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
     }
 
@@ -209,37 +217,48 @@ public class GameController implements Observer {
                 @Override
                 public void run() {
 
-                    if (click.getClickCount() == 2) {
-                        Card playedCard = handListView.getSelectionModel().getSelectedItem();
-                        Card lastPlayedCard = game.getLastPlayedCard();
+                    Card playedCard = handListView.getSelectionModel().getSelectedItem();
 
-                        boolean isValidMove = gameLogic.isValidMove(playedCard, lastPlayedCard);
+                    if (click.getClickCount() % 2 == 0) {
+                        if ((playedCard.getCardType() == Card.CardType.PICK_COLOR || playedCard.getCardType() == Card.CardType.PLUS4) && !colorChoiceBox.isVisible())
+                            colorChoiceBox.setVisible(true);
+                        else {
 
-                        LOGGER.log(Level.INFO, "Trying to play: " + playedCard.toString() + " on " + lastPlayedCard.toString());
-                        LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
+                            Card lastPlayedCard = game.getLastPlayedCard();
 
-                        if (isValidMove) {
-                            if(playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR){
-                                playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
+                            boolean isValidMove = gameLogic.isValidMove(playedCard, lastPlayedCard);
+
+                            LOGGER.log(Level.INFO, "Trying to play: " + playedCard.toString() + " on " + lastPlayedCard.toString());
+                            LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
+
+                            if (isValidMove) {
+                                if (playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR) {
+                                    playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
+                                }
+
+                                PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
+                                playMoveService.setOnSucceeded(event -> {
+
+                                    game.removeCardFromPlayerHand(new Move(Main.currentPlayer, playedCard));
+
+                                    LOGGER.info("Move successfully passed to server!");
+                                    serverInfoText.setText("Move is passed to server, enjoy!");
+                                });
+
+                                colorChoiceBox.setVisible(false);
+
+                                playMoveService.start();
+
+                            } else {
+                                LOGGER.info("Unvalid move");
+                                serverInfoText.setText("Move is not valid. Please pick another card.");
                             }
-
-                            PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
-                            playMoveService.setOnSucceeded(event -> {
-
-                                game.removeCardFromPlayerHand(new Move(Main.currentPlayer, playedCard));
-
-                                LOGGER.info("Move successfully passed to server!");
-                                serverInfoText.setText("Move is passed to server, enjoy!");
-                            });
-                            playMoveService.start();
-                        } else {
-                            LOGGER.info("Unvalid move");
-                            serverInfoText.setText("Move is not valid. Please pick another card.");
                         }
                     }
                 }
             });
-        } else {
+        } else
+        {
             serverInfoText.setText("It is not your turn...");
         }
     }
@@ -247,6 +266,8 @@ public class GameController implements Observer {
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
 
     public void gameFinished() {
+        fetchPlayersInfoService.setGameFinished(true);
+        currentPlayerAndCardService.setPlaying(false);
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
         game.deleteObservers();
@@ -276,17 +297,18 @@ public class GameController implements Observer {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
-
                 List<Player> playerList = game.getPlayerList();
 
-                /*
-                //TODO initially the players have no hand size...
-                for (Player player : playerList) {
-                    if (player.getHandSize() == 0) {
-                        isGameFinished = true;
-                        gameFinished();
+                //Check if game hasn't ended
+                if(successfulGameStart) {
+                    for (Player player : playerList) {
+                        if (player.getHandSize() == 0) {
+                            isGameFinished = true;
+                            gameFinished();
+                        }
                     }
-                }*/
+                }
+
 
                 if (!isGameFinished) {
 
@@ -348,6 +370,7 @@ public class GameController implements Observer {
                     player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
                     player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
                     player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
+
                 }
                 else{
                     gameFinished();

@@ -68,4 +68,8 @@ public class FetchPlayersInfoService extends Service<Boolean> {
             }
         };
     }
+
+    public void setGameFinished(Boolean gameFinished) {
+        isGameFinished = gameFinished;
+    }
 }
