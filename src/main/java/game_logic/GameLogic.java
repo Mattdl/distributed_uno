@@ -75,8 +75,12 @@ public class GameLogic {
             switch (move.getCard().getCardType()) {
                 //Change direction
                 case REVERSE:
+                    if(game.getGameSize() == 2){
+                        game.setCurrentPlayer(game.getNextPlayer(2));
+
+                    } else{
                     game.setClockwise(!game.isClockwise());
-                    game.setCurrentPlayer(game.getNextPlayer(1));
+                    game.setCurrentPlayer(game.getNextPlayer(1));}
                     break;
                 //Next player draws 2 cards and skips turn
                 case PLUS2:
