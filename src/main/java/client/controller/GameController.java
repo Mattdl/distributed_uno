@@ -5,6 +5,7 @@ import client.Main;
 import client.service.game.CheckPlayersService;
 import client.service.game.FetchCurrentPlayerAndCardService;
 import client.service.game.FetchPlayersInfoService;
+import client.service.game.FetchPlusCardsService;
 import client.service.game.InitService;
 import client.service.game.PlayMoveService;
 import game_logic.GameLogic;
@@ -80,6 +81,8 @@ public class GameController implements Observer {
     @FXML
     private Text currentPlayerText;
 
+    private FetchPlusCardsService fetchPlusCardsService;
+
     public GameController(Game game) {
         this.game = game;
         this.gameLogic = new GameLogic();
@@ -110,7 +113,6 @@ public class GameController implements Observer {
         initServices();
 
         //Used to create ListView with images of cards in hand (UNTESTED)
-
 
 
         //Set choicebox values
@@ -168,6 +170,9 @@ public class GameController implements Observer {
 
         FetchCurrentPlayerAndCardService currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
         currentPlayerAndCardService.start();
+
+        fetchPlusCardsService = new FetchPlusCardsService(game, false);
+        fetchPlusCardsService.start();
     }
 
     /**
@@ -219,7 +224,7 @@ public class GameController implements Observer {
                         LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
 
                         if (isValidMove) {
-                            if(playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR){
+                            if (playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR) {
                                 playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
                             }
 
@@ -247,6 +252,8 @@ public class GameController implements Observer {
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
 
     public void gameFinished() {
+        fetchPlusCardsService.setGameFinished(true);
+
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
         game.deleteObservers();
@@ -348,8 +355,7 @@ public class GameController implements Observer {
                     player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
                     player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
                     player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
-                }
-                else{
+                } else {
                     gameFinished();
                 }
             }

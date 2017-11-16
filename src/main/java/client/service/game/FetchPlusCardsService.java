@@ -5,19 +5,18 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Card;
 import model.Game;
-import model.Move;
 import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
 
-public class FetchPlusCards extends Service<Void> {
+public class FetchPlusCardsService extends Service<Void> {
 
     private boolean isGameFinished;
     private Game currentGame;
 
-    public FetchPlusCards(Game currentGame, boolean isGameFinished) {
+    public FetchPlusCardsService(Game currentGame, boolean isGameFinished) {
         this.isGameFinished = isGameFinished;
         this.currentGame = currentGame;
     }
@@ -46,5 +45,9 @@ public class FetchPlusCards extends Service<Void> {
                 return null;
             }
         };
+    }
+
+    public void setGameFinished(boolean gameFinished) {
+        isGameFinished = gameFinished;
     }
 }
