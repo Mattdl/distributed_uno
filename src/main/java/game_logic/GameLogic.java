@@ -125,7 +125,7 @@ public class GameLogic {
     }
 
     /**
-     * Calculates winning players score based on remaining cards in other players hands
+     * Calculates winning player's score based on remaining cards in other players hands
      * @param game
      * @return score
      */
