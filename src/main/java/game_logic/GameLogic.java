@@ -3,9 +3,12 @@ package game_logic;
 import model.Card;
 import model.Game;
 import model.Move;
+import model.Player;
 
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class GameLogic {
 
@@ -119,5 +122,33 @@ public class GameLogic {
 
             return drawnCard;
         }
+    }
+
+    /**
+     * Calculates winning players score based on remaining cards in other players hands
+     * @param game
+     * @return score
+     */
+    public int calculateScore(Game game){
+        int score = 0;
+
+        List<Card> remainingCards =
+                game.getPlayerList().stream()
+                        .flatMap(e->e.getHand().stream())
+                        .collect(Collectors.toList());
+
+        for(Card card : remainingCards){
+            switch (card.getCardType()) {
+                case NORMAL:
+                    score += card.getValue();
+                    break;
+                case PICK_COLOR:
+                case PLUS4:
+                    score +=50;
+                    break;
+                default: score += 20;
+            }
+        }
+        return score;
     }
 }
