@@ -176,7 +176,7 @@ public class GameController implements Observer {
         fetchPlayersInfoService = new FetchPlayersInfoService(game, false, false);
         fetchPlayersInfoService.start();
 
-        currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
+        currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false,false);
         currentPlayerAndCardService.start();
 
         fetchPlusCardsService = new FetchPlusCardsService(game, false);
@@ -272,7 +272,7 @@ public class GameController implements Observer {
 
     public void gameFinished() {
         fetchPlayersInfoService.setGameFinished(true);
-        currentPlayerAndCardService.setPlaying(false);
+        currentPlayerAndCardService.setGameFinished(true);
         fetchPlusCardsService.setGameFinished(true);
 
         Stage stage = (Stage) endGameButton.getScene().getWindow();
