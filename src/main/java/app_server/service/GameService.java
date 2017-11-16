@@ -215,17 +215,20 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         try {
 
             while ((game.getLastPlayedCard().getCardType() != Card.CardType.PLUS2
-                    || game.getLastPlayedCard().getCardType() != Card.CardType.PLUS4)
+                    && game.getLastPlayedCard().getCardType() != Card.CardType.PLUS4)
                     && !game.isPlayerAfterLastPlayer(serverSidePlayer)) {
+                LOGGER.log(Level.INFO,"Nah the notify did not have plus cards for me, just waitin...");
                 wait();
             }
 
             if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2) {
+                LOGGER.info("Fetching PLUS2 playercards.");
                 List<Card> hand = serverSidePlayer.getHand();
                 return hand.subList(hand.size() - 2, hand.size());
             }
 
             if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS4) {
+                LOGGER.info("Fetching PLUS4 playercards.");
                 List<Card> hand = serverSidePlayer.getHand();
                 return hand.subList(hand.size() - 4, hand.size());
             }

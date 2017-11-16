@@ -10,8 +10,12 @@ import stub_RMI.client_appserver.GameStub;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class FetchPlusCardsService extends Service<Void> {
+
+    private static final Logger LOGGER = Logger.getLogger(FetchPlusCardsService.class.getName());
 
     private boolean isGameFinished;
     private Game currentGame;
@@ -27,20 +31,31 @@ public class FetchPlusCardsService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
 
+                LOGGER.log(Level.INFO,"Starting FetchPlusCardsService");
+
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
                 boolean isSuccessful;
 
                 while (!isGameFinished) {
+
+                    LOGGER.log(Level.INFO,"Requesting plus cards");
+
                     List<Card> cards = gameService.getPlusCards(currentGame.getGameName(), Main.currentPlayer);
 
                     isSuccessful = cards != null;
 
                     if (isSuccessful) {
                         currentGame.addPlayerPlusCards(Main.currentPlayer, cards);
+                        LOGGER.log(Level.INFO,"Plus cards received from server = {0}",cards);
+                    }
+                    else{
+                        LOGGER.log(Level.SEVERE,"NULL RECEIVED from plus cards");
                     }
                 }
+
+                LOGGER.log(Level.INFO,"Ending FetchPlusCardsService");
 
                 return null;
             }

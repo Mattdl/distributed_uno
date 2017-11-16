@@ -360,11 +360,17 @@ public class Game extends Observable implements Serializable {
 
         Player lastPlayer = getLastMove().getPlayer();
 
+        if(lastPlayer == null){
+            return false;
+        }
+
         int lastPlayerIndex = playerList.indexOf(lastPlayer);
 
-        return currentPlayerIndex == lastPlayerIndex + 1 % gameSize;
+        boolean ret = currentPlayerIndex == lastPlayerIndex + 1 % gameSize;
 
+        LOGGER.log(Level.INFO,"Plus cards for player = {0}, is = {1}", new Object[]{currentPlayer,ret});
 
+        return ret;
     }
 
 
