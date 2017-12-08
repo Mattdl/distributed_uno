@@ -22,7 +22,7 @@ public class AppServer {
     private Lobby lobby;
 
     private void startServer(String ip, int port) {
-        //GameDbService gameDbService = registerClientRMI();
+//        GameDbService gameDbService = registerClientRMI();
         initData();
 
         try {
@@ -53,7 +53,7 @@ public class AppServer {
         //TODO connect with db
     }
 
-    private GameDbService registerClientRMI() {
+/*    private GameDbService registerClientRMI() {
 
         try {
             Registry myRegistry = LocateRegistry.getRegistry(DB_IP, DB_PORT);
@@ -66,7 +66,7 @@ public class AppServer {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
     public static void main(String[] args) {
         String ip = args[0];

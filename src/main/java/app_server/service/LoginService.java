@@ -21,6 +21,7 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
         //TODO decrypt username & password
 
         //TODO check login with database
+        //Get password in plain text from user, hash with salt from database, check with hash from database
         //return null if failed login
 
         //TODO generate token

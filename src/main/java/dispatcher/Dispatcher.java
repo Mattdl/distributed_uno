@@ -3,6 +3,7 @@ package dispatcher;
 
 
 import app_server.AppServer;
+import db_server.DatabaseServer;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -23,6 +24,10 @@ public class Dispatcher {
 
     private void startServer() {
 
+        LOGGER.info("Starting database");
+        //Setup db
+        DatabaseServer.main(new String[0]);
+
         LOGGER.info("Starting server from dispatch");
 
         //Startup one server
@@ -30,7 +35,6 @@ public class Dispatcher {
         serverArgs[0] = STARTING_SERVER_IP;
         serverArgs[1] = String.valueOf(STARTING_SERVER_PORT);
         AppServer.main(serverArgs);
-
 
         //SERVER-SIDE RMI
         try {

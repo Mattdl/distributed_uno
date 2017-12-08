@@ -1,5 +1,8 @@
 package db_server;
 
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.Connection;
@@ -9,7 +12,7 @@ import java.sql.SQLException;
 
 public class DatabaseServer {
 
-    private Connection conn;
+    private ConnectionSource conn;
     private final int PORT = 7000;
 
     private void startServer() {
@@ -40,12 +43,10 @@ public class DatabaseServer {
         String url = "jdbc:sqlite:" + fileName;
 
         try {
-            conn = DriverManager.getConnection(url);
+            conn = new JdbcConnectionSource(url);
 
             if (conn != null) {
-                DatabaseMetaData meta = conn.getMetaData();
-                System.out.println("The driver name is " + meta.getDriverName());
-                System.out.println("A new database has been created.");
+                System.out.println("The database type is " + conn.getDatabaseType().getDatabaseName());
             }
 
         } catch (SQLException e) {

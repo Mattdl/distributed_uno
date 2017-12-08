@@ -1,25 +1,36 @@
 package model;
 
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+@DatabaseTable(tableName = "Player")
 public class Player implements Serializable {
+    @DatabaseField(id = true)
     private String name;
-    private String password;
-    private List<Card> hand;
+    @DatabaseField(canBeNull = false)
+    private String hash;
+    @DatabaseField(dataType = DataType.SERIALIZABLE)
+    private LinkedList<Card> hand;
     private int handSize; //used on server for lightweight Player object
     //private String token;
 
+
+    public Player() {
+    }
 
     public Player(String name) {
         this.name = name;
         this.hand = new LinkedList<>();
     }
 
-    public Player(String name, String password) {
+    public Player(String name, String hash) {
         this.name = name;
-        this.password = password;
         this.hand = new LinkedList<>();
     }
 
@@ -50,11 +61,15 @@ public class Player implements Serializable {
     }
 
     public void setHand(List<Card> hand) {
-        this.hand = hand;
+        this.hand = (LinkedList<Card>) hand;
     }
 
-    public String getPassword() {
-        return password;
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
     }
 
     public boolean equals(Player player) {
@@ -81,7 +96,6 @@ public class Player implements Serializable {
     public String toString() {
         return "Player{" +
                 "name='" + name + '\'' +
-                ", password='" + password + '\'' +
                 ", hand=" + hand +
                 ", handSize=" + handSize +
                 '}';
