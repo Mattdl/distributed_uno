@@ -27,6 +27,7 @@ import model.Card;
 import model.Game;
 import model.Move;
 import model.Player;
+import sun.rmi.runtime.Log;
 
 import java.util.Observable;
 import java.util.Observer;
@@ -264,8 +265,10 @@ public class GameController implements Observer {
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
+    //TODO: check boolean values
 
     public void gameFinished() {
+        LOGGER.log(Level.INFO, "Game finished");
         fetchPlayersInfoService.setGameFinished(true);
         currentPlayerAndCardService.setPlaying(false);
         Stage stage = (Stage) endGameButton.getScene().getWindow();
@@ -297,14 +300,16 @@ public class GameController implements Observer {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+                LOGGER.log(Level.INFO, "updating UI");
                 List<Player> playerList = game.getPlayerList();
 
                 //Check if game hasn't ended
                 if(successfulGameStart) {
                     for (Player player : playerList) {
+                        LOGGER.log(Level.INFO, "Player " + player.getName() + " has " + player.getHandSize() + " cards");
                         if (player.getHandSize() == 0) {
+                            LOGGER.log(Level.WARNING, "EMPTY HAND FOUND");
                             isGameFinished = true;
-                            gameFinished();
                         }
                     }
                 }
