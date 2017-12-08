@@ -28,11 +28,11 @@ public class FetchService extends Service<Void> {
                 //The fetching loop
                 while(online){
 
-                    //TODO RMI call to fetch Game-data
+                    //TODO RMI call to fetch game-data
 
                     LOGGER.log(Level.INFO,"GameData fetch received: {0}");
 
-                    //TODO update Game-model
+                    //TODO update game-model
 
                     //tmp
                     online=false;

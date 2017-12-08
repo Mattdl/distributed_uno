@@ -6,6 +6,9 @@ import javafx.scene.image.Image;
 import java.io.Serializable;
 
 public class Card implements Serializable {
+
+    private static final long serialVersionUID = 8367908553994431734L;
+
     private transient Image image;
     private CardType cardType;
     private CardColor color;

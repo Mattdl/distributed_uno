@@ -46,8 +46,10 @@ public class FetchPlusCardsService extends Service<Void> {
 
                     isSuccessful = cards != null;
 
+                    LOGGER.log(Level.INFO,"ANSWER RECEIVED FOR PLUSCARDS, cards = {0}",cards);
+
                     if (isSuccessful) {
-                        currentGame.addPlayerPlusCards(Main.currentPlayer, cards);
+                        currentGame.addPlayerPlusCards( cards);
                         LOGGER.log(Level.INFO,"Plus cards received from server = {0}",cards);
                     }
                     else{

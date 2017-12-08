@@ -146,13 +146,13 @@ public class GameController implements Observer {
                     if (successfulGameStart) {
                         LOGGER.info("Successful initialization");
 
-                        serverInfoText.setText("Game successfully initialized, all players ready to start!");
+                        serverInfoText.setText("game successfully initialized, all players ready to start!");
                         runGame();
 
                     } else {
                         LOGGER.info("Failed initialization");
 
-                        serverInfoText.setText("Game failed initialization...");
+                        serverInfoText.setText("game failed initialization...");
                     }
                 });
 

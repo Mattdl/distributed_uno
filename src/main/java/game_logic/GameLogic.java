@@ -56,7 +56,7 @@ public class GameLogic {
     }
 
     /**
-     * Processing played move, used by server to update the Game object.
+     * Processing played move, used by server to update the game object.
      *
      * @param game
      * @param move
