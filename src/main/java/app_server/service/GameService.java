@@ -218,13 +218,15 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
             while (!((game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2
                     || game.getLastPlayedCard().getCardType() == Card.CardType.PLUS4)
-                    && game.isPlayerAfterLastPlayer(serverSidePlayer))) {
+                    && game.isPlayerAfterLastPlayer(serverSidePlayer))
+                    || game.getLastPlayedCard().isHasFetchedCards()) {
                 LOGGER.log(Level.INFO,"Nah the notify did not have plus cards for me, just waitin...");
                 wait();
             }
 
             LOGGER.log(Level.INFO,"LEAVING WHILE, last card = {0}",game.getLastPlayedCard());
 
+            game.getLastPlayedCard().setHasFetchedCards(true);
 
             if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2) {
                 LOGGER.info("Fetching PLUS2 playercards.");

@@ -79,7 +79,6 @@ public class GameLogic {
                 case REVERSE:
                     if(game.getGameSize() == 2){
                         game.setCurrentPlayer(game.getNextPlayer(2));
-
                     } else{
                     game.setClockwise(!game.isClockwise());
                     game.setCurrentPlayer(game.getNextPlayer(1));}
@@ -88,15 +87,18 @@ public class GameLogic {
                 case PLUS2:
                     game.drawCards(game.getNextPlayer(1), 2);
                     game.setCurrentPlayer(game.getNextPlayer(2));
+                    game.addMove(new Move(game.getNextPlayer(1),null,true));
                     break;
                 //Next player draws 4 cards and skips turn
                 case PLUS4:
                     game.drawCards(game.getNextPlayer(1), 4);
                     game.setCurrentPlayer(game.getNextPlayer(2));
+                    game.addMove(new Move(game.getNextPlayer(1),null,true));
                     break;
                 //Skips next player
                 case SKIP:
                     game.setCurrentPlayer(game.getNextPlayer(2));
+                    game.addMove(new Move(game.getNextPlayer(1),null,true));
                     break;
                 //Sets next player
                 case NORMAL:

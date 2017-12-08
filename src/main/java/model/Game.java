@@ -275,8 +275,23 @@ public class Game extends Observable implements Serializable {
         moves.add(move);
     }
 
+
+    /**
+     * The passed Move has a color, picked by the user. But in the hand on the server, the color is null.
+     * This when you call the remove method (in removeCard), it wil not find the card, because it's not equal.
+     *
+     * @param move
+     */
     public void removeCardFromPlayerHand(Move move) {
-        move.getPlayer().removeCard(move.getCard());
+        LOGGER.log(Level.INFO,"removeCardFromPlayerHand Move = {0}",move);
+
+
+        boolean foundCard = move.getPlayer().removeCard(move.getCard());
+
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand Move = {0}",move);
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand foundCard = {0}",foundCard);
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand PLAYER HAND = {0}",move.getPlayer().getHand());
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand TARGET CARD = {0}",move.getCard());
 
         setChanged();
         notifyObservers();
