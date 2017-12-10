@@ -20,6 +20,13 @@
             </plugin>
         </plugins>
     </build>
+    <dependencies>
+        <dependency>
+            <groupId>69</groupId>
+            <artifactId>distributed_uno</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
     <properties>
         <slf4jVersion>1.6.1</slf4jVersion>

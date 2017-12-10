@@ -28,7 +28,6 @@ import model.Card;
 import model.Game;
 import model.Move;
 import model.Player;
-import sun.rmi.runtime.Log;
 
 import java.util.Observable;
 import java.util.Observer;

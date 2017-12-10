@@ -1,0 +1,56 @@
+package model;
+
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
+/**
+ * Used for account purposes.
+ *
+ */
+@DatabaseTable(tableName = "User")
+public class User
+{
+    @DatabaseField(id = true)
+    private Player player;
+
+    @DatabaseField(canBeNull = false)
+    private String hash;
+
+    @DatabaseField(canBeNull = false)
+    private String salt;
+
+
+    public User()
+    {
+    }
+
+    public Player getPlayer()
+    {
+        return player;
+    }
+
+    public void setPlayer( Player player )
+    {
+        this.player = player;
+    }
+
+    public String getHash()
+    {
+        return hash;
+    }
+
+    public void setHash( String hash )
+    {
+        this.hash = hash;
+    }
+
+    public String getSalt()
+    {
+        return salt;
+    }
+
+    public void setSalt( String salt )
+    {
+        this.salt = salt;
+    }
+}

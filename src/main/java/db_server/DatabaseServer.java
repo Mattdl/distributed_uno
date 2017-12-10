@@ -3,6 +3,9 @@ package db_server;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.sql.Connection;
@@ -11,6 +14,8 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseServer {
+
+    final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
     private ConnectionSource conn;
     private final int PORT = 7000;
@@ -46,7 +51,7 @@ public class DatabaseServer {
             conn = new JdbcConnectionSource(url);
 
             if (conn != null) {
-                System.out.println("The database type is " + conn.getDatabaseType().getDatabaseName());
+                System.out.println("CONNECTED: The database type is " + conn.getDatabaseType().getDatabaseName());
             }
 
         } catch (SQLException e) {

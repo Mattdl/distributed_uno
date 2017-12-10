@@ -11,12 +11,13 @@ import java.util.List;
 
 @DatabaseTable(tableName = "Player")
 public class Player implements Serializable {
+
     @DatabaseField(id = true)
     private String name;
-    @DatabaseField(canBeNull = false)
-    private String hash;
+
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     private LinkedList<Card> hand;
+
     private int handSize; //used on server for lightweight Player object
     //private String token;
 
@@ -62,14 +63,6 @@ public class Player implements Serializable {
 
     public void setHand(List<Card> hand) {
         this.hand = (LinkedList<Card>) hand;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
     }
 
     public boolean equals(Player player) {
