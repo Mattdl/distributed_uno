@@ -22,14 +22,14 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     public GameDbService(Connection conn) throws RemoteException {
         this.conn = conn;
-        //this. gameDao = DaoManager.createDao(conn, Game.class);
+        //this. gameDao = DaoManager.createDao(conn, game.class);
     }
 
     @Override
     public List<Game> getJoinableGames() throws RemoteException {
 
         //TODO query instead
-        //List<Game> games = gameDao.queryForAll();
+        //List<game> games = gameDao.queryForAll();
 
         return null;
     }

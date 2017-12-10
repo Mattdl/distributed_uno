@@ -109,7 +109,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 return "Could not join the game...";
             }
         } else {
-            return "Game could not be found in the lobby...";
+            return "game could not be found in the lobby...";
         }
     }
 
@@ -136,7 +136,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 lobby.getGameList().remove(gameInLobby);
                 gameUpdated(gameInLobby);
 
-                LOGGER.log(Level.INFO,"Game removed");
+                LOGGER.log(Level.INFO,"game removed");
 
                 return null;
             } else {
@@ -147,12 +147,12 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                     return null;
                 } else {
                     LOGGER.log(Level.INFO,"Player could not be removed");
-                    return "Player could not be found in Game playerlist...";
+                    return "Player could not be found in game playerlist...";
                 }
             }
         } else {
             LOGGER.log(Level.INFO,"Could not find game, gameInLobby is null");
-            return "Game could not be found in the lobby...";
+            return "game could not be found in the lobby...";
         }
     }
 
@@ -166,7 +166,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 wait();
             }
 
-            //TODO only return lightweight version of Game
+            //TODO only return lightweight version of game
             return game;
         } catch (Exception e) {
             e.printStackTrace();
