@@ -3,6 +3,8 @@ package model;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Date;
+
 /**
  * Used for account purposes.
  */
@@ -21,6 +23,11 @@ public class User {
     @DatabaseField(foreign = true)
     private Player player;
 
+    @DatabaseField
+    private String token;
+
+    @DatabaseField
+    private Date tokenExpTime;
 
     public User() {
     }
