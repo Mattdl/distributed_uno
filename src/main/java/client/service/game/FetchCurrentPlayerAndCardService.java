@@ -17,12 +17,12 @@ import java.rmi.registry.Registry;
 public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
     private Game game;
     private boolean isInit;
-    private boolean isPlaying;
+    private boolean isGameFinished;
 
-    public FetchCurrentPlayerAndCardService(Game game, boolean isInit) {
+    public FetchCurrentPlayerAndCardService(Game game, boolean isInit, boolean isGameFinished) {
         this.game = game;
         this.isInit = isInit;
-        isPlaying = true;
+        isGameFinished = isGameFinished;
     }
 
     @Override
@@ -47,14 +47,14 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
                         game.setCurrentPlayer(ret.getPlayer());
                         game.setLastPlayedCard(ret.getCard());
                     }
-                } while (!isInit && isPlaying);
+                } while (!isInit && !isGameFinished);
 
                 return isSuccessful;
             }
         };
     }
 
-    public void setPlaying(boolean playing) {
-        isPlaying = playing;
+    public void setGameFinished(boolean gameFinished) {
+        isGameFinished = gameFinished;
     }
 }

@@ -23,7 +23,7 @@ public class Lobby extends Observable implements Serializable {
         return gameList;
     }
 
-    public synchronized Game findGame(String gameName) {
+    public Game findGame(String gameName) {
 
         int i = 0;
 

@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 public class Model extends Observable{
 
-    //private List<Game> gamesInLobby;
+    //private List<game> gamesInLobby;
 
 
     //To warn LoginController

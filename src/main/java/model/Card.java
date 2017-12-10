@@ -11,6 +11,7 @@ public class Card implements Serializable {
     private CardType cardType;
     private CardColor color;
     private Integer value;
+    private boolean hasFetchedCards;
 
     public Card(Image image, CardType cardType, CardColor color, Integer value) {
         this.image = image;
@@ -37,6 +38,14 @@ public class Card implements Serializable {
 
     public Integer getValue() {
         return value;
+    }
+
+    public boolean isHasFetchedCards() {
+        return hasFetchedCards;
+    }
+
+    public void setHasFetchedCards(boolean hasFetchedCards) {
+        this.hasFetchedCards = hasFetchedCards;
     }
 
     /**

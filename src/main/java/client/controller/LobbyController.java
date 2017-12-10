@@ -75,7 +75,7 @@ public class LobbyController implements Observer {
                 for (Game game : lobby.getGameList()) {
                     vboxEntryList.getChildren().add(createGameEntry(game));
                 }
-                LOGGER.info("Game entries initiated");
+                LOGGER.info("game entries initiated");
 
                 //Set the list to the container view
                 centerContainer.getChildren().clear();

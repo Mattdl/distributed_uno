@@ -5,6 +5,7 @@ import client.Main;
 import client.service.game.CheckPlayersService;
 import client.service.game.FetchCurrentPlayerAndCardService;
 import client.service.game.FetchPlayersInfoService;
+import client.service.game.FetchPlusCardsService;
 import client.service.game.InitService;
 import client.service.game.PlayMoveService;
 import game_logic.GameLogic;
@@ -86,6 +87,8 @@ public class GameController implements Observer {
     private FetchCurrentPlayerAndCardService currentPlayerAndCardService;
 
     private boolean successfulGameStart;
+
+    private FetchPlusCardsService fetchPlusCardsService;
 
     public GameController(Game game) {
         this.game = game;
@@ -175,8 +178,11 @@ public class GameController implements Observer {
         fetchPlayersInfoService = new FetchPlayersInfoService(game, false, false);
         fetchPlayersInfoService.start();
 
-        currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false);
+        currentPlayerAndCardService = new FetchCurrentPlayerAndCardService(game, false,false);
         currentPlayerAndCardService.start();
+
+        fetchPlusCardsService = new FetchPlusCardsService(game, false);
+        fetchPlusCardsService.start();
     }
 
     /**
@@ -265,12 +271,13 @@ public class GameController implements Observer {
     }
 
     //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
-    //TODO: check boolean values
 
     public void gameFinished() {
         LOGGER.log(Level.INFO, "Game finished");
         fetchPlayersInfoService.setGameFinished(true);
-        currentPlayerAndCardService.setPlaying(false);
+        currentPlayerAndCardService.setGameFinished(true);
+        fetchPlusCardsService.setGameFinished(true);
+
         Stage stage = (Stage) endGameButton.getScene().getWindow();
         switchToWinnerScene(stage, null);
         game.deleteObservers();

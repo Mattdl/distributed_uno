@@ -1,6 +1,7 @@
 package model;
 
 import app_server.DeckBuilder;
+import client.Main;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
@@ -274,8 +275,23 @@ public class Game extends Observable implements Serializable {
         moves.add(move);
     }
 
+
+    /**
+     * The passed Move has a color, picked by the user. But in the hand on the server, the color is null.
+     * This when you call the remove method (in removeCard), it wil not find the card, because it's not equal.
+     *
+     * @param move
+     */
     public void removeCardFromPlayerHand(Move move) {
-        move.getPlayer().removeCard(move.getCard());
+        LOGGER.log(Level.INFO,"removeCardFromPlayerHand Move = {0}",move);
+
+
+        boolean foundCard = move.getPlayer().removeCard(move.getCard());
+
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand Move = {0}",move);
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand foundCard = {0}",foundCard);
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand PLAYER HAND = {0}",move.getPlayer().getHand());
+        LOGGER.log(Level.INFO,"AFTER removeCardFromPlayerHand TARGET CARD = {0}",move.getCard());
 
         setChanged();
         notifyObservers();
@@ -335,8 +351,77 @@ public class Game extends Observable implements Serializable {
         deck.add(move.getCard());
     }
 
+    /**
+     * A Move may be a 'draw_card' or a 'played card'
+     *
+     * @return
+     */
     public Move getLastMove() {
         return moves.get(moves.size() - 1);
+    }
+
+    /**
+     * Finds the last played move that is not a Drawn Card move.
+     *
+     * @return
+     */
+    public Move getLastPlayedMove() {
+        int i = moves.size() - 1;
+
+        while (i >= 0) {
+            Move move = moves.get(i);
+            if (!move.isHasDrawnCard() && move.getCard() != null) {
+                LOGGER.log(Level.INFO, "Last played move is on deck is {0}", move);
+                return move;
+            }
+            i--;
+        }
+
+        LOGGER.log(Level.SEVERE, "No last played card found!!");
+
+        return null;
+    }
+
+
+
+    public void addPlayerPlusCards(List<Card> cards) {
+
+        LOGGER.log(Level.INFO,"Adding plus cards in CLIENT BACKEND, player = {0}, cards = {1}",new Object[]{currentPlayer,cards});
+
+        Main.currentPlayer.addCards(cards);
+
+        LOGGER.log(Level.INFO,"addPlayerPlusCards Finished");
+
+
+        setChanged();
+        notifyObservers();
+    }
+
+    /**
+     * Checks if the currentPlayer is the turn after the last played player.
+     * Can be used to assign plus-cards to the currentPlayer
+     *
+     * @param currentPlayer
+     * @return
+     */
+    public boolean isPlayerAfterLastPlayer(Player currentPlayer) {
+
+        int currentPlayerIndex = playerList.indexOf(currentPlayer);
+
+        //Get last player of a move, NOT a drawcard
+        Player lastPlayer = getLastPlayedMove().getPlayer();
+
+        if (lastPlayer == null) {
+            return false;
+        }
+
+        int lastPlayerIndex = playerList.indexOf(lastPlayer);
+
+        boolean ret = currentPlayerIndex == lastPlayerIndex + 1 % gameSize;
+
+        LOGGER.log(Level.INFO, "Plus cards for player = {0}, is = {1}", new Object[]{currentPlayer, ret});
+
+        return ret;
     }
 
 
@@ -445,7 +530,7 @@ public class Game extends Observable implements Serializable {
 
     @Override
     public String toString() {
-        return "Game{" +
+        return "game{" +
                 "state=" + state +
                 ", clockwise=" + clockwise +
                 ", playerList=" + playerList +

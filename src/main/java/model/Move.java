@@ -18,6 +18,12 @@ public class Move implements Serializable {
         this.hasDrawnCard = false;
     }
 
+    public Move(Player player, Card card, boolean hasDrawnCard) {
+        this.player = player;
+        this.card = card;
+        this.hasDrawnCard = hasDrawnCard;
+    }
+
     public Player getPlayer() {
         return player;
     }
@@ -50,5 +56,14 @@ public class Move implements Serializable {
     public void setDrawnCard(Card drawnCard) {
         this.card = drawnCard;
         hasDrawnCard = true;
+    }
+
+    @Override
+    public String toString() {
+        return "Move{" +
+                "player=" + player +
+                ", card=" + card +
+                ", hasDrawnCard=" + hasDrawnCard +
+                '}';
     }
 }

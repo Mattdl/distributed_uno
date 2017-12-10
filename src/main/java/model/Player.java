@@ -76,8 +76,19 @@ public class Player implements Serializable {
         return this.name.equals(player.name);
     }
 
-    public void removeCard(Card card){
-        hand.remove(card);
+    /**
+     * Checks are for bugfix
+     * Zie Game.removeCardFromPlayerHand()
+     *
+     * @param card
+     * @return
+     */
+    public boolean removeCard(Card card){
+        boolean successfull = hand.remove(card);
+        if(!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)){
+            successfull = hand.remove(new Card(null,card.getCardType(),null,card.getValue()));
+        }
+        return successfull;
     }
 
     public int handListSize(){
@@ -99,5 +110,9 @@ public class Player implements Serializable {
                 ", hand=" + hand +
                 ", handSize=" + handSize +
                 '}';
+    }
+
+    public void addCards(List<Card> cards) {
+        hand.addAll(cards);
     }
 }
