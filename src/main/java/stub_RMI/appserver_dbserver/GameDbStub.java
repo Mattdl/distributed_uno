@@ -14,4 +14,6 @@ public interface GameDbStub extends Remote {
     boolean persistMove(String gameName, Move move) throws RemoteException;
     boolean persistPlayer(String gameName, Player player) throws RemoteException;
 
+    Game fetchGame(String gameName) throws RemoteException;
+
 }

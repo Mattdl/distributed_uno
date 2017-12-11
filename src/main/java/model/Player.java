@@ -64,7 +64,7 @@ public class Player implements Serializable {
     }
 
     public List<Card> getHand() {
-        return (List) hand;
+        return (List<Card>) hand;
     }
 
     public boolean hasHand(){

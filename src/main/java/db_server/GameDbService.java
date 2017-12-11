@@ -4,6 +4,7 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import model.Game;
+import model.Move;
 import model.Player;
 import stub_RMI.appserver_dbserver.GameDbStub;
 
@@ -30,4 +31,35 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         //this. gameDao = DaoManager.createDao(conn, Game.class);
     }
 
+    @Override
+    public boolean persistGame(Game game) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public boolean persistMove(String gameName, Move move) throws RemoteException {
+
+        try {
+            Game game = gameDao.queryForId(gameName);
+
+            game.addMove(move);
+
+            gameDao.update(game);
+
+        }catch (SQLException e){
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean persistPlayer(String gameName, Player player) throws RemoteException {
+        return false;
+    }
+
+    @Override
+    public Game fetchGame(String gameName) throws RemoteException {
+        return null;
+    }
 }
