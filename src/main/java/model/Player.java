@@ -8,6 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,17 +18,16 @@ public class Player implements Serializable {
     @DatabaseField(id = true)
     private String name;
 
+    /*
     //May be serializable, because we won't persist Cards by themself
     @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private List<Card> hand;
+    */
+    @ForeignCollectionField(eager = false)
+    private Collection<Card> hand = new LinkedList<Card>();
 
     @DatabaseField
     private int score; //The total score over all games of the player
 
-    /* Otherwise:
-    @ForeignCollectionField(eager = false)
-    ForeignCollection<Card> handdB;
-    */
 
     private int handSize; //used on server for lightweight Player object
 
@@ -64,7 +64,7 @@ public class Player implements Serializable {
     }
 
     public List<Card> getHand() {
-        return hand;
+        return (List) hand;
     }
 
     public boolean hasHand(){

@@ -6,6 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @DatabaseTable
 public class Card implements Serializable {
@@ -22,12 +23,12 @@ public class Card implements Serializable {
     private CardColor color;
 
     @DatabaseField
-    private Integer value;
+    private int value; //TODO, changed from Integer to int => Bugchecking
 
     @DatabaseField
     private boolean hasFetchedCards;
 
-    public Card(Image image, CardType cardType, CardColor color, Integer value) {
+    public Card(Image image, CardType cardType, CardColor color, int value) {
         this.image = image;
         this.cardType = cardType;
         this.color = color;
@@ -88,20 +89,19 @@ public class Card implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Card card = (Card) o;
-
-        if (cardType != card.cardType) return false;
-        if (color != card.color) return false;
-        return value != null ? value.equals(card.value) : card.value == null;
+        return id == card.id &&
+                value == card.value &&
+                hasFetchedCards == card.hasFetchedCards &&
+                Objects.equals(image, card.image) &&
+                cardType == card.cardType &&
+                color == card.color;
     }
 
     @Override
     public int hashCode() {
-        int result = cardType != null ? cardType.hashCode() : 0;
-        result = 31 * result + (color != null ? color.hashCode() : 0);
-        result = 31 * result + (value != null ? value.hashCode() : 0);
-        return result;
+
+        return Objects.hash(id, image, cardType, color, value, hasFetchedCards);
     }
 
     @Override

@@ -1,5 +1,8 @@
 package model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.io.Serializable;
 
 /**
@@ -7,9 +10,19 @@ import java.io.Serializable;
  * If the hasDrawnCard attribute is true, this means that the card attribute represents the Card that is drawn from the
  * deck by the player.
  */
+@DatabaseTable
 public class Move implements Serializable {
+
+    @DatabaseField(generatedId = true)
+    private int id;
+
+    @DatabaseField(canBeNull = false, foreign = true)
     private Player player;
+
+    @DatabaseField(canBeNull = true, foreign = true)
     private Card card;
+
+    @DatabaseField
     private boolean hasDrawnCard;
 
     public Move(Player player, Card card) {
