@@ -1,16 +1,30 @@
 package model;
 
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 import javafx.scene.image.Image;
 
 import java.io.Serializable;
 
+@DatabaseTable
 public class Card implements Serializable {
 
+    @DatabaseField(generatedId = true)
+    private int id;
+
     private transient Image image;
+
+    @DatabaseField
     private CardType cardType;
+
+    @DatabaseField
     private CardColor color;
+
+    @DatabaseField
     private Integer value;
+
+    @DatabaseField
     private boolean hasFetchedCards;
 
     public Card(Image image, CardType cardType, CardColor color, Integer value) {
