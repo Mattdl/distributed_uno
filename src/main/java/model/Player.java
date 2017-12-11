@@ -1,7 +1,9 @@
 package model;
 
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
@@ -9,17 +11,25 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-@DatabaseTable(tableName = "Player")
+@DatabaseTable
 public class Player implements Serializable {
 
     @DatabaseField(id = true)
     private String name;
 
+    //May be serializable, because we won't persist Cards by themself
     @DatabaseField(dataType = DataType.SERIALIZABLE)
-    private LinkedList<Card> hand;
+    private List<Card> hand;
+
+    @DatabaseField
+    private int score; //The total score over all games of the player
+
+    /* Otherwise:
+    @ForeignCollectionField(eager = false)
+    ForeignCollection<Card> handdB;
+    */
 
     private int handSize; //used on server for lightweight Player object
-    //private String token;
 
 
     public Player() {
@@ -62,7 +72,7 @@ public class Player implements Serializable {
     }
 
     public void setHand(List<Card> hand) {
-        this.hand = (LinkedList<Card>) hand;
+        this.hand = hand;
     }
 
     public boolean equals(Player player) {
