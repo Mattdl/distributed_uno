@@ -1,8 +1,15 @@
 package db_server;
 
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
+import com.j256.ormlite.table.TableUtils;
+import model.Card;
+import model.Game;
+import model.Move;
+import model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,9 +27,14 @@ public class DatabaseServer {
     private ConnectionSource conn;
     private final int PORT = 7000;
 
+    private String databaseUrl;
+
+    private Dao<Game, String> gameDao;
+    private Dao<Move, String> moveDao;
+
     private void startServer() {
 
-        initDb("uno.db");
+        initDb("uno"+PORT+".db");
 
         if(conn!=null){
             //Init RMI services
@@ -32,7 +44,7 @@ public class DatabaseServer {
 
                 //Bind RMI implementations to service names
                 registry.rebind("UserDbService", new UserDbService());
-                registry.rebind("GameDbService", new GameDbService(conn));
+                registry.rebind("GameDbService", new GameDbService(gameDao,moveDao));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -45,17 +57,30 @@ public class DatabaseServer {
 
     private void initDb(String fileName) {
 
-        String url = "jdbc:sqlite:" + fileName;
+        databaseUrl = "jdbc:sqlite:" + fileName;
 
         try {
-            conn = new JdbcConnectionSource(url);
+            conn = new JdbcConnectionSource(databaseUrl);
 
-            if (conn != null) {
-                System.out.println("CONNECTED: The database type is " + conn.getDatabaseType().getDatabaseName());
-            }
+            LOGGER.info("Connection established to {}",databaseUrl);
+
+            //INIT DAO's
+            moveDao = DaoManager.createDao(conn, Move.class);
+            gameDao = DaoManager.createDao(conn, Game.class);
+
+            //CREATE TABLES
+            TableUtils.createTable(conn,Game.class);
+            TableUtils.createTable(conn, Card.class);
+            TableUtils.createTable(conn, Move.class);
+            TableUtils.createTable(conn, Player.class);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());
+        }finally {
+            if (conn != null) {
+                LOGGER.info("Database Created with all tables!");
+                conn.closeQuietly();
+            }
         }
     }
 

@@ -19,16 +19,15 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     private ConnectionSource conn;
     private Dao<Game, String> gameDao;
-    private Dao<Player, String> playerDao;
+    private Dao<Move, String> moveDao;
 
     public GameDbService() throws RemoteException {
 
     }
 
-    public GameDbService(ConnectionSource conn) throws RemoteException, SQLException {
-        this.conn = conn;
-        this.playerDao = DaoManager.createDao(conn, Player.class);
-        //this. gameDao = DaoManager.createDao(conn, Game.class);
+    public GameDbService(Dao<Game, String> gameDao, Dao<Move, String> moveDao) throws RemoteException{
+        this.moveDao = moveDao;
+        this. gameDao = gameDao;
     }
 
     @Override
