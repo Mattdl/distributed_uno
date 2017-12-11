@@ -58,7 +58,7 @@ public class DeckBuilder {
                             LOGGER.info("Error loading card image :" + "/textures/" + cardType + ".png");
                         }
                         //LOGGER.log(Level.INFO,"Creating PLUS4/COLOR card");
-                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, null, null));
+                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, null, -1));
                     }
 
                     if (cardType == Card.CardType.PLUS2 || cardType == Card.CardType.SKIP || cardType == Card.CardType.REVERSE) {
@@ -68,7 +68,7 @@ public class DeckBuilder {
                             LOGGER.info("Error loading card image : " + "/textures/" + cardType + "_" + color + ".png");
                         }
                         //LOGGER.log(Level.INFO, "Creating special card: " + cardType.toString() + ", " + color.toString());
-                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, color, null));
+                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, color, -1));
                     }
                 }
             }

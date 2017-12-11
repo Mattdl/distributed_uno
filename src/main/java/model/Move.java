@@ -25,6 +25,9 @@ public class Move implements Serializable {
     @DatabaseField
     private boolean hasDrawnCard;
 
+    public Move() {
+    }
+
     public Move(Player player, Card card) {
         this.player = player;
         this.card = card;
