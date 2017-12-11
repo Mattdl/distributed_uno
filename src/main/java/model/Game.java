@@ -41,9 +41,10 @@ public class Game extends Observable implements Serializable {
     @ForeignCollectionField(eager = false)
     private Collection<Move> moves;
 
-    //@DatabaseField
+    @DatabaseField
     private int gameSize;
 
+    @DatabaseField
     private int joinedPlayers;
 
     private int version;
@@ -51,6 +52,10 @@ public class Game extends Observable implements Serializable {
     private Player currentPlayer;
 
     //private String password;
+
+
+    public Game() {
+    }
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
         this.gameName = gameName;

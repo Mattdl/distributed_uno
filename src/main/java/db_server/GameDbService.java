@@ -58,6 +58,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         return false;
     }
 
+    /**
+     * Method used to restore a Game, when the appServer has crashed.
+     *
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public Game fetchGame(String gameName) throws RemoteException {
         return null;

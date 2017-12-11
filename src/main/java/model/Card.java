@@ -28,6 +28,9 @@ public class Card implements Serializable {
     @DatabaseField
     private boolean hasFetchedCards;
 
+    public Card() {
+    }
+
     public Card(Image image, CardType cardType, CardColor color, int value) {
         this.image = image;
         this.cardType = cardType;
