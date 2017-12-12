@@ -1,5 +1,6 @@
 package app_server.service;
 
+import db_server.GameDbService;
 import game_logic.GameLogic;
 import model.Card;
 import model.Game;
@@ -25,9 +26,14 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     private Lobby lobby;
     //private GameDbService gameDbService;
 
-    public GameService(Lobby lobby) throws RemoteException {
+    //RMI
+    private GameDbService gameDbService;
+
+
+    public GameService(Lobby lobby, GameDbService gameDbService) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
+        this.gameDbService = gameDbService;
     }
 
     /**
