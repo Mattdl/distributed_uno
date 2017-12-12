@@ -31,12 +31,28 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     @Override
-    public boolean persistGame(Game game) throws RemoteException {
-        return false;
+    public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
+
+        try {
+            Game gameInDb = gameDao.queryForId(gameToPersist.getGameName());
+
+            if(gameInDb == null){
+                gameDao.create(gameToPersist);
+            }
+            else{
+                gameDao.update(gameToPersist);
+            }
+
+        }catch (SQLException e){
+            e.printStackTrace();
+            return false;
+        }
+
+        return true;
     }
 
     @Override
-    public boolean persistMove(String gameName, Move move) throws RemoteException {
+    public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
 
         try {
             Game game = gameDao.queryForId(gameName);
@@ -47,13 +63,14 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         }catch (SQLException e){
             e.printStackTrace();
+            return false;
         }
 
-        return false;
+        return true;
     }
 
     @Override
-    public boolean persistPlayer(String gameName, Player player) throws RemoteException {
+    public synchronized boolean persistPlayer(String gameName, Player player) throws RemoteException {
         return false;
     }
 
@@ -65,7 +82,15 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      * @throws RemoteException
      */
     @Override
-    public Game fetchGame(String gameName) throws RemoteException {
+    public synchronized Game fetchGame(String gameName) throws RemoteException {
+        try{
+            Game game = gameDao.queryForId(gameName);
+
+            return game;
+        }catch(SQLException e){
+            e.printStackTrace();
+        }
+
         return null;
     }
 }

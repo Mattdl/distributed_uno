@@ -22,7 +22,9 @@ public class AppServer {
     private Lobby lobby;
 
     private void startServer(String ip, int port) {
-//        GameDbService gameDbService = registerClientRMI();
+
+        GameDbService gameDbService = registerAsClientWithDatabase(DB_IP, DB_PORT);
+
         initData();
 
         try {
@@ -46,17 +48,22 @@ public class AppServer {
     }
 
     /**
-     * Method to initialise a new lobby, must be filled with games later on from database
+     * Method to initialise a new lobby. Init objects in this
      */
     private void initData() {
         lobby = new Lobby(0);
-        //TODO connect with db
     }
 
-/*    private GameDbService registerClientRMI() {
+
+    /**
+     * This app server is an RMI client of the databse, to persist/retrieve games.
+     *
+     * @return
+     */
+    private GameDbService registerAsClientWithDatabase(String dbIP, int dbPort) {
 
         try {
-            Registry myRegistry = LocateRegistry.getRegistry(DB_IP, DB_PORT);
+            Registry myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
             GameDbService gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
 
@@ -66,7 +73,7 @@ public class AppServer {
             e.printStackTrace();
         }
         return null;
-    }*/
+    }
 
     public static void main(String[] args) {
         String ip = args[0];
