@@ -5,6 +5,7 @@ import app_server.service.GameService;
 import app_server.service.LobbyService;
 import app_server.service.LoginService;
 import db_server.GameDbService;
+import db_server.UserDbService;
 import model.Lobby;
 
 import java.rmi.RemoteException;
@@ -16,14 +17,23 @@ public class AppServer {
 
     private static final Logger LOGGER = Logger.getLogger(AppServer.class.getName());
 
+    //TODO outcomment this, dbIP mus tbe provided by the dispatcher, if connection is lost to db, dispatcher must be contacted
     final String DB_IP = "localhost";
     final int DB_PORT = 1200;
+
+    private final String DISPATCHER_IP = "localhost";
+    private final int DISPATCHER_PORT = 1099;
+
+    private GameDbService gameDbService;
+    private UserDbService userDbService;
+
 
     private Lobby lobby;
 
     private void startServer(String ip, int port) {
 
-        GameDbService gameDbService = registerAsClientWithDatabase(DB_IP, DB_PORT);
+        registerAsClientWithDatabase(DB_IP, DB_PORT);
+        registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
 
         initData();
 
@@ -33,7 +43,7 @@ public class AppServer {
             //Bind RMI implementations to service names
             registry.rebind("LoginService", new LoginService());
 
-            registry.rebind("GameService", new GameService(lobby));
+            registry.rebind("GameService", new GameService(lobby, gameDbService));
 
             registry.rebind("GameLobbyService", new GameLobbyService(lobby));
 
@@ -45,6 +55,25 @@ public class AppServer {
 
 
         LOGGER.info("system is ready");
+    }
+
+    private void registerAsClientWithDispatcher(String dispatcherIp, int dispatcherPort) {
+        Registry myRegistry = null;
+
+        try {
+            myRegistry = LocateRegistry.getRegistry(dispatcherIp, dispatcherPort);
+
+            gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            //TODO if no connetion, ask dispatcher for new dbIP+port
+        }
+
+        if(myRegistry == null || gameDbService == null || userDbService == null){
+            //TODO if no connetion, ask dispatcher for new dbIP+por
+            LOGGER.warning("APPSERVER COULD NOT CONNECT TO DATABASE");
+        }
     }
 
     /**
@@ -60,19 +89,24 @@ public class AppServer {
      *
      * @return
      */
-    private GameDbService registerAsClientWithDatabase(String dbIP, int dbPort) {
+    private void registerAsClientWithDatabase(String dbIP, int dbPort) {
+        Registry myRegistry = null;
 
         try {
-            Registry myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
+            myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
-            GameDbService gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
-
-            return gameDbService;
+            gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
+            userDbService = (UserDbService) myRegistry.lookup("UserDbService");
 
         } catch (Exception e) {
             e.printStackTrace();
+            //TODO if no connetion, ask dispatcher for new dbIP+port
         }
-        return null;
+
+        if(myRegistry == null || gameDbService == null || userDbService == null){
+            //TODO if no connetion, ask dispatcher for new dbIP+por
+            LOGGER.warning("APPSERVER COULD NOT CONNECT TO DATABASE");
+        }
     }
 
     public static void main(String[] args) {
