@@ -130,6 +130,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         return null;
     }
 
+
     /**
      * RMI call to give back the list of players and their updated values.
      *
@@ -273,6 +274,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         return null;
     }
 
+    //TODO persist move to database
     private synchronized Card updateGame(Game game, Move move) {
         LOGGER.info("Entering updateGame");
 

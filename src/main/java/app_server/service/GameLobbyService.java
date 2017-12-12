@@ -36,6 +36,8 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                 wait();
             }
             else{
+                //TODO persist Game to database
+
                 notifyAll();
             }
             return true;
