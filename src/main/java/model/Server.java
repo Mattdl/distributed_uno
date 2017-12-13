@@ -11,6 +11,11 @@ public class Server implements Serializable {
         port = -1;
     }
 
+    public Server(String ip, int port) {
+        this.ip = ip;
+        this.port = port;
+    }
+
     public String getIp() {
         return ip;
     }

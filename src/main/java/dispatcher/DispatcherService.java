@@ -5,7 +5,6 @@ import stub_RMI.client_dispatcher.DispatcherStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -18,11 +17,10 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
     private List<Server> dbServers;
 
 
-    public DispatcherService() throws RemoteException {
-        appServers = new ArrayList<>();
-        dbServers = new ArrayList<>();
+    public DispatcherService(List<Server> appServers, List<Server> dbServers) throws RemoteException {
+        this.appServers = appServers;
+        this.dbServers = dbServers;
     }
-
 
     /**
      * Method called by every new client
@@ -34,8 +32,8 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         LOGGER.info("retrieveServerInfo");
 
         Server server = new Server();
-        server.setIp(Dispatcher.STARTING_SERVER_IP);
-        server.setPort(Dispatcher.STARTING_SERVER_PORT);
+        server.setIp(Dispatcher.STARTING_APPSERVER_IP);
+        server.setPort(Dispatcher.STARTING_APPSERVER_PORT);
 
         return server;
     }
@@ -51,8 +49,8 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         LOGGER.info("retrieveActiveDatabaseInfo");
 
         Server server = new Server();
-        server.setIp(Dispatcher.STARTING_SERVER_IP);
-        server.setPort(Dispatcher.STARTING_SERVER_PORT);
+        server.setIp(Dispatcher.STARTING_APPSERVER_IP);
+        server.setPort(Dispatcher.STARTING_APPSERVER_PORT);
 
         return server;
     }

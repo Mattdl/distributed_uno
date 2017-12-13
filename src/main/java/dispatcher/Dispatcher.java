@@ -1,28 +1,49 @@
 package dispatcher;
 
 
-
 import app_server.AppServer;
 import db_server.DatabaseServer;
+import model.Server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Logger;
 
 public class Dispatcher {
 
-    private static final Logger LOGGER = Logger.getLogger( Dispatcher.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
 
-
+    // DISPATCHER
     private final int DISPATCHER_PORT = 1099;
 
-    public static final int STARTING_SERVER_PORT = 1100;
-    public static final String STARTING_SERVER_IP = "localhost";
+    // APP SERVERS
+    public static final int STARTING_APPSERVER_PORT = 1100;
+    public static final String STARTING_APPSERVER_IP = "localhost";
 
+    // DB SERVERS
+    private final int DB_SERVER_COUNT = 1;
+    public static final int STARTING_DBSERVER_PORT = 7000;
+    public static final String STARTING_DBSERVER_IP = "localhost";
 
-    //private List<Server> onlineServers;
+    private List<Server> appServers;
+    private List<Server> dbServers;
 
-    private void startServer() {
+    private void init() {
+        initDbServers(DB_SERVER_COUNT);
+
+    }
+
+    private void initDbServers(int dbServerCount) {
+        dbServers = new ArrayList<>();
+
+        for (int i = 0; i < dbServerCount; i++) {
+            dbServers.add(new Server(STARTING_DBSERVER_IP,STARTING_DBSERVER_PORT + i));
+        }
+    }
+
+    private void startAppServer() {
 
         LOGGER.info("Starting database");
         //Setup db
@@ -32,8 +53,8 @@ public class Dispatcher {
 
         //Startup one server
         String[] serverArgs = new String[2];
-        serverArgs[0] = STARTING_SERVER_IP;
-        serverArgs[1] = String.valueOf(STARTING_SERVER_PORT);
+        serverArgs[0] = STARTING_APPSERVER_IP;
+        serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
         AppServer.main(serverArgs);
 
         //SERVER-SIDE RMI
@@ -55,6 +76,6 @@ public class Dispatcher {
     }
 
     public static void main(String[] args) {
-        new Dispatcher().startServer();
+        new Dispatcher().init();
     }
 }
