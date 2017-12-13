@@ -37,7 +37,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     /**
-     * Called once at creation of the Game on the AppServer.
+     * Called once at creation of the Game on the ApplicationServer.
      * Be careful when you call this multiple times! The previous Game will be updated and Players will keep the cards
      * of the previous init call!
      *

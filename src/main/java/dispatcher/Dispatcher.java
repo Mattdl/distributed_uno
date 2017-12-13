@@ -3,6 +3,8 @@ package dispatcher;
 
 import app_server.AppServer;
 import db_server.DatabaseServer;
+import model.ApplicationServer;
+import model.DbServer;
 import model.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +26,14 @@ public class Dispatcher {
     public static final String STARTING_APPSERVER_IP = "localhost";
 
     // DB SERVERS
-    private final int DB_SERVER_COUNT = 1;
+    private final int DB_SERVER_COUNT = 3;
     public static final int STARTING_DBSERVER_PORT = 7000;
     public static final String STARTING_DBSERVER_IP = "localhost";
     public static final int DEFAULT_MAX_GAME_LOAD_APPSERVER = 2;
 
 
-    private List<Server> appServers;
-    private List<Server> dbServers;
+    static List<ApplicationServer> appServers;
+    static List<DbServer> dbServers;
 
     private void init() {
         LOGGER.info("DISPATCHER STARTING setup");
@@ -49,10 +51,9 @@ public class Dispatcher {
 
         // Start servers
         startDbServers();
-        startAppServers();
+        startInitAppServer();
 
         LOGGER.info("DISPATCHER FINISHED startups");
-
     }
 
     /**
@@ -68,7 +69,7 @@ public class Dispatcher {
             Registry registry = LocateRegistry.createRegistry(DISPATCHER_PORT);
 
             // create a new service for the Clients
-            registry.rebind("DispatcherService", new DispatcherService(appServers, dbServers));
+            registry.rebind("DispatcherService", new DispatcherService());
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -76,11 +77,11 @@ public class Dispatcher {
     }
 
     /**
-     * Init the first AppServer, if server gets overloaded, it requests the Dispatcher for new AppServers
+     * Init the first ApplicationServer, if server gets overloaded, it requests the Dispatcher for new AppServers
      */
     private void initInitialAppServer() {
         appServers = new ArrayList<>();
-        appServers.add(new Server(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
+        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
     }
 
     /**
@@ -92,7 +93,7 @@ public class Dispatcher {
         dbServers = new ArrayList<>();
 
         for (int i = 0; i < dbServerCount; i++) {
-            dbServers.add(new Server(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT + i));
+            dbServers.add(new DbServer(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT + i));
         }
     }
 
@@ -137,20 +138,23 @@ public class Dispatcher {
         return ret;
     }
 
-    private void startAppServers() {
+    /**
+     * Only startup one app-server! If load is exceeded, other appServers are started by request of the appServer.
+     */
+    private void startInitAppServer() {
 
-        for (Server appServer : appServers) {
-            LOGGER.info("Starting AppServer from dispatch, AppServer = {}", appServer);
+        ApplicationServer appServer = appServers.get(0);
+        LOGGER.info("Starting ApplicationServer from dispatch, ApplicationServer = {}", appServer);
 
-            String[] serverArgs = new String[5];
-            serverArgs[0] = STARTING_APPSERVER_IP;
-            serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
-            serverArgs[2] = STARTING_DBSERVER_IP;
-            serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
-            serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+        String[] serverArgs = new String[5];
+        serverArgs[0] = STARTING_APPSERVER_IP;
+        serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
+        serverArgs[2] = STARTING_DBSERVER_IP;
+        serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
+        serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
 
-            AppServer.main(serverArgs);
-        }
+        AppServer.main(serverArgs);
+
     }
 
     public static void main(String[] args) {

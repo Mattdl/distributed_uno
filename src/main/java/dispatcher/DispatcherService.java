@@ -13,13 +13,7 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
 
     private static final Logger LOGGER = Logger.getLogger(DispatcherService.class.getName());
 
-    private List<Server> appServers;
-    private List<Server> dbServers;
-
-
-    public DispatcherService(List<Server> appServers, List<Server> dbServers) throws RemoteException {
-        this.appServers = appServers;
-        this.dbServers = dbServers;
+    public DispatcherService() throws RemoteException {
     }
 
     /**

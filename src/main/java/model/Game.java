@@ -61,7 +61,7 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
-     * Used at AppServer to instantiate a new game (with unique id)
+     * Used at ApplicationServer to instantiate a new game (with unique id)
      * @param gameName
      * @param gameSize
      * @param initialPlayer

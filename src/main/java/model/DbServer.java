@@ -10,14 +10,20 @@ public class DbServer extends Server {
     private GameDbStub gameDbStubs;
     private UserDbStub userDbStubs;
 
+    // Used by Dispatcher
+    private List<Server> assignedAppServers;
+
     public DbServer(String ip, int port) {
         super(ip, port);
+        assignedAppServers = new LinkedList<>();
     }
 
     public DbServer(String ip, int port, GameDbStub gameDbStubs, UserDbStub userDbStubs) {
         super(ip, port);
         this.gameDbStubs = gameDbStubs;
         this.userDbStubs = userDbStubs;
+        assignedAppServers = new LinkedList<>();
+
     }
 
     public GameDbStub getGameDbStubs() {
@@ -38,6 +44,14 @@ public class DbServer extends Server {
 
     public boolean isConnected(){
         return gameDbStubs != null && userDbStubs != null;
+    }
+
+    public List<Server> getAssignedAppServers() {
+        return assignedAppServers;
+    }
+
+    public void setAssignedAppServers(List<Server> assignedAppServers) {
+        this.assignedAppServers = assignedAppServers;
     }
 
     @Override

@@ -50,7 +50,7 @@ public class LoginController {
                     //connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
                 }
             } else {
-                LOGGER.warning("AppServer info is null!");
+                LOGGER.warning("ApplicationServer info is null!");
             }
 
             //Check if retrieved info has valid connection
