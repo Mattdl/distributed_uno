@@ -4,10 +4,13 @@ import app_server.service.GameLobbyService;
 import app_server.service.GameService;
 import app_server.service.LobbyService;
 import app_server.service.LoginService;
+import db_server.DatabaseServer;
 import db_server.GameDbService;
 import db_server.UserDbService;
 import dispatcher.DispatcherService;
 import model.Lobby;
+import model.Server;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
@@ -16,7 +19,7 @@ import java.util.logging.Logger;
 
 public class AppServer {
 
-    private static final Logger LOGGER = Logger.getLogger(AppServer.class.getName());
+    final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
     private static String dbIp;
     private static int dbPort;
@@ -69,8 +72,9 @@ public class AppServer {
             dispatcherService = (DispatcherService) myRegistry.lookup("DispatcherService");
 
         }catch(ConnectException ce){
-            LOGGER.warning("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
+            LOGGER.warn("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
             //TODO if no connetion, try again after some time
+            retrieveNewDatabaseInfo();
 
         }
         catch (Exception e) {
@@ -79,8 +83,28 @@ public class AppServer {
 
         if(myRegistry == null || gameDbService == null || userDbService == null){
             //TODO if no connetion, ask dispatcher for new dbIP+por
-            LOGGER.warning("APPSERVER COULD NOT CONNECT TO DATABASE");
+            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DATABASE");
         }
+    }
+
+    /**
+     * RMI call to Dispatcher to retrieve new database info
+     */
+    private void retrieveNewDatabaseInfo() {
+        try {
+            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER");
+            Server server = dispatcherService.retrieveActiveDatabaseInfo();
+
+            LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}",server);
+
+            dbPort = server.getPort();
+            dbIp = server.getIp();
+
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        LOGGER.info("Leaving retrieveNewDatabaseInfo on APPSERVER");
     }
 
     /**
@@ -112,7 +136,7 @@ public class AppServer {
 
         if(myRegistry == null || gameDbService == null || userDbService == null){
             //TODO if no connetion, ask dispatcher for new dbIP+por
-            LOGGER.warning("APPSERVER COULD NOT CONNECT TO DATABASE");
+            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DATABASE");
         }
     }
 
