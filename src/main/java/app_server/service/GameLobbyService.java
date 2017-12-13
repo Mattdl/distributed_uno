@@ -1,5 +1,6 @@
 package app_server.service;
 
+import db_server.GameDbService;
 import model.Game;
 import model.Lobby;
 import stub_RMI.client_appserver.GameLobbyStub;
@@ -14,15 +15,17 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
 
 
     private Lobby lobby;
-    //private GameDbService gameDbService;
+    private GameDbService gameDbService;
 
-    public GameLobbyService(Lobby lobby) throws RemoteException {
+    public GameLobbyService(Lobby lobby, GameDbService gameDbService) throws RemoteException {
         this.lobby = lobby;
+        this.gameDbService = gameDbService;
     }
 
     /**
      * RMI call that is called on client side after that a player has initialized his game.
-     * It only returns true when all players in the game have joined (and thus initialized) the game.
+     * It only returns true when all players in the game have joined (and initialized) the game.
+     *
      * @param gameName
      * @return
      * @throws RemoteException
@@ -34,14 +37,17 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
             game.addJoinedPlayer();
             if (game.getJoinedPlayers() < game.getPlayerList().size()) {
                 wait();
-            }
-            else{
-                //TODO persist Game to database
+            } else {
+
+                if (!game.isInitialyPersisted()) {
+                    gameDbService.persistGame(game);
+                    game.setInitialyPersisted(true);
+                }
 
                 notifyAll();
             }
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;

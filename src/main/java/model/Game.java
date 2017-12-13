@@ -51,6 +51,8 @@ public class Game extends Observable implements Serializable {
 
     private Player currentPlayer;
 
+    private boolean isInitialyPersisted;
+
     //private String password;
 
 
@@ -66,6 +68,7 @@ public class Game extends Observable implements Serializable {
         this.version = 0;
         this.moves = new LinkedList<>();
         playerList.add(initialPlayer);
+        isInitialyPersisted = false;
     }
 
     public Game(String gameName, int gameSize, Player initialPlayer, int version) {
@@ -77,6 +80,7 @@ public class Game extends Observable implements Serializable {
         this.version = version;
         this.moves = new LinkedList<>();
         playerList.add(initialPlayer);
+        isInitialyPersisted = false;
     }
 
     /**
@@ -106,7 +110,7 @@ public class Game extends Observable implements Serializable {
         while (i < playerList.size()) {
             //LOGGER.log(Level.INFO,"In the while");
 
-            if (((List<Player>)playerList).get(i).equals(player)) {
+            if (((List<Player>) playerList).get(i).equals(player)) {
                 playerList.remove(i);
                 LOGGER.log(Level.INFO, "Removed player: {0}", player);
 
@@ -133,8 +137,8 @@ public class Game extends Observable implements Serializable {
         int i = 0;
 
         while (i < playerList.size()) {
-            if (((List<Player>)playerList).get(i).equals(player)) {
-                return ((List<Player>)playerList).get(i);
+            if (((List<Player>) playerList).get(i).equals(player)) {
+                return ((List<Player>) playerList).get(i);
             }
             i++;
         }
@@ -255,7 +259,7 @@ public class Game extends Observable implements Serializable {
         LinkedList<Card> drawnCards = new LinkedList<>();
 
         for (int i = 0; i < amountOfCards; i++) {
-            Card card = ((LinkedList<Card>)deck).pollFirst();
+            Card card = ((LinkedList<Card>) deck).pollFirst();
             drawnCards.add(card);
         }
 
@@ -273,7 +277,7 @@ public class Game extends Observable implements Serializable {
      * Method to draw first card from the deck.
      */
     public synchronized void drawFirstCard() {
-        Card firstCard = ((LinkedList<Card>)deck).pollFirst();
+        Card firstCard = ((LinkedList<Card>) deck).pollFirst();
         moves.add(new Move(null, firstCard));
     }
 
@@ -311,7 +315,7 @@ public class Game extends Observable implements Serializable {
      */
     public void drawCards(Player player, int amount) {
         for (int i = 0; i < amount; i++)
-            player.addCard(((LinkedList<Card>)deck).pollFirst());
+            player.addCard(((LinkedList<Card>) deck).pollFirst());
     }
 
     /**
@@ -323,7 +327,7 @@ public class Game extends Observable implements Serializable {
     public Card drawCardForPlayer(Player player) {
         LOGGER.log(Level.INFO, "Entering drawCardForPlayer, before: decksize = {0}, playerhand size = {1}",
                 new Object[]{deck.size(), player.getHand().size()});
-        Card ret = ((LinkedList<Card>)deck).pollFirst();
+        Card ret = ((LinkedList<Card>) deck).pollFirst();
         player.addCard(ret);
         LOGGER.log(Level.INFO, "Entering drawCardForPlayer, after: decksize = {0}, playerhand size = {1}",
                 new Object[]{deck.size(), player.getHand().size()});
@@ -338,14 +342,14 @@ public class Game extends Observable implements Serializable {
      */
     public Player getNextPlayer(int amount) {
         if (clockwise)
-            return ((List<Player>)playerList).get(
-                    (((List<Player>)playerList).indexOf(currentPlayer) + amount) % playerList.size());
+            return ((List<Player>) playerList).get(
+                    (((List<Player>) playerList).indexOf(currentPlayer) + amount) % playerList.size());
         else {
-            int newIndex = ((List<Player>)playerList).indexOf(currentPlayer) - amount;
+            int newIndex = ((List<Player>) playerList).indexOf(currentPlayer) - amount;
             if (newIndex < 0) {
                 newIndex += playerList.size();
             }
-            return ((List<Player>)playerList).get(newIndex % playerList.size());
+            return ((List<Player>) playerList).get(newIndex % playerList.size());
         }
     }
 
@@ -364,7 +368,7 @@ public class Game extends Observable implements Serializable {
      * @return
      */
     public Move getLastMove() {
-        return ((List<Move>)moves).get(moves.size() - 1);
+        return ((List<Move>) moves).get(moves.size() - 1);
     }
 
     /**
@@ -376,7 +380,7 @@ public class Game extends Observable implements Serializable {
         int i = moves.size() - 1;
 
         while (i >= 0) {
-            Move move = ((List<Move>)moves).get(i);
+            Move move = ((List<Move>) moves).get(i);
             if (!move.isHasDrawnCard() && move.getCard() != null) {
                 LOGGER.log(Level.INFO, "Last played move is on deck is {0}", move);
                 return move;
@@ -412,7 +416,7 @@ public class Game extends Observable implements Serializable {
      */
     public boolean isPlayerAfterLastPlayer(Player currentPlayer) {
 
-        int currentPlayerIndex = ((List<Player>)playerList).indexOf(currentPlayer);
+        int currentPlayerIndex = ((List<Player>) playerList).indexOf(currentPlayer);
 
         //Get last player of a move, NOT a drawcard
         Player lastPlayer = getLastPlayedMove().getPlayer();
@@ -421,7 +425,7 @@ public class Game extends Observable implements Serializable {
             return false;
         }
 
-        int lastPlayerIndex = ((List<Player>)playerList).indexOf(lastPlayer);
+        int lastPlayerIndex = ((List<Player>) playerList).indexOf(lastPlayer);
 
         boolean ret = currentPlayerIndex == lastPlayerIndex + 1 % gameSize;
 
@@ -460,7 +464,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public List<Player> getPlayerList() {
-        return ((List<Player>)playerList);
+        return ((List<Player>) playerList);
     }
 
     /**
@@ -476,7 +480,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public List<Card> getDeck() {
-        return ((List<Card>)deck);
+        return ((List<Card>) deck);
     }
 
     public void setDeck(List<Card> deck) {
@@ -484,7 +488,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public List<Move> getMoves() {
-        return ((List<Move>)moves);
+        return ((List<Move>) moves);
     }
 
     public void setMoves(List<Move> moves) {
@@ -533,6 +537,13 @@ public class Game extends Observable implements Serializable {
         notifyObservers();
     }
 
+    public boolean isInitialyPersisted() {
+        return isInitialyPersisted;
+    }
+
+    public void setInitialyPersisted(boolean initialyPersisted) {
+        isInitialyPersisted = initialyPersisted;
+    }
 
     @Override
     public String toString() {
