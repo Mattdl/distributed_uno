@@ -1,7 +1,6 @@
 package client.controller;
 
 import client.Main;
-import client.service.game.CheckPlayersService;
 import client.service.game_lobby.LeaveGameService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -34,7 +33,7 @@ public class WinnerController {
     public void leaveGame() {
         LOGGER.log(Level.INFO, "Called leaveGame method in GameController");
 
-        LeaveGameService leaveGameService = new LeaveGameService(game.getGameName());
+        LeaveGameService leaveGameService = new LeaveGameService(game.getUniqueGameName());
         leaveGameService.setOnSucceeded(event -> {
 
             String failMsg = (String) event.getSource().getValue();

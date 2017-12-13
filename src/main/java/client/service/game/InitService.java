@@ -1,7 +1,6 @@
 package client.service.game;
 
 import client.Main;
-import client.controller.GameController;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Card;
@@ -39,7 +38,7 @@ public class InitService extends Service<Boolean> {
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
                 //Fetch init cards
-                List<Card> cards = gameService.initCards(game.getGameName(), Main.currentPlayer);
+                List<Card> cards = gameService.initCards(game.getUniqueGameName(), Main.currentPlayer);
 
                 boolean isSuccessful = cards != null;
 
@@ -51,7 +50,7 @@ public class InitService extends Service<Boolean> {
                 }
 
                 //Get current player and top card
-                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameName(), true);
+                Move ret = gameService.getCurrentPlayerAndLastCard(game.getUniqueGameName(), true);
 
                 isSuccessful = ret != null;
 
@@ -64,7 +63,7 @@ public class InitService extends Service<Boolean> {
                 }
 
                 //Fetch player info
-                List<Player> retList = gameService.getPlayerUpdates(game.getGameName(), Main.currentPlayer, true);
+                List<Player> retList = gameService.getPlayerUpdates(game.getUniqueGameName(), Main.currentPlayer, true);
 
                 isSuccessful = retList != null;
 

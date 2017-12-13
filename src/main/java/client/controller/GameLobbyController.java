@@ -5,7 +5,6 @@ import client.service.game_lobby.GameLobbyService;
 import client.service.game_lobby.LeaveGameService;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
@@ -14,9 +13,6 @@ import javafx.stage.Stage;
 import model.Game;
 import model.Player;
 
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
@@ -54,7 +50,7 @@ public class GameLobbyController implements Observer {
         gameLobbyService = new GameLobbyService(currentGame);
         gameLobbyService.start();
 
-        gameNameText.setText(currentGame.getGameName());
+        gameNameText.setText(currentGame.getUniqueGameName());
     }
 
     /**
@@ -64,7 +60,7 @@ public class GameLobbyController implements Observer {
     public void leaveGame() {
         LOGGER.log(Level.INFO, "Called leaveGame method in GameLobbyController");
 
-        LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameName());
+        LeaveGameService leaveGameService = new LeaveGameService(currentGame.getUniqueGameName());
         leaveGameService.setOnSucceeded(event -> {
 
             String failMsg = (String) event.getSource().getValue();

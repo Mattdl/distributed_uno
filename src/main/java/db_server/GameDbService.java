@@ -1,7 +1,6 @@
 package db_server;
 
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.support.ConnectionSource;
 import model.Game;
 import model.Move;
@@ -12,10 +11,7 @@ import stub_RMI.appserver_dbserver.GameDbStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 
 public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
@@ -41,7 +37,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         LOGGER.info("Persisting Game = {}",gameToPersist);
 
         try {
-            Game gameInDb = gameDao.queryForId(gameToPersist.getGameName());
+            Game gameInDb = gameDao.queryForId(gameToPersist.getUniqueGameName());
 
             if(gameInDb == null){
                 gameDao.create(gameToPersist);

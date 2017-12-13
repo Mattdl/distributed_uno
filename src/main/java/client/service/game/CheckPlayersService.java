@@ -5,8 +5,6 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Game;
 import stub_RMI.client_appserver.GameLobbyStub;
-import stub_RMI.client_appserver.GameStub;
-import stub_RMI.client_appserver.LobbyStub;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -43,7 +41,7 @@ public class CheckPlayersService extends Service<Boolean> {
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameLobbyStub gameService = (GameLobbyStub) myRegistry.lookup("GameLobbyService");
 
-                boolean successful = gameService.hasEverybodyJoined(game.getGameName());
+                boolean successful = gameService.hasEverybodyJoined(game.getUniqueGameName());
 
                 LOGGER.log(Level.INFO, "CheckPlayersService result = {0}", successful);
 

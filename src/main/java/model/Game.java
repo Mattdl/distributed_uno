@@ -496,9 +496,8 @@ public class Game extends Observable implements Serializable {
         this.moves = moves;
     }
 
-    //TODO check usages
-    public String getGameName() {
-        return gameName;
+    public String getUniqueGameName() {
+        return gameNameId;
     }
 
     public void setGameName(String gameName) {
@@ -547,8 +546,8 @@ public class Game extends Observable implements Serializable {
         isInitialyPersisted = initialyPersisted;
     }
 
-    public String getGameNameId() {
-        return gameNameId;
+    public String getGameNameForDisplay() {
+        return gameName;
     }
 
     @Override

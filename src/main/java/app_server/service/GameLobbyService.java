@@ -1,7 +1,5 @@
 package app_server.service;
 
-import db_server.DatabaseServer;
-import db_server.GameDbService;
 import model.Game;
 import model.Lobby;
 import org.slf4j.Logger;
@@ -54,7 +52,7 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                     game.setInitialyPersisted(true);
 
                     //TODO delete this, just for testing
-                    Game gameRet = gameDbService.fetchGame(game.getGameName());
+                    Game gameRet = gameDbService.fetchGame(game.getUniqueGameName());
                     LOGGER.info("FETCHED GAME FROM DATABASE = {}",gameRet);
 
 

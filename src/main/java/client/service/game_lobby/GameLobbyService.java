@@ -1,23 +1,22 @@
 package client.service.game_lobby;
 
 import client.Main;
-import client.controller.LobbyController;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import model.Game;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stub_RMI.client_appserver.LobbyStub;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Service that obtains the information for an in-game Lobby
  */
 public class GameLobbyService extends Service<Void> {
 
-    private static final Logger LOGGER = Logger.getLogger(GameLobbyService.class.getName());
+    final Logger LOGGER = LoggerFactory.getLogger(GameLobbyService.class);
 
     private Game clientGame;
     private boolean inGameLobby;
@@ -43,13 +42,13 @@ public class GameLobbyService extends Service<Void> {
 
                 while (inGameLobby) {
 
-                    LOGGER.info("Requesting GameLobby info");
-                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getGameName());
+                    LOGGER.info("Requesting GameLobby info, for game = {}",clientGame.getUniqueGameName());
+                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getUniqueGameName());
 
                     //We have to make copy in order to notify the observers of the game
                     clientGame.makeCopy(serverSideGame);
 
-                    LOGGER.log(Level.INFO, "Received from server GameLobby info, game = {0}", serverSideGame);
+                    LOGGER.info("Received from server GameLobby info, game = {0}", serverSideGame);
                     }
                 return null;
             }

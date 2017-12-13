@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.TilePane;
 import javafx.scene.layout.VBox;
@@ -98,11 +97,11 @@ public class LobbyController implements Observer {
      */
     public HBox createGameEntry(Game game) {
         HBox entry = new HBox();
-        entry.getChildren().add(new Text(game.getGameName()));
+        entry.getChildren().add(new Text(game.getUniqueGameName()));
         entry.getChildren().add(new Text("Players: " + game.getPlayerList().size() + " of " + game.getGameSize()));
 
-        Button button = new Button(game.getGameName());
-        button.setId(game.getGameName());
+        Button button = new Button(game.getUniqueGameName());
+        button.setId(game.getUniqueGameName());
         button.setOnAction(e -> joinGame(e));
         entry.getChildren().add(button);
 
