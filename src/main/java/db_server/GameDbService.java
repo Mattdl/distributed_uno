@@ -89,6 +89,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
                     gameDbStub.persistGame(gameToPersist);
 
+                    LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
+
                 } catch (Exception e) {
                     LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
                     e.printStackTrace();
@@ -166,7 +168,30 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             return false;
         }
 
+        persistMoveToOtherDatabases(gameName, move);
+
         return true;
+    }
+
+    private void persistMoveToOtherDatabases(String gameName, Move move) {
+        for (DbServer otherDbServer : DatabaseServer.otherDatabases) {
+
+            if (otherDbServer.isConnected()) {
+
+                GameDbStub gameDbStub = otherDbServer.getGameDbStubs();
+
+                try {
+
+                    gameDbStub.persistMove(gameName, move);
+
+                    LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
+
+                } catch (Exception e) {
+                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     @Override

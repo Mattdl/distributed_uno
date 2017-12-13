@@ -39,4 +39,12 @@ public class DbServer extends Server {
     public boolean isConnected(){
         return gameDbStubs != null && userDbStubs != null;
     }
+
+    @Override
+    public String toString() {
+        return "DbServer{" +
+                "ip='" + ip + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }
