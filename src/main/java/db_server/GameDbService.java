@@ -159,28 +159,6 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
 
             if (game != null) {
-                /*
-                //TODO delete
-                ForeignCollection<Player> players = (ForeignCollection<Player>) game.getPlayerListCollection();
-
-                LOGGER.info("BEFORE CAST, playerlist = {}, size = {}", players, players.size());
-
-                CloseableIterator<Player> it = players.closeableIterator();
-
-                try {
-                    while (it.hasNext()) {
-                        Player player = it.next();
-                        LOGGER.info("FOUND IN PLAYERLIST = {}", player);
-                    }
-                } finally {
-                    it.closeQuietly();
-                }
-
-
-                LOGGER.info("WITH CAST, playerlist = {}", game.getPlayerList());
-
-                game.setPlayerList(game.getPlayerList());
-                */
 
                 // Converting ForeignCollections to Arraylists
                 game.setMoves(new ArrayList<>(game.getMovesCollection()));
