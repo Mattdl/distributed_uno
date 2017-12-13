@@ -6,6 +6,7 @@ import app_server.service.LobbyService;
 import app_server.service.LoginService;
 import db_server.GameDbService;
 import db_server.UserDbService;
+import dispatcher.DispatcherService;
 import model.Lobby;
 
 import java.rmi.ConnectException;
@@ -17,7 +18,6 @@ public class AppServer {
 
     private static final Logger LOGGER = Logger.getLogger(AppServer.class.getName());
 
-    //TODO outcomment this, dbIP mus tbe provided by the dispatcher, if connection is lost to db, dispatcher must be contacted
     private static String dbIp;
     private static int dbPort;
 
@@ -28,6 +28,7 @@ public class AppServer {
 
     private GameDbService gameDbService;
     private UserDbService userDbService;
+    private DispatcherService dispatcherService;
 
 
     private Lobby lobby;
@@ -65,11 +66,11 @@ public class AppServer {
         try {
             myRegistry = LocateRegistry.getRegistry(dispatcherIp, dispatcherPort);
 
-            gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
+            dispatcherService = (DispatcherService) myRegistry.lookup("DispatcherService");
 
         }catch(ConnectException ce){
-            LOGGER.warning("APPSERVER FAILED CONNECTING TO DATABASE, RMI ConnectException");
-            //TODO if no connetion, ask dispatcher for new dbIP+port
+            LOGGER.warning("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
+            //TODO if no connetion, try again after some time
 
         }
         catch (Exception e) {
