@@ -6,6 +6,8 @@ import com.j256.ormlite.support.ConnectionSource;
 import model.Game;
 import model.Move;
 import model.Player;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 
 import java.rmi.RemoteException;
@@ -16,6 +18,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class GameDbService extends UnicastRemoteObject implements GameDbStub {
+
+    final Logger LOGGER = LoggerFactory.getLogger(GameDbService.class);
+
 
     private ConnectionSource conn;
     private Dao<Game, String> gameDao;
@@ -33,20 +38,26 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     @Override
     public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
 
+        LOGGER.info("Persisting Game = {}",gameToPersist);
+
         try {
             Game gameInDb = gameDao.queryForId(gameToPersist.getGameName());
 
             if(gameInDb == null){
                 gameDao.create(gameToPersist);
+                LOGGER.info("Game was not in database. New entry inserted, Game = {}",gameToPersist);
             }
             else{
                 gameDao.update(gameToPersist);
+                LOGGER.info("Game was in database. Entry updated, Game = {}",gameToPersist);
             }
 
         }catch (SQLException e){
             e.printStackTrace();
             return false;
         }
+
+        LOGGER.info("Game persisted, Game = {}",gameToPersist);
 
         return true;
     }
@@ -83,8 +94,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      */
     @Override
     public synchronized Game fetchGame(String gameName) throws RemoteException {
+
+        LOGGER.info("Fetching Game with name = '{}'",gameName);
+
         try{
             Game game = gameDao.queryForId(gameName);
+
+            LOGGER.info("Game fetched with name = '{}', result = {}",gameName,game);
 
             return game;
         }catch(SQLException e){

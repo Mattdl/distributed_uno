@@ -75,6 +75,7 @@ public class DatabaseServer {
             TableUtils.createTableIfNotExists(conn, Player.class);
 
         } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
             System.out.println(e.getMessage());
         }finally {
             if (conn != null) {
