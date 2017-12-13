@@ -72,18 +72,15 @@ public class AppServer {
             dispatcherService = (DispatcherService) myRegistry.lookup("DispatcherService");
 
         }catch(ConnectException ce){
-            LOGGER.warn("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
+            LOGGER.error("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
             //TODO if no connetion, try again after some time
-            retrieveNewDatabaseInfo();
-
         }
         catch (Exception e) {
             e.printStackTrace();
         }
 
         if(myRegistry == null || gameDbService == null || userDbService == null){
-            //TODO if no connetion, ask dispatcher for new dbIP+por
-            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DATABASE");
+            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DISPATCHER");
         }
     }
 
@@ -121,23 +118,27 @@ public class AppServer {
      * @return
      */
     private void registerAsClientWithDatabase(String dbIP, int dbPort) {
+
+        LOGGER.info("Entering registerAsClientWithDatabase");
+
         Registry myRegistry = null;
 
-        try {
-            myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
+        while(myRegistry == null || gameDbService == null || userDbService == null) {
+            try {
+                myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
-            gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
-            userDbService = (UserDbService) myRegistry.lookup("UserDbService");
+                gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
+                userDbService = (UserDbService) myRegistry.lookup("UserDbService");
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            //TODO if no connetion, ask dispatcher for new dbIP+port
+            } catch (Exception e) {
+                e.printStackTrace();
+
+                //if no connetion, ask dispatcher for new dbIP+port
+                retrieveNewDatabaseInfo();
+            }
         }
 
-        if(myRegistry == null || gameDbService == null || userDbService == null){
-            //TODO if no connetion, ask dispatcher for new dbIP+por
-            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DATABASE");
-        }
+        LOGGER.info("Leaving registerAsClientWithDatabase");
     }
 
     public static void main(String[] args) {
