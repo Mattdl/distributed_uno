@@ -31,12 +31,14 @@ public class DatabaseServer {
 
     private Dao<Game, String> gameDao;
     private Dao<Move, String> moveDao;
+    private Dao<Player, String> playerDao;
+    private Dao<Card, String> cardDao;
 
     private void startServer() {
 
-        initDb("uno"+PORT+".db");
+        initDb("uno" + PORT + ".db");
 
-        if(conn!=null){
+        if (conn != null) {
             //Init RMI services
 
             try {
@@ -44,7 +46,7 @@ public class DatabaseServer {
 
                 //Bind RMI implementations to service names
                 registry.rebind("UserDbService", new UserDbService());
-                registry.rebind("GameDbService", new GameDbService(gameDao,moveDao));
+                registry.rebind("GameDbService", new GameDbService(gameDao, moveDao, playerDao, cardDao));
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -62,14 +64,16 @@ public class DatabaseServer {
         try {
             conn = new JdbcConnectionSource(databaseUrl);
 
-            LOGGER.info("Connection established to {}",databaseUrl);
+            LOGGER.info("Connection established to {}", databaseUrl);
 
             //INIT DAO's
             moveDao = DaoManager.createDao(conn, Move.class);
             gameDao = DaoManager.createDao(conn, Game.class);
+            cardDao = DaoManager.createDao(conn, Card.class);
+            playerDao = DaoManager.createDao(conn, Player.class);
 
             //CREATE TABLES
-            TableUtils.createTableIfNotExists(conn,Game.class);
+            TableUtils.createTableIfNotExists(conn, Game.class);
             TableUtils.createTableIfNotExists(conn, Card.class);
             TableUtils.createTableIfNotExists(conn, Move.class);
             TableUtils.createTableIfNotExists(conn, Player.class);
@@ -77,7 +81,7 @@ public class DatabaseServer {
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());
             System.out.println(e.getMessage());
-        }finally {
+        } finally {
             if (conn != null) {
                 LOGGER.info("Database Created with all tables!");
                 conn.closeQuietly();

@@ -2,6 +2,7 @@ package model;
 
 import app_server.DeckBuilder;
 import client.Main;
+import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -32,13 +33,13 @@ public class Game extends Observable implements Serializable {
     @DatabaseField
     private boolean clockwise;
 
-    @ForeignCollectionField(eager = false)
+    @ForeignCollectionField(eager = true, maxEagerLevel = 3)
     private Collection<Player> playerList;
 
-    @ForeignCollectionField(eager = false)
+    @ForeignCollectionField(eager = true, maxEagerLevel = 3)
     private Collection<Card> deck = new LinkedList<Card>();
 
-    @ForeignCollectionField(eager = false)
+    @ForeignCollectionField(eager = true, maxEagerLevel = 3)
     private Collection<Move> moves;
 
     @DatabaseField
@@ -479,8 +480,16 @@ public class Game extends Observable implements Serializable {
         this.clockwise = clockwise;
     }
 
+    //TODO check
     public List<Player> getPlayerList() {
-        return ((List<Player>) playerList);
+        if(!(playerList instanceof List<?>)) {
+            playerList = new ArrayList<>(playerList);
+        }
+        return (List<Player>) playerList;
+    }
+
+    public Collection<Player> getPlayerListCollection(){
+        return playerList;
     }
 
     /**
@@ -505,6 +514,10 @@ public class Game extends Observable implements Serializable {
 
     public List<Move> getMoves() {
         return ((List<Move>) moves);
+    }
+
+    public Collection<Move> getMovesCollection(){
+        return moves;
     }
 
     public void setMoves(List<Move> moves) {

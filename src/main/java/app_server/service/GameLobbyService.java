@@ -55,6 +55,8 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                     Game gameRet = gameDbService.fetchGame(game.getGameId());
                     LOGGER.info("FETCHED GAME FROM DATABASE = {}",gameRet);
 
+                    LOGGER.info("CONTENT OF PLAYERLIST = {}",gameRet.getPlayerList());
+
 
                     LOGGER.info("Game Object PERSISTED to Database!");
                 }

@@ -1,7 +1,9 @@
 package db_server;
 
+import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.dao.ForeignCollection;
+import model.Card;
 import model.Game;
 import model.Move;
 import model.Player;
@@ -12,50 +14,99 @@ import stub_RMI.appserver_dbserver.GameDbStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.Collection;
 
 public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     final Logger LOGGER = LoggerFactory.getLogger(GameDbService.class);
 
-
-    private ConnectionSource conn;
     private Dao<Game, String> gameDao;
     private Dao<Move, String> moveDao;
+    private Dao<Player, String> playerDao;
+    private Dao<Card, String> cardDao;
 
     public GameDbService() throws RemoteException {
 
     }
 
-    public GameDbService(Dao<Game, String> gameDao, Dao<Move, String> moveDao) throws RemoteException{
+    public GameDbService(Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
+        this.gameDao = gameDao;
         this.moveDao = moveDao;
-        this. gameDao = gameDao;
+        this.playerDao = playerDao;
+        this.cardDao = cardDao;
     }
 
     @Override
     public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
 
-        LOGGER.info("Persisting Game = {}",gameToPersist);
+        LOGGER.info("Persisting Game = {}", gameToPersist);
 
         try {
-            Game gameInDb = gameDao.queryForId(gameToPersist.getGameId());
+            //Game gameInDb = gameDao.queryForId(gameToPersist.getGameId());
 
-            if(gameInDb == null){
-                gameDao.create(gameToPersist);
-                LOGGER.info("Game was not in database. New entry inserted, Game = {}",gameToPersist);
-            }
-            else{
-                gameDao.update(gameToPersist);
-                LOGGER.info("Game was in database. Entry updated, Game = {}",gameToPersist);
-            }
+            createOrUpdateGame(gameToPersist);
 
-        }catch (SQLException e){
+            LOGGER.info("Game was not in database. New entry inserted, Game = {}", gameToPersist);
+
+
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
 
-        LOGGER.info("Game persisted, Game = {}",gameToPersist);
+        LOGGER.info("Game persisted, Game = {}", gameToPersist);
 
         return true;
+    }
+
+    private void createOrUpdateGame(Game game) throws SQLException {
+
+        //First object itself
+        gameDao.createOrUpdate(game);
+
+        //Then ForeignCollections
+        for (Player player : game.getPlayerList()) {
+            player.setGame(game);
+            createPlayer(player);
+        }
+
+        for (Card card : game.getDeck()) {
+            card.setGame(game);
+            cardDao.createOrUpdate(card);
+        }
+
+        for (Move move : game.getMoves()) {
+            move.setGame(game);
+            createMove(move);
+        }
+    }
+
+    private void createPlayer(Player player) throws SQLException {
+        LOGGER.info("Persisting player = {}",player);
+
+        //First object itself
+        playerDao.createOrUpdate(player);
+
+        // Then persist Foreign Key List objects
+        for (Card card : player.getHand()) {
+            card.setPlayer(player);
+            cardDao.createOrUpdate(card);
+        }
+    }
+
+    private void createMove(Move move) throws SQLException {
+        LOGGER.info("Persisting move = {}",move);
+        //First persist the foreign key objects
+        cardDao.createOrUpdate(move.getCard());
+
+        if(move.getPlayer() != null) {
+            createPlayer(move.getPlayer());
+        }
+
+
+        //The object itself
+        moveDao.createOrUpdate(move);
+
     }
 
     @Override
@@ -64,11 +115,18 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         try {
             Game game = gameDao.queryForId(gameName);
 
-            game.addMove(move);
+            Collection<Move> moves = game.getMovesCollection();
+            //moves.
 
-            gameDao.update(game);
+            //ForeignCollection<Move> movesForeign = (ForeignCollection<Move>) moves;
 
-        }catch (SQLException e){
+            //movesForeign.add(move);
+
+            //game.addMove(move);
+
+            //gameDao.update(game);
+
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
@@ -91,15 +149,41 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     @Override
     public synchronized Game fetchGame(String gameName) throws RemoteException {
 
-        LOGGER.info("Fetching Game with name = '{}'",gameName);
+        LOGGER.info("Fetching Game with name = '{}'", gameName);
 
-        try{
+        try {
             Game game = gameDao.queryForId(gameName);
 
-            LOGGER.info("Game fetched with name = '{}', result = {}",gameName,game);
+            LOGGER.info("GAME FOUND IN QUERY = {}", game);
+
+
+            if (game != null) {
+                //TODO delete
+                ForeignCollection<Player> players = (ForeignCollection<Player>) game.getPlayerListCollection();
+
+                LOGGER.info("BEFORE CAST, playerlist = {}, size = {}", players, players.size());
+
+                CloseableIterator<Player> it = players.closeableIterator();
+
+                try {
+                    while (it.hasNext()) {
+                        Player player = it.next();
+                        LOGGER.info("FOUND IN PLAYERLIST = {}", player);
+                    }
+                } finally {
+                    it.closeQuietly();
+                }
+
+
+                LOGGER.info("WITH CAST, playerlist = {}", game.getPlayerList());
+
+                game.setPlayerList(game.getPlayerList());
+            }
+
+            LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);
 
             return game;
-        }catch(SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 

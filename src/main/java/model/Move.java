@@ -16,10 +16,10 @@ public class Move implements Serializable {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField(canBeNull = false, foreign = true)
+    @DatabaseField( foreign = true)
     private Player player;
 
-    @DatabaseField(canBeNull = true, foreign = true)
+    @DatabaseField( foreign = true)
     private Card card;
 
     @DatabaseField
@@ -66,6 +66,14 @@ public class Move implements Serializable {
 
     public void setHasDrawnCard(boolean hasDrawnCard) {
         this.hasDrawnCard = hasDrawnCard;
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**

@@ -22,7 +22,7 @@ public class Player implements Serializable {
     //May be serializable, because we won't persist Cards by themself
     @DatabaseField(dataType = DataType.SERIALIZABLE)
     */
-    @ForeignCollectionField(eager = false)
+    @ForeignCollectionField(eager = true)
     private Collection<Card> hand = new LinkedList<Card>();
 
     @DatabaseField
@@ -81,6 +81,14 @@ public class Player implements Serializable {
 
     public boolean equals(Player player) {
         return this.name.equals(player.name);
+    }
+
+    public Game getGame() {
+        return game;
+    }
+
+    public void setGame(Game game) {
+        this.game = game;
     }
 
     /**
