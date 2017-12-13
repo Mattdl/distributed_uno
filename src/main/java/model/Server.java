@@ -3,8 +3,8 @@ package model;
 import java.io.Serializable;
 
 public class Server implements Serializable {
-    private String ip;
-    private int port;
+    protected String ip;
+    protected int port;
 
     public Server() {
         ip = null;

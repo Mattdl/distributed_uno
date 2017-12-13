@@ -31,9 +31,7 @@ public class DatabaseServer {
     private static String dbIp;
     private static int dbPort;
 
-    private static List<Server> otherDatabases = new LinkedList<>();
-    private static List<GameDbStub> gameDbStubs = new LinkedList<>();
-    private static List<UserDbStub> userDbStubs = new LinkedList<>();
+    static List<DbServer> otherDatabases = new LinkedList<>();
 
     private String databaseUrl;
 
@@ -62,9 +60,9 @@ public class DatabaseServer {
                 e.printStackTrace();
             }
             System.out.println("system is ready");
-
-
         }
+
+        //TODO reconnection attempts
     }
 
     private void initDb(String fileName) {
@@ -108,7 +106,7 @@ public class DatabaseServer {
 
         LOGGER.info("Entering registerAsClientWithOtherDatabases");
 
-        for (Server otherDbServer : otherDatabases) {
+        for (DbServer otherDbServer : otherDatabases) {
 
             Registry myRegistry;
 
@@ -121,16 +119,10 @@ public class DatabaseServer {
                 UserDbStub userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
 
                 //Add to Service lists
-                if (gameDbService != null) {
-                    gameDbStubs.add(gameDbService);
-                }
-
-                if (userDbService != null) {
-                    userDbStubs.add(userDbService);
-                }
+                otherDbServer.setGameDbStubs(gameDbService);
+                otherDbServer.setUserDbStubs(userDbService);
 
                 LOGGER.info("DATABASE CONNECTED TO OTHER DATABASE, other database server = {}:{}", otherDbServer.getIp(), otherDbServer.getPort());
-
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -153,7 +145,7 @@ public class DatabaseServer {
         while (argCount < args.length) {
 
             otherDatabases.add(
-                    new Server(
+                    new DbServer(
                             args[argCount],
                             Integer.valueOf(args[argCount + 1])
                     )

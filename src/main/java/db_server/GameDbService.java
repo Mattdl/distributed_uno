@@ -3,10 +3,7 @@ package db_server;
 import com.j256.ormlite.dao.CloseableIterator;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
-import model.Card;
-import model.Game;
-import model.Move;
-import model.Player;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
@@ -16,6 +13,8 @@ import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
@@ -68,7 +67,34 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         LOGGER.info("Game persisted, Game = {}", gameToPersist);
 
+        persistGameToOtherDatabases(gameToPersist);
+
         return true;
+    }
+
+    /**
+     * Propagate the persisting to all other databases
+     *
+     * @param gameToPersist
+     */
+    private void persistGameToOtherDatabases(Game gameToPersist) {
+
+        for (DbServer otherDbServer : DatabaseServer.otherDatabases) {
+
+            if (otherDbServer.isConnected()) {
+
+                GameDbStub gameDbStub = otherDbServer.getGameDbStubs();
+
+                try {
+
+                    gameDbStub.persistGame(gameToPersist);
+
+                } catch (Exception e) {
+                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     private void createOrUpdateGame(Game game) throws SQLException {
