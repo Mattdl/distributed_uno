@@ -37,6 +37,15 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         this.cardDao = cardDao;
     }
 
+    /**
+     * Called once at creation of the Game on the AppServer.
+     * Be careful when you call this multiple times! The previous Game will be updated and Players will keep the cards
+     * of the previous init call!
+     *
+     * @param gameToPersist
+     * @return
+     * @throws RemoteException
+     */
     @Override
     public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
 
@@ -83,7 +92,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     private void createPlayer(Player player) throws SQLException {
-        LOGGER.info("Persisting player = {}",player);
+        LOGGER.info("Persisting player = {}", player);
 
         //First object itself
         playerDao.createOrUpdate(player);
@@ -96,11 +105,12 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     private void createMove(Move move) throws SQLException {
-        LOGGER.info("Persisting move = {}",move);
+        LOGGER.info("Persisting move = {}", move);
+
         //First persist the foreign key objects
         cardDao.createOrUpdate(move.getCard());
 
-        if(move.getPlayer() != null) {
+        if (move.getPlayer() != null) {
             createPlayer(move.getPlayer());
         }
 
@@ -110,6 +120,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     }
 
+    //TODO
     @Override
     public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
 
@@ -165,8 +176,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                 game.setDeck(new ArrayList<>(game.getDeckCollection()));
                 game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
 
-                for(Player player:game.getPlayerList()){
+                LOGGER.info("FETCHED DECK = {}", game.getDeck());
+
+                for (Player player : game.getPlayerList()) {
                     player.setHand(new ArrayList<>(player.getHandCollection()));
+
+                    LOGGER.info("PLAYER HAND = {}", player.getHand());
+
                 }
             }
 
