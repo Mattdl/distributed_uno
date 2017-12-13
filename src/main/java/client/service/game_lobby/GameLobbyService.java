@@ -42,8 +42,8 @@ public class GameLobbyService extends Service<Void> {
 
                 while (inGameLobby) {
 
-                    LOGGER.info("Requesting GameLobby info, for game = {}",clientGame.getUniqueGameName());
-                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getUniqueGameName());
+                    LOGGER.info("Requesting GameLobby info, for game = {}",clientGame.getGameId());
+                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getGameId());
 
                     //We have to make copy in order to notify the observers of the game
                     clientGame.makeCopy(serverSideGame);

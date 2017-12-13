@@ -13,7 +13,7 @@ import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class CreateGameService extends Service<Boolean> {
+public class CreateGameService extends Service<String> {
 
     private static final Logger LOGGER = Logger.getLogger(CreateGameService.class.getName());
 
@@ -34,10 +34,10 @@ public class CreateGameService extends Service<Boolean> {
      * Tries to create a new game through RMI on server
      * @return
      */
-    protected Task<Boolean> createTask() {
-        return new Task<Boolean>() {
+    protected Task<String> createTask() {
+        return new Task<String>() {
             @Override
-            protected Boolean call() throws Exception {
+            protected String call() throws Exception {
 
                 String msg = Main.appServer.getIp() + ": " + Main.appServer.getPort();
 
@@ -48,11 +48,11 @@ public class CreateGameService extends Service<Boolean> {
                 LOGGER.log(Level.INFO, "Lookup successful");
 
 
-                boolean successful = lobbyService.createNewGame(initPlayer, name, size, password);
+                String gameId = lobbyService.createNewGame(initPlayer, name, size, password);
 
-                LOGGER.log(Level.INFO, "Return value, is successful= {0}",successful);
+                LOGGER.log(Level.INFO, "Return value, created game with Id = {0}",gameId);
 
-                return successful;
+                return gameId;
             }
         };
     }

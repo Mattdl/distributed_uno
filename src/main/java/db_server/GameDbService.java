@@ -37,7 +37,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         LOGGER.info("Persisting Game = {}",gameToPersist);
 
         try {
-            Game gameInDb = gameDao.queryForId(gameToPersist.getUniqueGameName());
+            Game gameInDb = gameDao.queryForId(gameToPersist.getGameId());
 
             if(gameInDb == null){
                 gameDao.create(gameToPersist);

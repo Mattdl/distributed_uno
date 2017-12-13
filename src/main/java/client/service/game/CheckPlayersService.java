@@ -41,7 +41,7 @@ public class CheckPlayersService extends Service<Boolean> {
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameLobbyStub gameService = (GameLobbyStub) myRegistry.lookup("GameLobbyService");
 
-                boolean successful = gameService.hasEverybodyJoined(game.getUniqueGameName());
+                boolean successful = gameService.hasEverybodyJoined(game.getGameId());
 
                 LOGGER.log(Level.INFO, "CheckPlayersService result = {0}", successful);
 

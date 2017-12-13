@@ -21,7 +21,7 @@ public class Game extends Observable implements Serializable {
     private static final Logger LOGGER = Logger.getLogger(Game.class.getName());
 
     @DatabaseField(id = true)
-    private String gameNameId; // gamename with timestamp concatenated
+    private String gameId; // gamename with timestamp concatenated
 
     @DatabaseField
     private String gameName;
@@ -59,8 +59,15 @@ public class Game extends Observable implements Serializable {
     public Game() {
     }
 
+    /**
+     * Used at AppServer to instantiate a new game (with unique id)
+     * @param gameName
+     * @param gameSize
+     * @param initialPlayer
+     */
+    //ONLY USED ONCE IN LOBBY-SERVICE! DO NOT TOUCH, ID IS GENERATED at appserver
     public Game(String gameName, int gameSize, Player initialPlayer) {
-        this.gameNameId = gameName + new Date().getTime();
+        this.gameId = gameName + new Date().getTime();
         this.gameName = gameName;
         this.gameSize = gameSize;
         this.playerList = new ArrayList<>();
@@ -72,16 +79,24 @@ public class Game extends Observable implements Serializable {
         isInitialyPersisted = false;
     }
 
-    public Game(String gameName, int gameSize, Player initialPlayer, int version) {
+    /**
+     * Used by client to make a new game, the id is given from the appServer
+     *
+     * @param gameId
+     * @param gameName
+     * @param gameSize
+     * @param currentPlayer
+     */
+    public Game(String gameId, String gameName, int gameSize, Player currentPlayer) {
+        this.gameId = gameId;
         this.gameName = gameName;
         this.gameSize = gameSize;
-        this.playerList = new ArrayList<>();
-        this.clockwise = true;
-        this.state = State.WAITING;
-        this.version = version;
+
         this.moves = new LinkedList<>();
-        playerList.add(initialPlayer);
-        isInitialyPersisted = false;
+        this.clockwise = true;
+
+        this.playerList = new ArrayList<>();
+        playerList.add(currentPlayer);
     }
 
     /**
@@ -496,8 +511,14 @@ public class Game extends Observable implements Serializable {
         this.moves = moves;
     }
 
-    public String getUniqueGameName() {
-        return gameNameId;
+    //Unique name
+    public String getGameId() {
+        return gameId;
+    }
+
+    //Name to display
+    public String getGameName() {
+        return gameName;
     }
 
     public void setGameName(String gameName) {
@@ -546,9 +567,6 @@ public class Game extends Observable implements Serializable {
         isInitialyPersisted = initialyPersisted;
     }
 
-    public String getGameNameForDisplay() {
-        return gameName;
-    }
 
     @Override
     public String toString() {

@@ -28,7 +28,7 @@ public class Lobby extends Observable implements Serializable {
         int i = 0;
 
         while (i < gameList.size()) {
-            if (gameList.get(i).getUniqueGameName().equals(gameName)) {
+            if (gameList.get(i).getGameId().equals(gameName)) {
                 return gameList.get(i);
             }
             i++;

@@ -50,17 +50,17 @@ public class CreateGameController {
         CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer, password);
 
         createGameService.setOnSucceeded(event1 -> {
-            boolean successful = (boolean) event1.getSource().getValue();
-            String msg1 = "Boolean: " + successful;
-            LOGGER.log(Level.INFO, msg1);
+            String gameId = (String) event1.getSource().getValue();
+
+            LOGGER.log(Level.INFO, "Game Id = {0}",gameId);
 
 
-            if (successful) {
+            if (gameId != null) {
                 String msg = "Created game with success";
                 LOGGER.log(Level.INFO, msg);
 
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameLobbyScene(stage, new Game(name,playerCount,Main.currentPlayer));
+                switchToGameLobbyScene(stage, new Game(gameId, name,playerCount,Main.currentPlayer));
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 LOGGER.log(Level.INFO, "Could not create game");

@@ -97,11 +97,11 @@ public class LobbyController implements Observer {
      */
     public HBox createGameEntry(Game game) {
         HBox entry = new HBox();
-        entry.getChildren().add(new Text(game.getUniqueGameName()));
+        entry.getChildren().add(new Text(game.getGameName()));
         entry.getChildren().add(new Text("Players: " + game.getPlayerList().size() + " of " + game.getGameSize()));
 
-        Button button = new Button(game.getUniqueGameName());
-        button.setId(game.getUniqueGameName());
+        Button button = new Button(game.getGameName());
+        button.setId(game.getGameId());
         button.setOnAction(e -> joinGame(e));
         entry.getChildren().add(button);
 

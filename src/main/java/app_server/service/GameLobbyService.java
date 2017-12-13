@@ -52,7 +52,7 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                     game.setInitialyPersisted(true);
 
                     //TODO delete this, just for testing
-                    Game gameRet = gameDbService.fetchGame(game.getUniqueGameName());
+                    Game gameRet = gameDbService.fetchGame(game.getGameId());
                     LOGGER.info("FETCHED GAME FROM DATABASE = {}",gameRet);
 
 

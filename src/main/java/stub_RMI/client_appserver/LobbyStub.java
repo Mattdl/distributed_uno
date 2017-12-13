@@ -11,7 +11,7 @@ public interface LobbyStub extends Remote {
 
     Lobby getJoinableGames(int version) throws RemoteException;
 
-    boolean createNewGame(Player initPlayer, String gameName, int gameSize, String password) throws RemoteException;
+    String createNewGame(Player initPlayer, String gameName, int gameSize, String password) throws RemoteException;
 
     Game getGameLobbyInfo(int version, String gameName) throws RemoteException;
 

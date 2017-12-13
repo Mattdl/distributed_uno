@@ -33,7 +33,7 @@ public class WinnerController {
     public void leaveGame() {
         LOGGER.log(Level.INFO, "Called leaveGame method in GameController");
 
-        LeaveGameService leaveGameService = new LeaveGameService(game.getUniqueGameName());
+        LeaveGameService leaveGameService = new LeaveGameService(game.getGameId());
         leaveGameService.setOnSucceeded(event -> {
 
             String failMsg = (String) event.getSource().getValue();

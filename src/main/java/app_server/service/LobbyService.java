@@ -69,7 +69,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @return Returns a message if failed, null if successful
      * @throws RemoteException
      */
-    public synchronized boolean createNewGame(Player initPlayer, String gameName, int gameSize, String password)
+    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize, String password)
             throws RemoteException {
         //TODO extend with password (if time)
 
@@ -84,7 +84,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         lobbyUpdated();
 
-        return true;
+        return game.getGameId();
     }
 
     /**
@@ -165,7 +165,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
         try {
 
-            LOGGER.info("getGameLobbyInfo, clientversion={},game={}",clientVersion,game);
+            LOGGER.info("getGameLobbyInfo, clientversion={}, gameName = '{}', found game={}",clientVersion,gameName,game);
             //Use while here, because otherwise for every total Lobby update, it will continue...
             while (clientVersion >= game.getVersion()) {
                 wait();

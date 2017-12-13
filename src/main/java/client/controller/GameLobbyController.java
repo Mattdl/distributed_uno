@@ -46,11 +46,11 @@ public class GameLobbyController implements Observer {
     @FXML
     public void initialize() {
         LOGGER.log(Level.INFO, "Initializing GameLobbyController, Currentgame={0}", currentGame);
-        currentGame.addObserver(this);
+        currentGame.addObserver(this); //TODO debug, this gives nullptr exception
         gameLobbyService = new GameLobbyService(currentGame);
         gameLobbyService.start();
 
-        gameNameText.setText(currentGame.getUniqueGameName());
+        gameNameText.setText(currentGame.getGameName());
     }
 
     /**
@@ -60,7 +60,7 @@ public class GameLobbyController implements Observer {
     public void leaveGame() {
         LOGGER.log(Level.INFO, "Called leaveGame method in GameLobbyController");
 
-        LeaveGameService leaveGameService = new LeaveGameService(currentGame.getUniqueGameName());
+        LeaveGameService leaveGameService = new LeaveGameService(currentGame.getGameId());
         leaveGameService.setOnSucceeded(event -> {
 
             String failMsg = (String) event.getSource().getValue();
