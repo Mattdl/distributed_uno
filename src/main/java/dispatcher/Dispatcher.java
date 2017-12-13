@@ -4,6 +4,7 @@ package dispatcher;
 import app_server.AppServer;
 import db_server.DatabaseServer;
 import model.Server;
+import org.slf4j.LoggerFactory;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -13,7 +14,7 @@ import java.util.logging.Logger;
 
 public class Dispatcher {
 
-    private static final Logger LOGGER = Logger.getLogger(Dispatcher.class.getName());
+    final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
     // DISPATCHER
     private final int DISPATCHER_PORT = 1099;
@@ -26,53 +27,92 @@ public class Dispatcher {
     private final int DB_SERVER_COUNT = 1;
     public static final int STARTING_DBSERVER_PORT = 7000;
     public static final String STARTING_DBSERVER_IP = "localhost";
+    public static final int DEFAULT_MAX_GAME_LOAD_APPSERVER = 2;
+
 
     private List<Server> appServers;
     private List<Server> dbServers;
 
     private void init() {
+        LOGGER.info("DISPATCHER STARTING setup");
+
+        // Init servers
         initDbServers(DB_SERVER_COUNT);
+        initInitialAppServer();
+
+        LOGGER.info("DISPATCHER FINISHED init");
+
+        // Init RMI
+        initRMI();
+
+        LOGGER.info("DISPATCHER FINISHED init");
+
+        // Start servers
+        startDbServers();
+        startAppServers();
+
+        LOGGER.info("DISPATCHER FINISHED startups");
+
 
     }
 
-    private void initDbServers(int dbServerCount) {
-        dbServers = new ArrayList<>();
+    private void initRMI() {
 
-        for (int i = 0; i < dbServerCount; i++) {
-            dbServers.add(new Server(STARTING_DBSERVER_IP,STARTING_DBSERVER_PORT + i));
-        }
-    }
-
-    private void startAppServer() {
-
-        LOGGER.info("Starting database");
-        //Setup db
-        DatabaseServer.main(new String[0]);
-
-        LOGGER.info("Starting server from dispatch");
-
-        //Startup one server
-        String[] serverArgs = new String[2];
-        serverArgs[0] = STARTING_APPSERVER_IP;
-        serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
-        AppServer.main(serverArgs);
-
-        //SERVER-SIDE RMI
+        //SERVER-SIDE RMI, used by AppServers and Clients
         try {
             //Init all RMI service bindings
             Registry registry = LocateRegistry.createRegistry(DISPATCHER_PORT);
 
             // create a new service for the Clients
-            registry.rebind("DispatcherService", new DispatcherService());
+            registry.rebind("DispatcherService", new DispatcherService(appServers, dbServers));
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
-        //CLIENT-SIDE RMI to application servers
-        //new DispatcherThread().start();
+    /**
+     * Init the first AppServer, if server gets overloaded, it requests the Dispatcher for new AppServers
+     */
+    private void initInitialAppServer() {
+        appServers.add(new Server(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
+    }
 
-        LOGGER.info("DISPATCHER is ready");
+    /**
+     * Init all db servers
+     *
+     * @param dbServerCount
+     */
+    private void initDbServers(int dbServerCount) {
+        dbServers = new ArrayList<>();
+
+        for (int i = 0; i < dbServerCount; i++) {
+            dbServers.add(new Server(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT + i));
+        }
+    }
+
+    private void startDbServers() {
+        for (Server dbServer : dbServers) {
+            LOGGER.info("Starting database {}", dbServer);
+            //Setup db
+            DatabaseServer.main(new String[]{dbServer.getIp(), String.valueOf(dbServer.getPort())});
+        }
+    }
+
+    private void startAppServers() {
+
+        for (Server appServer : appServers) {
+            LOGGER.info("Starting AppServer from dispatch, AppServer = {}", appServer);
+
+            String[] serverArgs = new String[5];
+            serverArgs[0] = STARTING_APPSERVER_IP;
+            serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
+            serverArgs[3] = STARTING_DBSERVER_IP;
+            serverArgs[4] = String.valueOf(STARTING_DBSERVER_PORT);
+            serverArgs[5] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+
+            AppServer.main(serverArgs);
+        }
     }
 
     public static void main(String[] args) {
