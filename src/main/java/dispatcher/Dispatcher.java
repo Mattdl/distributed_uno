@@ -56,6 +56,11 @@ public class Dispatcher {
 
     }
 
+    /**
+     * Setup RMI connections.
+     * This Dispatcher only has a server-side RMI interface.
+     * This is used by the AppServers and Clients.
+     */
     private void initRMI() {
 
         //SERVER-SIDE RMI, used by AppServers and Clients
