@@ -7,6 +7,7 @@ import model.Game;
 import model.Lobby;
 import model.Move;
 import model.Player;
+import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.RemoteException;
@@ -27,10 +28,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     //private GameDbService gameDbService;
 
     //RMI
-    private GameDbService gameDbService;
+    private GameDbStub gameDbService;
 
 
-    public GameService(Lobby lobby, GameDbService gameDbService) throws RemoteException {
+    public GameService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
         this.gameDbService = gameDbService;

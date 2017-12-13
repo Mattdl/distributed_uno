@@ -11,10 +11,14 @@ import dispatcher.DispatcherService;
 import model.Lobby;
 import model.Server;
 import org.slf4j.LoggerFactory;
+import stub_RMI.appserver_dbserver.GameDbStub;
+import stub_RMI.appserver_dbserver.UserDbStub;
+import stub_RMI.client_dispatcher.DispatcherStub;
 
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Date;
 import java.util.logging.Logger;
 
 public class AppServer {
@@ -29,17 +33,17 @@ public class AppServer {
     private final String DISPATCHER_IP = "localhost";
     private final int DISPATCHER_PORT = 1099;
 
-    private GameDbService gameDbService;
-    private UserDbService userDbService;
-    private DispatcherService dispatcherService;
+    private GameDbStub gameDbService;
+    private UserDbStub userDbService;
+    private DispatcherStub dispatcherService;
 
 
     private Lobby lobby;
 
     private void startServer(String ip, int port) {
 
-        registerAsClientWithDatabase(dbIp, dbPort);
         registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
+        registerAsClientWithDatabase(dbIp, dbPort);
 
         initData();
 
@@ -69,7 +73,7 @@ public class AppServer {
         try {
             myRegistry = LocateRegistry.getRegistry(dispatcherIp, dispatcherPort);
 
-            dispatcherService = (DispatcherService) myRegistry.lookup("DispatcherService");
+            dispatcherService = (DispatcherStub) myRegistry.lookup("DispatcherService");
 
         }catch(ConnectException ce){
             LOGGER.error("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
@@ -79,9 +83,7 @@ public class AppServer {
             e.printStackTrace();
         }
 
-        if(myRegistry == null || gameDbService == null || userDbService == null){
-            LOGGER.warn("APPSERVER COULD NOT CONNECT TO DISPATCHER");
-        }
+        LOGGER.info("Leaving registerAsClientWithDispatcher");
     }
 
     /**
@@ -89,7 +91,7 @@ public class AppServer {
      */
     private void retrieveNewDatabaseInfo() {
         try {
-            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER");
+            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}",dbIp,dbPort);
             Server server = dispatcherService.retrieveActiveDatabaseInfo();
 
             LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}",server);
@@ -123,14 +125,25 @@ public class AppServer {
 
         Registry myRegistry = null;
 
-        while(myRegistry == null || gameDbService == null || userDbService == null) {
+        //long startTime = System.currentTimeMillis();
+        //long elapsedTime = 0;
+        //long waitingTimeForNewRequest = 5*1000;
+
+
+        //elapsedTime < waitingTimeForNewRequest &&
+        while( myRegistry == null || gameDbService == null || userDbService == null) {
             try {
                 myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
-                gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
-                userDbService = (UserDbService) myRegistry.lookup("UserDbService");
+                gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
+                userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
+
+                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}",dbIP,dbPort);
+
 
             } catch (Exception e) {
+                //elapsedTime = (new Date()).getTime() - startTime;
+
                 e.printStackTrace();
 
                 //if no connetion, ask dispatcher for new dbIP+port

@@ -11,7 +11,7 @@ import java.util.Objects;
 @DatabaseTable
 public class Card implements Serializable {
 
-    @DatabaseField(generatedId = true)
+    @DatabaseField(generatedId = true, canBeNull = false)
     private int id;
 
     private transient Image image;

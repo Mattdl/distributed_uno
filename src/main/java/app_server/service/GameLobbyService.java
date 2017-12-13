@@ -3,6 +3,7 @@ package app_server.service;
 import db_server.GameDbService;
 import model.Game;
 import model.Lobby;
+import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.GameLobbyStub;
 
 import java.rmi.RemoteException;
@@ -15,9 +16,9 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
 
 
     private Lobby lobby;
-    private GameDbService gameDbService;
+    private GameDbStub gameDbService;
 
-    public GameLobbyService(Lobby lobby, GameDbService gameDbService) throws RemoteException {
+    public GameLobbyService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
         this.gameDbService = gameDbService;
     }
