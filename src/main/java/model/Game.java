@@ -60,6 +60,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public Game(String gameName, int gameSize, Player initialPlayer) {
+        this.gameNameId = gameName + new Date().getTime();
         this.gameName = gameName;
         this.gameSize = gameSize;
         this.playerList = new ArrayList<>();
@@ -495,6 +496,7 @@ public class Game extends Observable implements Serializable {
         this.moves = moves;
     }
 
+    //TODO check usages
     public String getGameName() {
         return gameName;
     }
@@ -543,6 +545,10 @@ public class Game extends Observable implements Serializable {
 
     public void setInitialyPersisted(boolean initialyPersisted) {
         isInitialyPersisted = initialyPersisted;
+    }
+
+    public String getGameNameId() {
+        return gameNameId;
     }
 
     @Override
