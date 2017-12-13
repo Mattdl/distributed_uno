@@ -25,6 +25,10 @@ public class Move implements Serializable {
     @DatabaseField
     private boolean hasDrawnCard;
 
+    // ORMLITE: Returning fields for foreign keys
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Game game;
+
     public Move() {
     }
 

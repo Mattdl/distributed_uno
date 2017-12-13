@@ -31,6 +31,10 @@ public class Player implements Serializable {
 
     private int handSize; //used on server for lightweight Player object
 
+    // ORMLITE: Returning fields for foreign keys
+    @DatabaseField(foreign = true, foreignAutoRefresh = true)
+    private Game game;
+
 
     public Player() {
     }
