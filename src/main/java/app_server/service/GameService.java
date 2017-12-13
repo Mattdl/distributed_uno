@@ -279,6 +279,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     private synchronized Card updateGame(Game game, Move move) {
         LOGGER.info("Entering updateGame");
 
+        try {
+            gameDbService.persistMove(game.getGameId(), move);
+            LOGGER.info("MOVE persisted to database for game = {}", game);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
         Player serverPlayer = game.findPlayer(move.getPlayer());
 
         if (serverPlayer != null) {

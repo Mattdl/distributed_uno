@@ -51,6 +51,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         LOGGER.info("Persisting Game = {}", gameToPersist);
 
+        //If you want to update a whole game object, best is to erase everything and do new inserts.
+
         try {
             //Game gameInDb = gameDao.queryForId(gameToPersist.getGameId());
 
@@ -92,7 +94,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     private void createPlayer(Player player) throws SQLException {
-        LOGGER.info("Persisting player = {}", player);
+        LOGGER.info("Creating player = {}", player);
 
         //First object itself
         playerDao.createOrUpdate(player);
@@ -105,7 +107,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     private void createMove(Move move) throws SQLException {
-        LOGGER.info("Persisting move = {}", move);
+        LOGGER.info("Creating move = {}", move);
 
         //First persist the foreign key objects
         cardDao.createOrUpdate(move.getCard());
@@ -123,20 +125,15 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     //TODO
     @Override
     public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
+        LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameName);
 
         try {
             Game game = gameDao.queryForId(gameName);
 
-            Collection<Move> moves = game.getMovesCollection();
-            //moves.
+            ForeignCollection<Move> movesForeign = (ForeignCollection<Move>) game.getMovesCollection();
 
-            //ForeignCollection<Move> movesForeign = (ForeignCollection<Move>) moves;
-
-            //movesForeign.add(move);
-
-            //game.addMove(move);
-
-            //gameDao.update(game);
+            // Should add the move
+            movesForeign.add(move);
 
         } catch (SQLException e) {
             e.printStackTrace();
