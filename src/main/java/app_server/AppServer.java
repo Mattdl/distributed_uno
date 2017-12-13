@@ -8,6 +8,7 @@ import db_server.GameDbService;
 import db_server.UserDbService;
 import model.Lobby;
 
+import java.rmi.ConnectException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -65,9 +66,13 @@ public class AppServer {
 
             gameDbService = (GameDbService) myRegistry.lookup("GameDbService");
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch(ConnectException ce){
+            LOGGER.warning("APPSERVER FAILED CONNECTING TO DATABASE, RMI ConnectException");
             //TODO if no connetion, ask dispatcher for new dbIP+port
+
+        }
+        catch (Exception e) {
+            e.printStackTrace();
         }
 
         if(myRegistry == null || gameDbService == null || userDbService == null){
