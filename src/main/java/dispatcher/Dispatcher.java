@@ -80,6 +80,7 @@ public class Dispatcher {
      * Init the first AppServer, if server gets overloaded, it requests the Dispatcher for new AppServers
      */
     private void initInitialAppServer() {
+        appServers = new ArrayList<>();
         appServers.add(new Server(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
     }
 
