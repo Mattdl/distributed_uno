@@ -98,11 +98,38 @@ public class Dispatcher {
     }
 
     private void startDbServers() {
+
         for (Server dbServer : dbServers) {
             LOGGER.info("Starting database {}", dbServer);
+
             //Setup db
-            DatabaseServer.main(new String[]{dbServer.getIp(), String.valueOf(dbServer.getPort())});
+            String[] stringArgs = getDbServerArgsWithout(dbServer);
+
+            DatabaseServer.main(stringArgs);
         }
+    }
+
+    private String[] getDbServerArgsWithout(Server dbServer) {
+        String[] ret = new String[(dbServers.size()) * 2];
+
+        ret[0] = dbServer.getIp();
+        ret[1] = String.valueOf(dbServer.getPort());
+
+        int argCount = 2;
+        for (int i = 0; i < dbServers.size(); i++) {
+
+            Server tmp = dbServers.get(i);
+
+            if (tmp != dbServer) {
+
+                ret[argCount] = tmp.getIp();
+                ret[argCount + 1] = String.valueOf(tmp.getPort());
+
+                argCount += 2;
+            }
+        }
+
+        return ret;
     }
 
     private void startAppServers() {
