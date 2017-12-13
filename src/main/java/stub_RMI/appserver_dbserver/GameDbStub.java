@@ -11,9 +11,9 @@ import java.util.List;
 public interface GameDbStub extends Remote {
 
     boolean persistGame(Game game) throws RemoteException;
-    boolean persistMove(String gameName, Move move) throws RemoteException;
-    boolean persistPlayer(String gameName, Player player) throws RemoteException;
+    boolean persistMove(String gameId, Move move) throws RemoteException;
+    boolean persistPlayer(String gameId, Player player) throws RemoteException;
 
-    Game fetchGame(String gameName) throws RemoteException;
+    Game fetchGame(String gameId) throws RemoteException;
 
 }

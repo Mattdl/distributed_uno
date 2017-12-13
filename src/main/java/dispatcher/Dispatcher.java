@@ -4,17 +4,17 @@ package dispatcher;
 import app_server.AppServer;
 import db_server.DatabaseServer;
 import model.Server;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 public class Dispatcher {
 
-    final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
+    final Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
     // DISPATCHER
     private final int DISPATCHER_PORT = 1099;

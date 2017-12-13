@@ -122,7 +122,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     }
 
-    //TODO
+    //TODO test if works
     @Override
     public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
         LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameName);
