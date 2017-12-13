@@ -9,7 +9,6 @@ import db_server.UserDbService;
 import model.Lobby;
 
 import java.rmi.ConnectException;
-import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.logging.Logger;
@@ -19,8 +18,8 @@ public class AppServer {
     private static final Logger LOGGER = Logger.getLogger(AppServer.class.getName());
 
     //TODO outcomment this, dbIP mus tbe provided by the dispatcher, if connection is lost to db, dispatcher must be contacted
-    final String DB_IP = "localhost";
-    final int DB_PORT = 1200;
+    static String dbIp;
+    static int dbPort;
 
     private final String DISPATCHER_IP = "localhost";
     private final int DISPATCHER_PORT = 1099;
@@ -33,7 +32,7 @@ public class AppServer {
 
     private void startServer(String ip, int port) {
 
-        registerAsClientWithDatabase(DB_IP, DB_PORT);
+        registerAsClientWithDatabase(dbIp, dbPort);
         registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
 
         initData();
@@ -115,8 +114,21 @@ public class AppServer {
     }
 
     public static void main(String[] args) {
+
+        /* Parse this:
+            serverArgs[0] = STARTING_APPSERVER_IP;
+            serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
+            serverArgs[3] = STARTING_DBSERVER_IP;
+            serverArgs[4] = String.valueOf(STARTING_DBSERVER_PORT);
+            serverArgs[5] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+         */
         String ip = args[0];
         int port = Integer.parseInt(args[1]);
+
+        dbIp = args[2];
+        dbPort = Integer.parseInt(args[3]);
+
+
 
         new AppServer().startServer(ip, port);
     }

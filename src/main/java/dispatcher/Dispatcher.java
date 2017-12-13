@@ -113,9 +113,9 @@ public class Dispatcher {
             String[] serverArgs = new String[5];
             serverArgs[0] = STARTING_APPSERVER_IP;
             serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
-            serverArgs[3] = STARTING_DBSERVER_IP;
-            serverArgs[4] = String.valueOf(STARTING_DBSERVER_PORT);
-            serverArgs[5] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+            serverArgs[2] = STARTING_DBSERVER_IP;
+            serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
+            serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
 
             AppServer.main(serverArgs);
         }
