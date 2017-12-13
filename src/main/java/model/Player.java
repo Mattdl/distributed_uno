@@ -130,4 +130,8 @@ public class Player implements Serializable {
     public void addCards(List<Card> cards) {
         hand.addAll(cards);
     }
+
+    public Collection<Card> getHandCollection() {
+        return hand;
+    }
 }

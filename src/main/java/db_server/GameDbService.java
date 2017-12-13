@@ -14,6 +14,7 @@ import stub_RMI.appserver_dbserver.GameDbStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 public class GameDbService extends UnicastRemoteObject implements GameDbStub {
@@ -158,6 +159,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
 
             if (game != null) {
+                /*
                 //TODO delete
                 ForeignCollection<Player> players = (ForeignCollection<Player>) game.getPlayerListCollection();
 
@@ -178,6 +180,16 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                 LOGGER.info("WITH CAST, playerlist = {}", game.getPlayerList());
 
                 game.setPlayerList(game.getPlayerList());
+                */
+
+                // Converting ForeignCollections to Arraylists
+                game.setMoves(new ArrayList<>(game.getMovesCollection()));
+                game.setDeck(new ArrayList<>(game.getDeckCollection()));
+                game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
+
+                for(Player player:game.getPlayerList()){
+                    player.setHand(new ArrayList<>(player.getHandCollection()));
+                }
             }
 
             LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);

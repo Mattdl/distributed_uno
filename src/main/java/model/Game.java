@@ -482,9 +482,10 @@ public class Game extends Observable implements Serializable {
 
     //TODO check
     public List<Player> getPlayerList() {
+        /*
         if(!(playerList instanceof List<?>)) {
             playerList = new ArrayList<>(playerList);
-        }
+        }*/
         return (List<Player>) playerList;
     }
 
@@ -506,6 +507,10 @@ public class Game extends Observable implements Serializable {
 
     public List<Card> getDeck() {
         return ((List<Card>) deck);
+    }
+
+    public Collection<Card> getDeckCollection(){
+        return deck;
     }
 
     public void setDeck(List<Card> deck) {
