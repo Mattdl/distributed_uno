@@ -1,8 +1,11 @@
 package app_server.service;
 
+import db_server.DatabaseServer;
 import db_server.GameDbService;
 import model.Game;
 import model.Lobby;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.GameLobbyStub;
 
@@ -14,6 +17,7 @@ import java.rmi.server.UnicastRemoteObject;
  */
 public class GameLobbyService extends UnicastRemoteObject implements GameLobbyStub {
 
+    final Logger LOGGER = LoggerFactory.getLogger(GameLobbyService.class);
 
     private Lobby lobby;
     private GameDbStub gameDbService;
@@ -33,16 +37,28 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
      */
     @Override
     public synchronized boolean hasEverybodyJoined(String gameName) throws RemoteException {
+        LOGGER.info("Entering hasEverybodyJoined");
+
         try {
             Game game = lobby.findGame(gameName);
             game.addJoinedPlayer();
             if (game.getJoinedPlayers() < game.getPlayerList().size()) {
+                LOGGER.info("Waiting on other players");
                 wait();
             } else {
 
                 if (!game.isInitialyPersisted()) {
+                    LOGGER.info("Persisting Game Object to Database!");
+
                     gameDbService.persistGame(game);
                     game.setInitialyPersisted(true);
+
+                    //TODO delete this, just for testing
+                    Game gameRet = gameDbService.fetchGame(game.getGameName());
+                    LOGGER.info("FETCHED GAME FROM DATABASE = {}",gameRet);
+
+
+                    LOGGER.info("Game Object PERSISTED to Database!");
                 }
 
                 notifyAll();

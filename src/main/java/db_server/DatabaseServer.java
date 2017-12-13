@@ -69,10 +69,10 @@ public class DatabaseServer {
             gameDao = DaoManager.createDao(conn, Game.class);
 
             //CREATE TABLES
-            TableUtils.createTable(conn,Game.class);
-            TableUtils.createTable(conn, Card.class);
-            TableUtils.createTable(conn, Move.class);
-            TableUtils.createTable(conn, Player.class);
+            TableUtils.createTableIfNotExists(conn,Game.class);
+            TableUtils.createTableIfNotExists(conn, Card.class);
+            TableUtils.createTableIfNotExists(conn, Move.class);
+            TableUtils.createTableIfNotExists(conn, Player.class);
 
         } catch (SQLException e) {
             System.out.println(e.getMessage());

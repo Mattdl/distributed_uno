@@ -10,6 +10,7 @@ import db_server.UserDbService;
 import dispatcher.DispatcherService;
 import model.Lobby;
 import model.Server;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.appserver_dbserver.UserDbStub;
@@ -19,11 +20,11 @@ import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Date;
-import java.util.logging.Logger;
+
 
 public class AppServer {
 
-    final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
+    final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
     private static String dbIp;
     private static int dbPort;
