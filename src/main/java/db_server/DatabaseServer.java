@@ -6,10 +6,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
 import com.j256.ormlite.table.TableUtils;
-import model.Card;
-import model.Game;
-import model.Move;
-import model.Player;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,13 +16,19 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DatabaseServer {
 
     final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
     private ConnectionSource conn;
-    private final int PORT = 7000;
+
+    private static String dbIp = "localhost";
+    private static int dbPort = 7000;
+
+    private static List<Server> otherDatabases = new ArrayList<>();
 
     private String databaseUrl;
 
@@ -36,13 +39,13 @@ public class DatabaseServer {
 
     private void startServer() {
 
-        initDb("uno" + PORT + ".db");
+        initDb("uno_port" + dbPort + ".db");
 
         if (conn != null) {
             //Init RMI services
 
             try {
-                Registry registry = LocateRegistry.createRegistry(PORT);
+                Registry registry = LocateRegistry.createRegistry(dbPort);
 
                 //Bind RMI implementations to service names
                 registry.rebind("UserDbService", new UserDbService());
@@ -91,6 +94,25 @@ public class DatabaseServer {
 
 
     public static void main(String[] args) {
+
+        dbIp = args[0];
+        dbPort = Integer.valueOf(args[1]);
+
+        int argCount = 2;
+
+        while (argCount < args.length) {
+
+            otherDatabases.add(
+                    new Server(
+                            args[argCount],
+                            Integer.valueOf(args[argCount + 1])
+                    )
+            );
+
+            argCount += 2;
+        }
+
+
         new DatabaseServer().startServer();
     }
 }

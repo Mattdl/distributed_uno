@@ -53,7 +53,6 @@ public class Dispatcher {
 
         LOGGER.info("DISPATCHER FINISHED startups");
 
-
     }
 
     /**
@@ -109,6 +108,12 @@ public class Dispatcher {
         }
     }
 
+    /**
+     * Get the params of the other databases in String array format.
+     *
+     * @param dbServer
+     * @return
+     */
     private String[] getDbServerArgsWithout(Server dbServer) {
         String[] ret = new String[(dbServers.size()) * 2];
 
