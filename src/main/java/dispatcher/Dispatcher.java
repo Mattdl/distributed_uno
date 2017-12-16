@@ -201,7 +201,7 @@ public class Dispatcher {
         return null;
     }
 
-    public static Server startNewAppServer() {
+    public static ApplicationServer startNewAppServer() {
         int portOffset = appServers.size();
 
         //Init the new server
@@ -210,7 +210,9 @@ public class Dispatcher {
         server.setPort(Dispatcher.STARTING_APPSERVER_PORT + portOffset);
 
         // Get least loaded db-server
-        server.setAssignedDbServer(getLeastOccupiedDbServer());
+        DbServer dbServer = getLeastOccupiedDbServer();
+        dbServer.incrementAssignedAppServerCount();
+        server.setAssignedDbServer(dbServer);
 
         //Add it to the list
         appServers.add(server);

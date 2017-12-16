@@ -41,7 +41,7 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         }
 
         // If no more space is available, create and start new appserver
-        Server ret = Dispatcher.startNewAppServer();
+        ApplicationServer ret = Dispatcher.startNewAppServer();
 
         LOGGER.info("DISPATCHER RETRIEVED NEW APP SERVER");
         LOGGER.info("DISPATCHER STATUS: dbServers = {}, appServers = {}", dbServers, appServers);
