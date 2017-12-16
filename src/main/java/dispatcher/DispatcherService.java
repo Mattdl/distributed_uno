@@ -1,6 +1,5 @@
 package dispatcher;
 
-import app_server.AppServer;
 import model.ApplicationServer;
 import model.DbServer;
 import model.Server;

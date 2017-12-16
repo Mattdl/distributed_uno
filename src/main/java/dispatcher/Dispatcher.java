@@ -132,7 +132,6 @@ public class Dispatcher {
             String[] stringArgs = getDbServerArgsWithout(dbServer);
 
             DatabaseServer.main(stringArgs);
-
         }
     }
 
@@ -172,9 +171,9 @@ public class Dispatcher {
 
         LOGGER.info("Starting ApplicationServer from dispatch, ApplicationServer = {}", appServer);
 
-        String[] serverArgs = new String[5];
-        serverArgs[0] = STARTING_APPSERVER_IP;
-        serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
+        String[] serverArgs = new String[4];
+        serverArgs[0] = appServer.getIp();
+        serverArgs[1] = String.valueOf(appServer.getPort());
         serverArgs[2] = appServer.getAssignedDbServer().getIp();
         serverArgs[3] = String.valueOf(appServer.getAssignedDbServer().getPort());
 
@@ -203,7 +202,7 @@ public class Dispatcher {
     }
 
     public static Server startNewAppServer() {
-        int portOffset = appServers.size() - 1;
+        int portOffset = appServers.size();
 
         //Init the new server
         ApplicationServer server = new ApplicationServer();
