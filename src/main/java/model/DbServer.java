@@ -11,6 +11,8 @@ public class DbServer extends Server {
     private GameDbStub gameDbStub;
     private UserDbStub userDbStub;
     private int assignedAppServerCount;
+    private boolean isOnline;
+
 
     public DbServer(String ip, int port) {
         super(ip, port);
@@ -60,6 +62,14 @@ public class DbServer extends Server {
         assignedAppServerCount--;
     }
 
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
     @Override
     public String toString() {
         return "DbServer{" +
@@ -67,6 +77,20 @@ public class DbServer extends Server {
                 ", ip='" + ip + '\'' +
                 ", port=" + port +
                 '}';
+    }
+
+    public String toDisplayString() {
+        String base = getBaseDisplayString();
+
+        if (isOnline) {
+            return base + " = ONLINE";
+        } else {
+            return base + " = OFFLINE";
+        }
+    }
+
+    public String getBaseDisplayString(){
+        return "DB SERVER '" + ip + "':" + port;
     }
 
     @Override

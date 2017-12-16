@@ -39,7 +39,7 @@ public class Dispatcher {
     //TODO SET THESE PARAMS
     private boolean testFailureDatabase = false;
 
-    private void init() {
+    protected void init() {
         LOGGER.info("DISPATCHER STARTING setup");
 
         // Init servers
@@ -126,13 +126,19 @@ public class Dispatcher {
 
 
         for (DbServer dbServer : databasesToStartup) {
-            LOGGER.info("DISPATCHER STARTING DATABASE {}", dbServer);
-
-            //Setup db
-            String[] stringArgs = getDbServerArgsWithout(dbServer);
-
-            DatabaseServer.main(stringArgs);
+            startDbServer(dbServer);
         }
+    }
+
+    protected void startDbServer(DbServer dbServer){
+        LOGGER.info("DISPATCHER STARTING DATABASE {}", dbServer);
+
+        //Setup db
+        String[] stringArgs = getDbServerArgsWithout(dbServer);
+
+        DatabaseServer.main(stringArgs);
+
+        dbServer.setOnline(true);
     }
 
     /**

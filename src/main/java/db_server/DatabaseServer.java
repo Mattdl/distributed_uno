@@ -12,8 +12,10 @@ import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.appserver_dbserver.UserDbStub;
 
+import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -21,7 +23,9 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
-    final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
+    public static List<DatabaseServer> databaseInstances = new LinkedList<>();
+
+    static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
     private String dbIp;
     private int dbPort;
@@ -39,6 +43,7 @@ public class DatabaseServer {
     private Dao<Card, String> cardDao;
 
     private int connRefreshTime = 60 * 1000;
+    private TimerTask timerTask;
 
     public DatabaseServer(String dbIp, int dbPort, List<DbServer> otherDatabases) {
         this.dbIp = dbIp;
@@ -71,7 +76,7 @@ public class DatabaseServer {
         // Connect with other databases
         registerAsClientWithOtherDatabases();
 
-        LOGGER.info("DATABASE '{}:{}' is READY",dbIp,dbPort);
+        LOGGER.info("DATABASE '{}:{}' is READY", dbIp, dbPort);
     }
 
     private void initDb(String fileName) {
@@ -117,7 +122,7 @@ public class DatabaseServer {
 
         Timer timer = new Timer();
 
-        timer.scheduleAtFixedRate(new TimerTask() {
+        timerTask = new TimerTask() {
 
             @Override
             public void run() {
@@ -129,7 +134,7 @@ public class DatabaseServer {
 
                 for (DbServer otherDbServer : otherDatabases) {
 
-                    if (!otherDbServer.isConnected()) {
+                    //if (!otherDbServer.isConnected()) {
 
                         Registry myRegistry;
                         GameDbStub gameDbStub = null;
@@ -157,7 +162,7 @@ public class DatabaseServer {
 
                             //e.printStackTrace();
                         }
-                    }
+                    //}
                     LOGGER.info("Leaving registerAsClientWithOtherDatabases");
                 }
 
@@ -166,7 +171,36 @@ public class DatabaseServer {
                     gameDbService.updateOtherDatabases(otherDatabases);
                 }
             }
-        }, 0, connRefreshTime);
+        };
+
+        timer.scheduleAtFixedRate(timerTask, 2*1000, connRefreshTime);
+    }
+
+    public static void stopDatabaseServer(DbServer targetDbServer) {
+        LOGGER.info("STOPPING DATABASE, targetDbServer = {} ", targetDbServer);
+
+        Iterator<DatabaseServer> it = databaseInstances.iterator();
+        boolean found = false;
+
+        while (it.hasNext() && !found) {
+            DatabaseServer databaseServer = it.next();
+
+            if (databaseServer.dbIp.equals(targetDbServer.getIp())
+                    && databaseServer.dbPort == targetDbServer.getPort()) {
+                found = true;
+
+                try {
+                    UnicastRemoteObject.unexportObject(databaseServer.gameDbService, false);
+                    UnicastRemoteObject.unexportObject(databaseServer.userDbService, false);
+                    databaseServer.timerTask.cancel();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                LOGGER.info("STOPPED DATABASE  '{}:{}'", databaseServer.dbIp, databaseServer.dbPort);
+
+            }
+        }
     }
 
 
@@ -193,6 +227,9 @@ public class DatabaseServer {
             argCount += 2;
         }
 
-        new DatabaseServer(dbIp, dbPort, otherDatabases).startServer();
+        DatabaseServer databaseServer = new DatabaseServer(dbIp, dbPort, otherDatabases);
+        databaseInstances.add(databaseServer);
+
+        databaseServer.startServer();
     }
 }

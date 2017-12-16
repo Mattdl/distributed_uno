@@ -1,5 +1,6 @@
 package dispatcher;
 
+import db_server.DatabaseServer;
 import model.DbServer;
 
 import javax.swing.*;
@@ -22,6 +23,7 @@ public class DispatcherUI extends Dispatcher {
     }
 
     private void createAndShowGUI() {
+
         //Create and set up the window.
         frame = new JFrame("DISPATCHER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,11 +35,16 @@ public class DispatcherUI extends Dispatcher {
         BorderLayout borderLayout = new BorderLayout();
         pane.setLayout(borderLayout);
 
+        JPanel panelNorth = new JPanel();
+        JPanel panelCenter = new JPanel();
+
+
         //Add the ubiquitous "Hello World" label.
         JLabel label = new JLabel("Control panel for the dispatcher.");
-        pane.add(label,BorderLayout.NORTH);
+        panelNorth.add(label);
+        frame.add(panelNorth, BorderLayout.NORTH);
 
-        LOGGER.info("DISPLAYING BUTTONS FOR dbservers = {}",dbServers);
+        LOGGER.info("DISPLAYING BUTTONS FOR dbservers = {}", dbServers);
 
         for (DbServer dbServer : dbServers) {
             JButton button = new JButton(dbServer.toDisplayString());
@@ -48,10 +55,11 @@ public class DispatcherUI extends Dispatcher {
                 //button.updateUI();
 
                 //updateUI()
-                });
+            });
 
-            pane.add(button,BorderLayout.CENTER);
+            panelCenter.add(button);
         }
+        frame.add(panelCenter, BorderLayout.CENTER);
 
         //Display the window.
         frame.pack();
@@ -67,10 +75,19 @@ public class DispatcherUI extends Dispatcher {
     private DbServer doDatabaseServerAction(DbServer dbServer) {
         dbServer = findDbServerFromString(dbServer.getBaseDisplayString());
 
-        dbServer.setOnline(!dbServer.isOnline());
+        if (dbServer != null) {
 
-        //TODO actually shut down the database, simulate crash
-        //dbServer.shutDown();
+            if (dbServer.isOnline()) {
+
+                //TODO actually shut down the database, simulate crash
+                DatabaseServer.stopDatabaseServer(dbServer);
+            } else {
+                startDbServer(dbServer);
+            }
+
+            // Update status
+            dbServer.setOnline(!dbServer.isOnline());
+        }
 
         return dbServer;
 
