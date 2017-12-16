@@ -59,7 +59,6 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         LOGGER.info("retrieveActiveDatabaseInfo");
         LOGGER.info("DISPATCHER STATUS: dbServers = {}, appServers = {}", dbServers, appServers);
 
-
         ApplicationServer appServer = Dispatcher.findAppServer(currentAppServer);
 
         if (appServer != null) {
@@ -130,15 +129,5 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         }
 
         LOGGER.info("DISPATCHER STATUS: dbServers = {}, appServers = {}", dbServers, appServers);
-    }
-
-    @Override
-    public void shutAppServerDown(Server server) throws RemoteException {
-
-    }
-
-    @Override
-    public void startNewAppServer() throws RemoteException {
-
     }
 }
