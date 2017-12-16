@@ -178,7 +178,6 @@ public class Dispatcher {
         serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
         serverArgs[2] = appServer.getAssignedDbServer().getIp();
         serverArgs[3] = String.valueOf(appServer.getAssignedDbServer().getPort());
-        serverArgs[4] = String.valueOf(DEFAULT_MAX_PLAYER_LOAD_APPSERVER);
 
         LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", (Object[]) serverArgs);
 
