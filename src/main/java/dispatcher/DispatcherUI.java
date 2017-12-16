@@ -25,23 +25,32 @@ public class DispatcherUI extends Dispatcher {
         //Create and set up the window.
         frame = new JFrame("DISPATCHER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(300, 200);
+        frame.setLocationRelativeTo(null);
+
+        Container pane = frame.getContentPane();
+
+        BorderLayout borderLayout = new BorderLayout();
+        pane.setLayout(borderLayout);
 
         //Add the ubiquitous "Hello World" label.
         JLabel label = new JLabel("Control panel for the dispatcher.");
-        frame.getContentPane().add(label);
+        pane.add(label,BorderLayout.NORTH);
+
+        LOGGER.info("DISPLAYING BUTTONS FOR dbservers = {}",dbServers);
 
         for (DbServer dbServer : dbServers) {
-            Button button = new Button(dbServer.toDisplayString());
+            JButton button = new JButton(dbServer.toDisplayString());
             button.addActionListener((e) -> {
 
                 DbServer updatedDbServer = doDatabaseServerAction(dbServer);
+                button.setText(updatedDbServer.toDisplayString());
+                //button.updateUI();
 
-                button.setLabel(updatedDbServer.toDisplayString());
+                //updateUI()
+                });
 
-                updateUI();
-            });
-
-            frame.getContentPane().add(button);
+            pane.add(button,BorderLayout.CENTER);
         }
 
         //Display the window.
