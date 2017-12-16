@@ -162,6 +162,7 @@ public class DatabaseServer {
                 }
 
                 if (updated) {
+                    LOGGER.info("Other Databases Connections were changed.");
                     gameDbService.updateOtherDatabases(otherDatabases);
                 }
             }

@@ -35,7 +35,7 @@ public class Dispatcher {
     static List<ApplicationServer> appServers;
     static List<DbServer> dbServers;
 
-    private void init() {
+    protected void init() {
         LOGGER.info("DISPATCHER STARTING setup");
 
         // Init servers
@@ -157,9 +157,5 @@ public class Dispatcher {
 
         AppServer.main(serverArgs);
 
-    }
-
-    public static void main(String[] args) {
-        new Dispatcher().init();
     }
 }

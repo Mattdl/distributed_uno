@@ -30,7 +30,6 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     //RMI
     private GameDbStub gameDbService;
 
-
     public GameService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
