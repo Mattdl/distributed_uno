@@ -6,6 +6,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
 import com.j256.ormlite.table.TableUtils;
+import javafx.util.Pair;
 import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
-    public static List<DatabaseServer> databaseInstances = new LinkedList<>();
+    public static List<Pair<DatabaseServer, Registry>> databaseInstances = new LinkedList<>();
 
     static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
@@ -60,6 +61,8 @@ public class DatabaseServer {
         //Init RMI services
         try {
             Registry registry = LocateRegistry.createRegistry(dbPort);
+
+            databaseInstances.add(new Pair<>(this, registry));
 
             userDbService = new UserDbService(otherDatabases);
             gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
@@ -136,32 +139,32 @@ public class DatabaseServer {
 
                     //if (!otherDbServer.isConnected()) {
 
-                        Registry myRegistry;
-                        GameDbStub gameDbStub = null;
-                        UserDbStub userDbStub = null;
+                    Registry myRegistry;
+                    GameDbStub gameDbStub = null;
+                    UserDbStub userDbStub = null;
 
-                        try {
-                            myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
+                    try {
+                        myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
 
-                            if (myRegistry != null) {
-                                gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
-                                userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
-                            }
-
-                            // If new connection
-                            otherDbServer.setGameDbStub(gameDbStub);
-                            otherDbServer.setUserDbStub(userDbStub);
-
-                            updated = true;
-
-                            LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
-
-
-                        } catch (Exception e) {
-                            LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
-
-                            //e.printStackTrace();
+                        if (myRegistry != null) {
+                            gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
+                            userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
                         }
+
+                        // If new connection
+                        otherDbServer.setGameDbStub(gameDbStub);
+                        otherDbServer.setUserDbStub(userDbStub);
+
+                        updated = true;
+
+                        LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+
+                    } catch (Exception e) {
+                        LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+                        //e.printStackTrace();
+                    }
                     //}
                     LOGGER.info("Leaving registerAsClientWithOtherDatabases");
                 }
@@ -173,23 +176,32 @@ public class DatabaseServer {
             }
         };
 
-        timer.scheduleAtFixedRate(timerTask, 2*1000, connRefreshTime);
+        timer.scheduleAtFixedRate(timerTask, 2 * 1000, connRefreshTime);
     }
 
     public static void stopDatabaseServer(DbServer targetDbServer) {
         LOGGER.info("STOPPING DATABASE, targetDbServer = {} ", targetDbServer);
 
-        Iterator<DatabaseServer> it = databaseInstances.iterator();
+        Iterator<Pair<DatabaseServer, Registry>> it = databaseInstances.iterator();
         boolean found = false;
 
+        Pair<DatabaseServer, Registry> pair = null;
+
         while (it.hasNext() && !found) {
-            DatabaseServer databaseServer = it.next();
+
+            pair = it.next();
+            DatabaseServer databaseServer = pair.getKey();
 
             if (databaseServer.dbIp.equals(targetDbServer.getIp())
                     && databaseServer.dbPort == targetDbServer.getPort()) {
                 found = true;
 
+                Registry registry = pair.getValue();
+
                 try {
+                    registry.unbind("GameDbService");
+                    registry.unbind("UserDbService");
+
                     UnicastRemoteObject.unexportObject(databaseServer.gameDbService, false);
                     UnicastRemoteObject.unexportObject(databaseServer.userDbService, false);
                     databaseServer.timerTask.cancel();
@@ -201,6 +213,8 @@ public class DatabaseServer {
 
             }
         }
+
+        databaseInstances.remove(pair);
     }
 
 
@@ -228,7 +242,7 @@ public class DatabaseServer {
         }
 
         DatabaseServer databaseServer = new DatabaseServer(dbIp, dbPort, otherDatabases);
-        databaseInstances.add(databaseServer);
+        //databaseInstances.add(databaseServer);
 
         databaseServer.startServer();
     }
