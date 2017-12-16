@@ -38,6 +38,8 @@ public class DatabaseServer {
     private Dao<Player, String> playerDao;
     private Dao<Card, String> cardDao;
 
+    private int connRefreshTime = 60 * 1000;
+
     public DatabaseServer(String dbIp, int dbPort, List<DbServer> otherDatabases) {
         this.dbIp = dbIp;
         this.dbPort = dbPort;
@@ -158,11 +160,11 @@ public class DatabaseServer {
                     LOGGER.info("Leaving registerAsClientWithOtherDatabases");
                 }
 
-                if(updated) {
+                if (updated) {
                     gameDbService.updateOtherDatabases(otherDatabases);
                 }
             }
-        }, 0, 2 * 60 * 1000);
+        }, 0, connRefreshTime);
     }
 
 
