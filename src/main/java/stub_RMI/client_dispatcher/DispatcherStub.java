@@ -9,5 +9,9 @@ public interface DispatcherStub extends Remote {
 
     Server retrieveServerInfo() throws RemoteException; //return host-ip, port, serviceName
 
-    Server retrieveActiveDatabaseInfo() throws RemoteException;
+    Server retrieveActiveDatabaseInfo(Server currentAppServer) throws RemoteException;
+
+    void shutAppServerDown(Server server) throws RemoteException;
+
+    void startNewAppServer() throws RemoteException;
 }

@@ -5,6 +5,7 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class DbServer extends Server {
     private GameDbStub gameDbStub;
@@ -60,5 +61,14 @@ public class DbServer extends Server {
                 "ip='" + ip + '\'' +
                 ", port=" + port +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Server server = (Server) o;
+        return port == server.port &&
+                Objects.equals(ip, server.ip);
     }
 }

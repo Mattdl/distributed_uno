@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Dispatcher {
@@ -34,6 +35,9 @@ public class Dispatcher {
 
     static List<ApplicationServer> appServers;
     static List<DbServer> dbServers;
+
+    //TODO SET THESE PARAMS
+    private boolean testFailureDatabase = true;
 
     private void init() {
         LOGGER.info("DISPATCHER STARTING setup");
@@ -81,7 +85,7 @@ public class Dispatcher {
      */
     private void initInitialAppServer() {
         appServers = new ArrayList<>();
-        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
+        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT,dbServers.get(0)));
     }
 
     /**
@@ -95,17 +99,40 @@ public class Dispatcher {
         for (int i = 0; i < dbServerCount; i++) {
             dbServers.add(new DbServer(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT + i));
         }
+
+        if (testFailureDatabase) {
+            insertUnconnectableDatabase();
+        }
+    }
+
+    /**
+     * Method to insert unreachable database.
+     * Used for testing reassignment.
+     */
+    private void insertUnconnectableDatabase() {
+        dbServers.add(0, new DbServer(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT - 1));
     }
 
     private void startDbServers() {
+        List<DbServer> databasesToStartup = new LinkedList<>();
 
-        for (Server dbServer : dbServers) {
+        if(!testFailureDatabase) {
+            databasesToStartup = dbServers;
+        }
+        else if(dbServers.size() > 1){
+            // First database is the failure database (not started)
+            databasesToStartup = dbServers.subList(1, dbServers.size());
+        }
+
+
+        for (DbServer dbServer : databasesToStartup) {
             LOGGER.info("DISPATCHER STARTING DATABASE {}", dbServer);
 
             //Setup db
             String[] stringArgs = getDbServerArgsWithout(dbServer);
 
             DatabaseServer.main(stringArgs);
+
         }
     }
 
@@ -149,14 +176,23 @@ public class Dispatcher {
         String[] serverArgs = new String[5];
         serverArgs[0] = STARTING_APPSERVER_IP;
         serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
-        serverArgs[2] = STARTING_DBSERVER_IP;
-        serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
+        serverArgs[2] = appServer.getAssignedDbServer().getIp();
+        serverArgs[3] = String.valueOf(appServer.getAssignedDbServer().getPort());
         serverArgs[4] = String.valueOf(DEFAULT_MAX_PLAYER_LOAD_APPSERVER);
 
-        LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", serverArgs);
+        LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", (Object[]) serverArgs);
 
         AppServer.main(serverArgs);
 
+    }
+
+    public static ApplicationServer findAppServer(Server server){
+        for(ApplicationServer appServer:appServers){
+            if(appServer.equals(server)){
+                return appServer;
+            }
+        }
+        return null;
     }
 
     public static void main(String[] args) {

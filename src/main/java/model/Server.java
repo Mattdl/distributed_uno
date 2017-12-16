@@ -1,6 +1,7 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class Server implements Serializable {
     protected String ip;
@@ -38,5 +39,20 @@ public class Server implements Serializable {
                 "ip='" + ip + '\'' +
                 ", port=" + port +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Server server = (Server) o;
+        return port == server.port &&
+                Objects.equals(ip, server.ip);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(ip, port);
     }
 }
