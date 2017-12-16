@@ -1,6 +1,7 @@
 package client;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 import model.Player;
 import model.Server;
@@ -10,7 +11,7 @@ import java.util.logging.Logger;
 
 public class Main extends Application {
 
-    private static final Logger LOGGER = Logger.getLogger( Main.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(Main.class.getName());
 
     public static SceneFactory sceneFactory;
     public static Server appServer;
@@ -18,9 +19,9 @@ public class Main extends Application {
     public static Player currentPlayer;
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) throws Exception {
 
-        LOGGER.log(Level.INFO,"Launching client application");
+        LOGGER.log(Level.INFO, "Launching client application");
 
 
         //Multiple threads should run here (Service!)
@@ -29,16 +30,16 @@ public class Main extends Application {
 
         final int HEIGHT = 600;
         final int WIDTH = 900;
-        sceneFactory = new SceneFactory(WIDTH,HEIGHT);
+        sceneFactory = new SceneFactory(WIDTH, HEIGHT);
         primaryStage.setScene(sceneFactory.getLoginScene());
 
 
         primaryStage.setTitle("UNO");
-        primaryStage.setAlwaysOnTop( false );
-        primaryStage.setResizable( true );
+        primaryStage.setAlwaysOnTop(false);
+        primaryStage.setResizable(true);
         primaryStage.show();
 
-        LOGGER.log(Level.INFO,"Client application LAUNCHED");
+        LOGGER.log(Level.INFO, "Client application LAUNCHED");
     }
 
 

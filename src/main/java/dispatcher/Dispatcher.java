@@ -17,7 +17,7 @@ import java.util.List;
 
 public class Dispatcher {
 
-    final Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
     // DISPATCHER
     private final int DISPATCHER_PORT = 1099;
@@ -37,7 +37,7 @@ public class Dispatcher {
     static List<DbServer> dbServers;
 
     //TODO SET THESE PARAMS
-    private boolean testFailureDatabase = true;
+    private boolean testFailureDatabase = false;
 
     private void init() {
         LOGGER.info("DISPATCHER STARTING setup");
@@ -55,7 +55,7 @@ public class Dispatcher {
 
         // Start servers
         startDbServers();
-        startInitAppServer();
+        startAppServer(appServers.get(0));
 
         LOGGER.info("DISPATCHER FINISHED startups");
     }
@@ -85,7 +85,8 @@ public class Dispatcher {
      */
     private void initInitialAppServer() {
         appServers = new ArrayList<>();
-        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT,dbServers.get(0)));
+        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT, dbServers.get(0)));
+        dbServers.get(0).incrementAssignedAppServerCount();
     }
 
     /**
@@ -116,10 +117,9 @@ public class Dispatcher {
     private void startDbServers() {
         List<DbServer> databasesToStartup = new LinkedList<>();
 
-        if(!testFailureDatabase) {
+        if (!testFailureDatabase) {
             databasesToStartup = dbServers;
-        }
-        else if(dbServers.size() > 1){
+        } else if (dbServers.size() > 1) {
             // First database is the failure database (not started)
             databasesToStartup = dbServers.subList(1, dbServers.size());
         }
@@ -168,9 +168,8 @@ public class Dispatcher {
     /**
      * Only startup one app-server! If load is exceeded, other appServers are started by request of the appServer.
      */
-    private void startInitAppServer() {
+    private static void startAppServer(ApplicationServer appServer) {
 
-        ApplicationServer appServer = appServers.get(0);
         LOGGER.info("Starting ApplicationServer from dispatch, ApplicationServer = {}", appServer);
 
         String[] serverArgs = new String[5];
@@ -185,13 +184,57 @@ public class Dispatcher {
 
     }
 
-    public static ApplicationServer findAppServer(Server server){
-        for(ApplicationServer appServer:appServers){
-            if(appServer.equals(server)){
+    public static ApplicationServer findAppServer(Server server) {
+        for (ApplicationServer appServer : appServers) {
+            if (appServer.equals(server)) {
                 return appServer;
             }
         }
         return null;
+    }
+
+    public static DbServer findDbServer(Server server) {
+        for (DbServer dbServer : dbServers) {
+            if (dbServer.equals(server)) {
+                return dbServer;
+            }
+        }
+        return null;
+    }
+
+    public static Server startNewAppServer() {
+        int portOffset = appServers.size() - 1;
+
+        //Init the new server
+        ApplicationServer server = new ApplicationServer();
+        server.setIp(Dispatcher.STARTING_APPSERVER_IP);
+        server.setPort(Dispatcher.STARTING_APPSERVER_PORT + portOffset);
+
+        // Get least loaded db-server
+        server.setAssignedDbServer(getLeastOccupiedDbServer());
+
+        //Add it to the list
+        appServers.add(server);
+
+        // Startup the server
+        startAppServer(server);
+
+        return server;
+    }
+
+    public static DbServer getLeastOccupiedDbServer() {
+
+        DbServer minDbServer = null;
+        int minCount = Integer.MAX_VALUE;
+
+        for (DbServer dbServer : dbServers) {
+            if (dbServer.getAssignedAppServerCount() < minCount) {
+                minDbServer = dbServer;
+                minCount = dbServer.getAssignedAppServerCount();
+            }
+        }
+
+        return minDbServer;
     }
 
     public static void main(String[] args) {

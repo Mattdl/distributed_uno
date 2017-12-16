@@ -6,29 +6,39 @@ import java.util.Objects;
 
 public class ApplicationServer extends Server {
     // Used by Dispatcher
-    private Server assignedDbServer;
+    private DbServer assignedDbServer;
     private int newDatabaseIndex;
+    private int assignedClientsCount;
+
+    public ApplicationServer() {
+        this.assignedDbServer = null;
+        newDatabaseIndex = 0;
+        assignedClientsCount = 0;
+    }
 
     public ApplicationServer(String ip, int port) {
         super(ip, port);
         this.assignedDbServer = null;
         newDatabaseIndex = 0;
+        assignedClientsCount = 0;
     }
 
-    public ApplicationServer(String ip, int port, Server assignedDbServer) {
+    public ApplicationServer(String ip, int port, DbServer assignedDbServer) {
         super(ip, port);
         this.assignedDbServer = assignedDbServer;
+        newDatabaseIndex = 0;
+        assignedClientsCount = 0;
     }
 
-    public Server getAssignedDbServer() {
+    public DbServer getAssignedDbServer() {
         return assignedDbServer;
     }
 
-    public void setAssignedDbServer(Server assignedDbServer) {
+    public void setAssignedDbServer(DbServer assignedDbServer) {
         this.assignedDbServer = assignedDbServer;
     }
 
-    public void incrementNewDatabaseIndex(){
+    public void incrementNewDatabaseIndex() {
         newDatabaseIndex++;
     }
 
@@ -48,11 +58,28 @@ public class ApplicationServer extends Server {
                 Objects.equals(ip, server.ip);
     }
 
+    public int getAssignedClientsCount() {
+        return assignedClientsCount;
+    }
+
+    public void setAssignedClientsCount(int assignedClientsCount) {
+        this.assignedClientsCount = assignedClientsCount;
+    }
+
+    public void incrementClientCount() {
+        assignedClientsCount++;
+    }
+
+    public void decrementClientCount() {
+        assignedClientsCount--;
+    }
+
     @Override
     public String toString() {
         return "ApplicationServer{" +
                 "assignedDbServer=" + assignedDbServer +
                 ", newDatabaseIndex=" + newDatabaseIndex +
+                ", assignedClientsCount=" + assignedClientsCount +
                 ", ip='" + ip + '\'' +
                 ", port=" + port +
                 '}';

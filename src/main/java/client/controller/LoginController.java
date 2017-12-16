@@ -4,6 +4,8 @@ import client.Main;
 import client.service.login.LoginService;
 import client.service.login.PingService;
 import client.service.login.ServerInitiatorService;
+import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -13,12 +15,18 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Player;
 import model.Server;
+import stub_RMI.client_dispatcher.DispatcherStub;
 
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static client.Main.appServer;
+import static client.service.login.ServerInitiatorService.DISPATCHER_IP;
+import static client.service.login.ServerInitiatorService.DISPATCHER_PORT;
+import static client.service.login.ServerInitiatorService.DISPATCHER_SERVICE;
 
 public class LoginController {
 
@@ -46,7 +54,11 @@ public class LoginController {
             if (serverInfo != null) {
                 appServer = serverInfo;
                 if (appServer.getIp() != null && appServer.getPort() != -1) {
-                    LOGGER.log(Level.WARNING, "Appserver=" + appServer + ", ip=" + appServer.getIp() + ", port=" + appServer.getPort());
+                    LOGGER.log(Level.INFO, "Appserver=" + appServer + ", ip=" + appServer.getIp() + ", port=" + appServer.getPort());
+
+                    Stage stage = (Stage) usernameInput.getScene().getWindow();
+                    updateStageToSentNotifyWhenLeaving(stage);
+
                     //connectionText.setText("Has serverinfo: " + appServer.getIp() + ":" + appServer.getPort());
                 }
             } else {
@@ -59,6 +71,8 @@ public class LoginController {
                 boolean isConnected = (boolean) event1.getSource().getValue();
                 if (isConnected) {
                     connectionText.setText("Connection established: " + serverInfo.getIp() + ":" + serverInfo.getPort());
+
+
                 } else {
                     LOGGER.warning("Could not connect to the retrieved server from dispatch!");
                 }
@@ -113,5 +127,36 @@ public class LoginController {
         stage.setScene(Main.sceneFactory.getLobbyScene(msg));
 
         LOGGER.log(Level.INFO, "switched To LobbyScene");
+    }
+
+    /**
+     * Only needs to be set when client has connection to an app server.
+     *
+     * @param stage
+     */
+    private void updateStageToSentNotifyWhenLeaving(Stage stage) {
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+
+                //RMI init
+                Registry myRegistry = LocateRegistry.getRegistry(DISPATCHER_IP, DISPATCHER_PORT);
+                DispatcherStub dispatcherService = (DispatcherStub) myRegistry.lookup(DISPATCHER_SERVICE);
+
+                dispatcherService.clientQuitingSession(Main.appServer);
+
+                return null;
+            }
+        };
+
+        task.setOnSucceeded(e -> {
+                    Platform.exit();
+                }
+
+        );
+
+        stage.setOnHidden(event -> {
+            task.run();
+        });
     }
 }
