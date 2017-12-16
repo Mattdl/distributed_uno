@@ -81,12 +81,14 @@ public class DispatcherUI extends Dispatcher {
 
                 //TODO actually shut down the database, simulate crash
                 DatabaseServer.stopDatabaseServer(dbServer);
+                dbServer.setOnline(false);
+
             } else {
                 startDbServer(dbServer);
+                dbServer.setOnline(true);
             }
 
             // Update status
-            dbServer.setOnline(!dbServer.isOnline());
         }
 
         return dbServer;

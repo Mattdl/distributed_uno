@@ -24,9 +24,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
-    public static List<Pair<DatabaseServer, Registry>> databaseInstances = new LinkedList<>();
+    public static HashMap<DatabaseServer,Registry> databaseInstances = new HashMap<>();
 
     static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
+    private boolean instanceRunning = true;
 
     private String dbIp;
     private int dbPort;
@@ -50,6 +51,7 @@ public class DatabaseServer {
         this.dbIp = dbIp;
         this.dbPort = dbPort;
         this.otherDatabases = otherDatabases;
+        this.instanceRunning = true;
 
         LOGGER.info("DATABASE '{}:{}' OTHER DATABASES INITIALIZED:{}'", dbIp, dbPort, otherDatabases);
     }
@@ -60,9 +62,14 @@ public class DatabaseServer {
 
         //Init RMI services
         try {
-            Registry registry = LocateRegistry.createRegistry(dbPort);
 
-            databaseInstances.add(new Pair<>(this, registry));
+            Registry registry = databaseInstances.get(this);
+
+            if(registry == null) {
+                registry = LocateRegistry.createRegistry(dbPort);
+            }else{
+                databaseInstances.replace(this,registry);
+            }
 
             userDbService = new UserDbService(otherDatabases);
             gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
@@ -182,41 +189,76 @@ public class DatabaseServer {
     public static void stopDatabaseServer(DbServer targetDbServer) {
         LOGGER.info("STOPPING DATABASE, targetDbServer = {} ", targetDbServer);
 
-        Iterator<Pair<DatabaseServer, Registry>> it = databaseInstances.iterator();
+        Iterator<Map.Entry<DatabaseServer, Registry>> it = databaseInstances.entrySet().iterator();
         boolean found = false;
 
-        Pair<DatabaseServer, Registry> pair = null;
+        Map.Entry<DatabaseServer, Registry> pair = null;
 
         while (it.hasNext() && !found) {
 
             pair = it.next();
             DatabaseServer databaseServer = pair.getKey();
 
-            if (databaseServer.dbIp.equals(targetDbServer.getIp())
+            LOGGER.info("In the while, databaseServer = {} ", databaseServer);
+
+
+            if (databaseServer.instanceRunning
+                    &&databaseServer.dbIp.equals(targetDbServer.getIp())
                     && databaseServer.dbPort == targetDbServer.getPort()) {
                 found = true;
 
+                LOGGER.info("In the while: 1");
+
+
                 Registry registry = pair.getValue();
+
+                LOGGER.info("In the while: 2");
+
 
                 try {
                     registry.unbind("GameDbService");
                     registry.unbind("UserDbService");
 
+                    LOGGER.info("In the while: 3");
+
+
                     UnicastRemoteObject.unexportObject(databaseServer.gameDbService, false);
                     UnicastRemoteObject.unexportObject(databaseServer.userDbService, false);
                     databaseServer.timerTask.cancel();
+
+                    LOGGER.info("In the while: 4");
+
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                LOGGER.info("Leaving the while: 5");
+
+
+                databaseServer.instanceRunning = false;
 
                 LOGGER.info("STOPPED DATABASE  '{}:{}'", databaseServer.dbIp, databaseServer.dbPort);
 
             }
         }
 
-        databaseInstances.remove(pair);
+        //databaseInstances.remove(pair);
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DatabaseServer that = (DatabaseServer) o;
+        return dbPort == that.dbPort &&
+                Objects.equals(dbIp, that.dbIp);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(dbIp, dbPort);
+    }
 
     public static void main(String[] args) {
 
