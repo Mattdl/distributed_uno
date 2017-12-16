@@ -27,10 +27,12 @@ public class AppServer {
     final Logger LOGGER = LoggerFactory.getLogger(AppServer.class);
 
     // TODO may not be static!!!
-    private static String dbIp;
-    private static int dbPort;
+    private String dbIp;
+    private int dbPort;
 
-    private static int maxGameLoad;
+    private String ip;
+    private int port;
+    private int maxGameLoad;
 
     private final String DISPATCHER_IP = "localhost";
     private final int DISPATCHER_PORT = 1099;
@@ -42,7 +44,15 @@ public class AppServer {
 
     private Lobby lobby;
 
-    private void startServer(String ip, int port) {
+    public AppServer(String ip, int port, String dbIp, int dbPort, int maxGameLoad) {
+        this.ip = ip;
+        this.port = port;
+        this.dbIp = dbIp;
+        this.dbPort = dbPort;
+        this.maxGameLoad = maxGameLoad;
+    }
+
+    private void startServer() {
 
         registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
         registerAsClientWithDatabase(dbIp, dbPort);
@@ -77,11 +87,10 @@ public class AppServer {
 
             dispatcherService = (DispatcherStub) myRegistry.lookup("DispatcherService");
 
-        }catch(ConnectException ce){
+        } catch (ConnectException ce) {
             LOGGER.error("APPSERVER FAILED CONNECTING TO DISPATCHER, RMI ConnectException");
             //TODO if no connetion, try again after some time
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -93,15 +102,15 @@ public class AppServer {
      */
     private void retrieveNewDatabaseInfo() {
         try {
-            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}",dbIp,dbPort);
+            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}", dbIp, dbPort);
             Server server = dispatcherService.retrieveActiveDatabaseInfo();
 
-            LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}",server);
+            LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}", server);
 
             dbPort = server.getPort();
             dbIp = server.getIp();
 
-        }catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -127,16 +136,16 @@ public class AppServer {
 
         Registry myRegistry = null;
 
-        while( myRegistry == null || gameDbService == null || userDbService == null) {
+        while (myRegistry == null || gameDbService == null || userDbService == null) {
             try {
                 myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
-                if(myRegistry != null) {
+                if (myRegistry != null) {
                     gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
                     userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
                 }
 
-                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}",dbIP,dbPort);
+                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", dbIP, dbPort);
 
 
             } catch (Exception e) {
@@ -165,11 +174,11 @@ public class AppServer {
         String ip = args[0];
         int port = Integer.parseInt(args[1]);
 
-        dbIp = args[2];
-        dbPort = Integer.parseInt(args[3]);
+        String dbIp = args[2];
+        int dbPort = Integer.parseInt(args[3]);
 
-        maxGameLoad = Integer.parseInt(args[4]);
+        int maxGameLoad = Integer.parseInt(args[4]);
 
-        new AppServer().startServer(ip, port);
+        new AppServer(ip, port, dbIp, dbPort, maxGameLoad).startServer();
     }
 }
