@@ -26,7 +26,7 @@ public class Dispatcher {
     public static final String STARTING_APPSERVER_IP = "localhost";
 
     // DB SERVERS
-    private final int DB_SERVER_COUNT = 3;
+    private final int DB_SERVER_COUNT = 1;
     public static final int STARTING_DBSERVER_PORT = 7000;
     public static final String STARTING_DBSERVER_IP = "localhost";
     public static final int DEFAULT_MAX_GAME_LOAD_APPSERVER = 2;
@@ -100,7 +100,7 @@ public class Dispatcher {
     private void startDbServers() {
 
         for (Server dbServer : dbServers) {
-            LOGGER.info("Starting database {}", dbServer);
+            LOGGER.info("DISPATCHER STARTING DATABASE {}", dbServer);
 
             //Setup db
             String[] stringArgs = getDbServerArgsWithout(dbServer);

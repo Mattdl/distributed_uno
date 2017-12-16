@@ -55,7 +55,7 @@ public class AppServer {
     private void startServer() {
 
         registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
-        registerAsClientWithDatabase(dbIp, dbPort);
+        registerAsClientWithDatabase();
 
         initData();
 
@@ -101,6 +101,8 @@ public class AppServer {
      * RMI call to Dispatcher to retrieve new database info
      */
     private void retrieveNewDatabaseInfo() {
+        LOGGER.info("APPSERVER ASKING NEW DATABASE INFO, current database server = {}:{}", dbIp, dbPort);
+
         try {
             LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}", dbIp, dbPort);
             Server server = dispatcherService.retrieveActiveDatabaseInfo();
@@ -130,26 +132,26 @@ public class AppServer {
      *
      * @return
      */
-    private void registerAsClientWithDatabase(String dbIP, int dbPort) {
+    private void registerAsClientWithDatabase() {
 
-        LOGGER.info("Entering registerAsClientWithDatabase");
+        LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}",dbIp,dbPort);
 
         Registry myRegistry = null;
 
         while (myRegistry == null || gameDbService == null || userDbService == null) {
             try {
-                myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
+                myRegistry = LocateRegistry.getRegistry(dbIp, dbPort);
 
                 if (myRegistry != null) {
                     gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
                     userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
                 }
 
-                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", dbIP, dbPort);
+                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", dbIp, dbPort);
 
 
             } catch (Exception e) {
-                //elapsedTime = (new Date()).getTime() - startTime;
+                LOGGER.info("APPSERVER FAILED CONNECTING TO DATABASE, database server = {}:{}", dbIp, dbPort);
 
                 e.printStackTrace();
 

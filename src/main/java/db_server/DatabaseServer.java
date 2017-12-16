@@ -56,12 +56,12 @@ public class DatabaseServer {
         try {
             Registry registry = LocateRegistry.createRegistry(dbPort);
 
-            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
             userDbService = new UserDbService(otherDatabases);
+            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
 
             //Bind RMI implementations to service names
-            registry.rebind("UserDbService", gameDbService);
-            registry.rebind("GameDbService", userDbService);
+            registry.rebind("UserDbService", userDbService);
+            registry.rebind("GameDbService", gameDbService);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -71,6 +71,7 @@ public class DatabaseServer {
         // Connect with other databases
         registerAsClientWithOtherDatabases();
 
+        LOGGER.info("DATABASE '{}:{}' is READY",dbIp,dbPort);
     }
 
     private void initDb(String fileName) {
@@ -154,7 +155,7 @@ public class DatabaseServer {
                         } catch (Exception e) {
                             LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
 
-                            e.printStackTrace();
+                            //e.printStackTrace();
                         }
                     }
                     LOGGER.info("Leaving registerAsClientWithOtherDatabases");
