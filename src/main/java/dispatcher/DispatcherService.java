@@ -43,8 +43,8 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
         LOGGER.info("retrieveActiveDatabaseInfo");
 
         Server server = new Server();
-        server.setIp(Dispatcher.STARTING_APPSERVER_IP);
-        server.setPort(Dispatcher.STARTING_APPSERVER_PORT);
+        server.setIp(Dispatcher.STARTING_DBSERVER_IP);
+        server.setPort(Dispatcher.STARTING_DBSERVER_PORT);
 
         return server;
     }

@@ -14,60 +14,68 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
     final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
 
-    private ConnectionSource conn;
+    private String dbIp;
+    private int dbPort;
 
-    private static String dbIp;
-    private static int dbPort;
-
-    static List<DbServer> otherDatabases = new LinkedList<>();
+    private List<DbServer> otherDatabases;
 
     private String databaseUrl;
+
+    private GameDbService gameDbService;
+    private UserDbService userDbService;
 
     private Dao<Game, String> gameDao;
     private Dao<Move, String> moveDao;
     private Dao<Player, String> playerDao;
     private Dao<Card, String> cardDao;
 
-    private void startServer() {
+    public DatabaseServer(String dbIp, int dbPort, List<DbServer> otherDatabases) {
+        this.dbIp = dbIp;
+        this.dbPort = dbPort;
+        this.otherDatabases = otherDatabases;
 
+        LOGGER.info("DATABASE '{}:{}' OTHER DATABASES INITIALIZED:{}'", dbIp, dbPort, otherDatabases);
+    }
+
+    private void startServer() {
+        // Init database
         initDb("uno_port" + dbPort + ".db");
 
-        registerAsClientWithOtherDatabases();
+        //Init RMI services
+        try {
+            Registry registry = LocateRegistry.createRegistry(dbPort);
 
-        if (conn != null) {
-            //Init RMI services
+            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
+            userDbService = new UserDbService(otherDatabases);
 
-            try {
-                Registry registry = LocateRegistry.createRegistry(dbPort);
+            //Bind RMI implementations to service names
+            registry.rebind("UserDbService", gameDbService);
+            registry.rebind("GameDbService", userDbService);
 
-                //Bind RMI implementations to service names
-                registry.rebind("UserDbService", new UserDbService());
-                registry.rebind("GameDbService", new GameDbService(gameDao, moveDao, playerDao, cardDao));
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            System.out.println("system is ready");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        //TODO reconnection attempts
+
+        // Connect with other databases
+        registerAsClientWithOtherDatabases();
+
     }
 
     private void initDb(String fileName) {
 
         databaseUrl = "jdbc:sqlite:" + fileName;
+
+        ConnectionSource conn = null;
 
         try {
             conn = new JdbcConnectionSource(databaseUrl);
@@ -102,42 +110,69 @@ public class DatabaseServer {
      *
      * @return
      */
-    private void registerAsClientWithOtherDatabases() {
+    private synchronized void registerAsClientWithOtherDatabases() {
 
-        LOGGER.info("Entering registerAsClientWithOtherDatabases");
+        Timer timer = new Timer();
 
-        for (DbServer otherDbServer : otherDatabases) {
+        timer.scheduleAtFixedRate(new TimerTask() {
 
-            Registry myRegistry;
+            @Override
+            public void run() {
+                // Your database code here
 
-            //TODO retry request attempts every x minutes
+                LOGGER.info("Entering registerAsClientWithOtherDatabases");
 
-            try {
-                myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
+                boolean updated = false;
 
-                GameDbStub gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
-                UserDbStub userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
+                for (DbServer otherDbServer : otherDatabases) {
 
-                //Add to Service lists
-                otherDbServer.setGameDbStubs(gameDbService);
-                otherDbServer.setUserDbStubs(userDbService);
+                    if (!otherDbServer.isConnected()) {
 
-                LOGGER.info("DATABASE CONNECTED TO OTHER DATABASE, other database server = {}:{}", otherDbServer.getIp(), otherDbServer.getPort());
+                        Registry myRegistry;
+                        GameDbStub gameDbStub = null;
+                        UserDbStub userDbStub = null;
 
-            } catch (Exception e) {
-                e.printStackTrace();
+                        try {
+                            myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
+
+                            if (myRegistry != null) {
+                                gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
+                                userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
+                            }
+
+                            // If new connection
+                            otherDbServer.setGameDbStub(gameDbStub);
+                            otherDbServer.setUserDbStub(userDbStub);
+
+                            updated = true;
+
+                            LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+
+                        } catch (Exception e) {
+                            LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+                            e.printStackTrace();
+                        }
+                    }
+                    LOGGER.info("Leaving registerAsClientWithOtherDatabases");
+                }
+
+                if(updated) {
+                    gameDbService.updateOtherDatabases(otherDatabases);
+                }
             }
-        }
-
-        LOGGER.info("Leaving registerAsClientWithOtherDatabases");
+        }, 0, 2 * 60 * 1000);
     }
 
 
     public static void main(String[] args) {
 
         // Init current database
-        dbIp = args[0];
-        dbPort = Integer.valueOf(args[1]);
+        String dbIp = args[0];
+        int dbPort = Integer.valueOf(args[1]);
+
+        List<DbServer> otherDatabases = new LinkedList<>();
 
         // Init other databases
         int argCount = 2;
@@ -154,7 +189,6 @@ public class DatabaseServer {
             argCount += 2;
         }
 
-
-        new DatabaseServer().startServer();
+        new DatabaseServer(dbIp, dbPort, otherDatabases).startServer();
     }
 }

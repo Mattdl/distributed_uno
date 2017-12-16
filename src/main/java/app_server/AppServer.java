@@ -24,8 +24,9 @@ import java.util.Date;
 
 public class AppServer {
 
-    final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
+    final Logger LOGGER = LoggerFactory.getLogger(AppServer.class);
 
+    // TODO may not be static!!!
     private static String dbIp;
     private static int dbPort;
 
@@ -126,18 +127,14 @@ public class AppServer {
 
         Registry myRegistry = null;
 
-        //long startTime = System.currentTimeMillis();
-        //long elapsedTime = 0;
-        //long waitingTimeForNewRequest = 5*1000;
-
-
-        //elapsedTime < waitingTimeForNewRequest &&
         while( myRegistry == null || gameDbService == null || userDbService == null) {
             try {
                 myRegistry = LocateRegistry.getRegistry(dbIP, dbPort);
 
-                gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
-                userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
+                if(myRegistry != null) {
+                    gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
+                    userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
+                }
 
                 LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}",dbIP,dbPort);
 

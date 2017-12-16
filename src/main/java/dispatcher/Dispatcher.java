@@ -153,6 +153,8 @@ public class Dispatcher {
         serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
         serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
 
+        LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", serverArgs);
+
         AppServer.main(serverArgs);
 
     }

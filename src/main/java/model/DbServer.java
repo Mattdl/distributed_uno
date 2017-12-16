@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class DbServer extends Server {
-    private GameDbStub gameDbStubs;
-    private UserDbStub userDbStubs;
+    private GameDbStub gameDbStub;
+    private UserDbStub userDbStub;
 
     // Used by Dispatcher
     private List<Server> assignedAppServers;
@@ -18,32 +18,32 @@ public class DbServer extends Server {
         assignedAppServers = new LinkedList<>();
     }
 
-    public DbServer(String ip, int port, GameDbStub gameDbStubs, UserDbStub userDbStubs) {
+    public DbServer(String ip, int port, GameDbStub gameDbStub, UserDbStub userDbStub) {
         super(ip, port);
-        this.gameDbStubs = gameDbStubs;
-        this.userDbStubs = userDbStubs;
+        this.gameDbStub = gameDbStub;
+        this.userDbStub = userDbStub;
         assignedAppServers = new LinkedList<>();
 
     }
 
-    public GameDbStub getGameDbStubs() {
-        return gameDbStubs;
+    public GameDbStub getGameDbStub() {
+        return gameDbStub;
     }
 
-    public void setGameDbStubs(GameDbStub gameDbStubs) {
-        this.gameDbStubs = gameDbStubs;
+    public void setGameDbStub(GameDbStub gameDbStub) {
+        this.gameDbStub = gameDbStub;
     }
 
-    public UserDbStub getUserDbStubs() {
-        return userDbStubs;
+    public UserDbStub getUserDbStub() {
+        return userDbStub;
     }
 
-    public void setUserDbStubs(UserDbStub userDbStubs) {
-        this.userDbStubs = userDbStubs;
+    public void setUserDbStub(UserDbStub userDbStub) {
+        this.userDbStub = userDbStub;
     }
 
     public boolean isConnected(){
-        return gameDbStubs != null && userDbStubs != null;
+        return gameDbStub != null && userDbStub != null;
     }
 
     public List<Server> getAssignedAppServers() {
