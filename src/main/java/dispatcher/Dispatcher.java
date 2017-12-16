@@ -12,11 +12,12 @@ import org.slf4j.LoggerFactory;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Dispatcher {
 
-    final Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(Dispatcher.class);
 
     // DISPATCHER
     private final int DISPATCHER_PORT = 1099;
@@ -29,13 +30,16 @@ public class Dispatcher {
     private final int DB_SERVER_COUNT = 3;
     public static final int STARTING_DBSERVER_PORT = 7000;
     public static final String STARTING_DBSERVER_IP = "localhost";
-    public static final int DEFAULT_MAX_GAME_LOAD_APPSERVER = 2;
+    public static final int DEFAULT_MAX_PLAYER_LOAD_APPSERVER = 2;
 
 
     static List<ApplicationServer> appServers;
     static List<DbServer> dbServers;
 
-    protected void init() {
+    //TODO SET THESE PARAMS
+    private boolean testFailureDatabase = false;
+
+    private void init() {
         LOGGER.info("DISPATCHER STARTING setup");
 
         // Init servers
@@ -51,7 +55,7 @@ public class Dispatcher {
 
         // Start servers
         startDbServers();
-        startInitAppServer();
+        startAppServer(appServers.get(0));
 
         LOGGER.info("DISPATCHER FINISHED startups");
     }
@@ -81,7 +85,8 @@ public class Dispatcher {
      */
     private void initInitialAppServer() {
         appServers = new ArrayList<>();
-        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT));
+        appServers.add(new ApplicationServer(STARTING_APPSERVER_IP, STARTING_APPSERVER_PORT, dbServers.get(0)));
+        dbServers.get(0).incrementAssignedAppServerCount();
     }
 
     /**
@@ -95,11 +100,32 @@ public class Dispatcher {
         for (int i = 0; i < dbServerCount; i++) {
             dbServers.add(new DbServer(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT + i));
         }
+
+        if (testFailureDatabase) {
+            insertUnconnectableDatabase();
+        }
+    }
+
+    /**
+     * Method to insert unreachable database.
+     * Used for testing reassignment.
+     */
+    private void insertUnconnectableDatabase() {
+        dbServers.add(0, new DbServer(STARTING_DBSERVER_IP, STARTING_DBSERVER_PORT - 1));
     }
 
     private void startDbServers() {
+        List<DbServer> databasesToStartup = new LinkedList<>();
 
-        for (Server dbServer : dbServers) {
+        if (!testFailureDatabase) {
+            databasesToStartup = dbServers;
+        } else if (dbServers.size() > 1) {
+            // First database is the failure database (not started)
+            databasesToStartup = dbServers.subList(1, dbServers.size());
+        }
+
+
+        for (DbServer dbServer : databasesToStartup) {
             LOGGER.info("DISPATCHER STARTING DATABASE {}", dbServer);
 
             //Setup db
@@ -141,21 +167,78 @@ public class Dispatcher {
     /**
      * Only startup one app-server! If load is exceeded, other appServers are started by request of the appServer.
      */
-    private void startInitAppServer() {
+    private static void startAppServer(ApplicationServer appServer) {
 
-        ApplicationServer appServer = appServers.get(0);
         LOGGER.info("Starting ApplicationServer from dispatch, ApplicationServer = {}", appServer);
 
-        String[] serverArgs = new String[5];
-        serverArgs[0] = STARTING_APPSERVER_IP;
-        serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
-        serverArgs[2] = STARTING_DBSERVER_IP;
-        serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
-        serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+        String[] serverArgs = new String[4];
+        serverArgs[0] = appServer.getIp();
+        serverArgs[1] = String.valueOf(appServer.getPort());
+        serverArgs[2] = appServer.getAssignedDbServer().getIp();
+        serverArgs[3] = String.valueOf(appServer.getAssignedDbServer().getPort());
 
-        LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", serverArgs);
+        LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", (Object[]) serverArgs);
 
         AppServer.main(serverArgs);
 
+    }
+
+    public static ApplicationServer findAppServer(Server server) {
+        for (ApplicationServer appServer : appServers) {
+            if (appServer.equals(server)) {
+                return appServer;
+            }
+        }
+        return null;
+    }
+
+    public static DbServer findDbServer(Server server) {
+        for (DbServer dbServer : dbServers) {
+            if (dbServer.equals(server)) {
+                return dbServer;
+            }
+        }
+        return null;
+    }
+
+    public static ApplicationServer startNewAppServer() {
+        int portOffset = appServers.size();
+
+        //Init the new server
+        ApplicationServer server = new ApplicationServer();
+        server.setIp(Dispatcher.STARTING_APPSERVER_IP);
+        server.setPort(Dispatcher.STARTING_APPSERVER_PORT + portOffset);
+
+        // Get least loaded db-server
+        DbServer dbServer = getLeastOccupiedDbServer();
+        dbServer.incrementAssignedAppServerCount();
+        server.setAssignedDbServer(dbServer);
+
+        //Add it to the list
+        appServers.add(server);
+
+        // Startup the server
+        startAppServer(server);
+
+        return server;
+    }
+
+    public static DbServer getLeastOccupiedDbServer() {
+
+        DbServer minDbServer = null;
+        int minCount = Integer.MAX_VALUE;
+
+        for (DbServer dbServer : dbServers) {
+            if (dbServer.getAssignedAppServerCount() < minCount) {
+                minDbServer = dbServer;
+                minCount = dbServer.getAssignedAppServerCount();
+            }
+        }
+
+        return minDbServer;
+    }
+
+    public static void main(String[] args) {
+        new Dispatcher().init();
     }
 }

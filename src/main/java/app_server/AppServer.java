@@ -26,13 +26,12 @@ public class AppServer {
 
     final Logger LOGGER = LoggerFactory.getLogger(AppServer.class);
 
-    // TODO may not be static!!!
     private String dbIp;
     private int dbPort;
 
+    private Server currentServer;
     private String ip;
     private int port;
-    private int maxGameLoad;
 
     private final String DISPATCHER_IP = "localhost";
     private final int DISPATCHER_PORT = 1099;
@@ -41,15 +40,14 @@ public class AppServer {
     private UserDbStub userDbService;
     private DispatcherStub dispatcherService;
 
-
     private Lobby lobby;
 
-    public AppServer(String ip, int port, String dbIp, int dbPort, int maxGameLoad) {
+    public AppServer(String ip, int port, String dbIp, int dbPort) {
+        this.currentServer = new Server(ip, port);
         this.ip = ip;
         this.port = port;
         this.dbIp = dbIp;
         this.dbPort = dbPort;
-        this.maxGameLoad = maxGameLoad;
     }
 
     private void startServer() {
@@ -105,7 +103,7 @@ public class AppServer {
 
         try {
             LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}", dbIp, dbPort);
-            Server server = dispatcherService.retrieveActiveDatabaseInfo();
+            Server server = dispatcherService.retrieveActiveDatabaseInfo(currentServer);
 
             LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}", server);
 
@@ -116,7 +114,7 @@ public class AppServer {
             e.printStackTrace();
         }
 
-        LOGGER.info("Leaving retrieveNewDatabaseInfo on APPSERVER");
+        LOGGER.info("APPSERVER RETRIEVED NEW DATABASE INFO= {}:{}", dbIp, dbPort);
     }
 
     /**
@@ -134,7 +132,7 @@ public class AppServer {
      */
     private void registerAsClientWithDatabase() {
 
-        LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}",dbIp,dbPort);
+        LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}", dbIp, dbPort);
 
         Registry myRegistry = null;
 
@@ -153,7 +151,7 @@ public class AppServer {
             } catch (Exception e) {
                 LOGGER.info("APPSERVER FAILED CONNECTING TO DATABASE, database server = {}:{}", dbIp, dbPort);
 
-                e.printStackTrace();
+                //e.printStackTrace();
 
                 //if no connetion, ask dispatcher for new dbIP+port
                 retrieveNewDatabaseInfo();
@@ -170,7 +168,6 @@ public class AppServer {
             serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
             serverArgs[2] = STARTING_DBSERVER_IP;
             serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
-            serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
          */
 
         String ip = args[0];
@@ -179,8 +176,7 @@ public class AppServer {
         String dbIp = args[2];
         int dbPort = Integer.parseInt(args[3]);
 
-        int maxGameLoad = Integer.parseInt(args[4]);
 
-        new AppServer(ip, port, dbIp, dbPort, maxGameLoad).startServer();
+        new AppServer(ip, port, dbIp, dbPort).startServer();
     }
 }

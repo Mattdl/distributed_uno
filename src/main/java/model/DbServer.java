@@ -5,27 +5,23 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 public class DbServer extends Server {
     private GameDbStub gameDbStub;
     private UserDbStub userDbStub;
-    private boolean isOnline;
-
-    // Used by Dispatcher
-    private List<Server> assignedAppServers;
+    private int assignedAppServerCount;
 
     public DbServer(String ip, int port) {
         super(ip, port);
-        assignedAppServers = new LinkedList<>();
-        isOnline = false;
+        assignedAppServerCount = 0;
     }
 
     public DbServer(String ip, int port, GameDbStub gameDbStub, UserDbStub userDbStub) {
         super(ip, port);
         this.gameDbStub = gameDbStub;
         this.userDbStub = userDbStub;
-        assignedAppServers = new LinkedList<>();
-        isOnline = false;
+        assignedAppServerCount = 0;
     }
 
     public GameDbStub getGameDbStub() {
@@ -48,41 +44,37 @@ public class DbServer extends Server {
         return gameDbStub != null && userDbStub != null;
     }
 
-    public List<Server> getAssignedAppServers() {
-        return assignedAppServers;
+    public int getAssignedAppServerCount() {
+        return assignedAppServerCount;
     }
 
-    public void setAssignedAppServers(List<Server> assignedAppServers) {
-        this.assignedAppServers = assignedAppServers;
+    public void setAssignedAppServerCount(int assignedAppServerCount) {
+        this.assignedAppServerCount = assignedAppServerCount;
     }
 
-    public boolean isOnline() {
-        return isOnline;
+    public void incrementAssignedAppServerCount() {
+        assignedAppServerCount++;
     }
 
-    public void setOnline(boolean online) {
-        isOnline = online;
+    public void decrementAssignedAppServerCount() {
+        assignedAppServerCount--;
     }
 
     @Override
     public String toString() {
         return "DbServer{" +
-                "ip='" + ip + '\'' +
+                "assignedAppServerCount=" + assignedAppServerCount +
+                ", ip='" + ip + '\'' +
                 ", port=" + port +
                 '}';
     }
 
-    public String toDisplayString() {
-        String base = getBaseDisplayString();
-
-        if (isOnline) {
-            return base + " = ONLINE";
-        } else {
-            return base + " = OFFLINE";
-        }
-    }
-
-    public String getBaseDisplayString(){
-        return "DB SERVER '" + ip + "':" + port;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Server server = (Server) o;
+        return port == server.port &&
+                Objects.equals(ip, server.ip);
     }
 }
