@@ -24,6 +24,7 @@ public class LoginService extends Service<Boolean> {
 
     /**
      * Background Task to obtain a login token
+     *
      * @return
      */
     @Override
@@ -32,8 +33,6 @@ public class LoginService extends Service<Boolean> {
             @Override
             protected Boolean call() throws Exception {
 
-                boolean isSuccessful;
-
                 try {
                     Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                     //LOGGER.log(Level.INFO, "Registry retrieved: {0}", myRegistry);
@@ -41,16 +40,26 @@ public class LoginService extends Service<Boolean> {
                     LoginStub loginService = (LoginStub) myRegistry.lookup("LoginService");
                     //LOGGER.log(Level.INFO, "loginService retrieved: {0}", loginService);
 
-                    String token = loginService.getLoginToken(username,password);
-                    isSuccessful = token != null;
+                    boolean succesfulLogin = false;
 
-                    if (isSuccessful) {
-                        Main.token = token;
+                    if (Main.token != null) {
+                        succesfulLogin = loginService.loginWithToken(Main.token);
                     }
 
-                    LOGGER.log(Level.INFO, "Loginserver retrieve token succesful=", isSuccessful);
+                    if(!succesfulLogin) {
 
-                    return isSuccessful;
+                        String token = loginService.getLoginToken(username, password);
+
+                        succesfulLogin = token != null;
+
+                        if (succesfulLogin) {
+                            Main.token = token;
+                        }
+                    }
+
+                    LOGGER.log(Level.INFO, "Loginserver retrieve token succesful=", succesfulLogin);
+
+                    return succesfulLogin;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
