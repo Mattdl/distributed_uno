@@ -29,7 +29,7 @@ public class Dispatcher {
     private final int DB_SERVER_COUNT = 3;
     public static final int STARTING_DBSERVER_PORT = 7000;
     public static final String STARTING_DBSERVER_IP = "localhost";
-    public static final int DEFAULT_MAX_GAME_LOAD_APPSERVER = 2;
+    public static final int DEFAULT_MAX_PLAYER_LOAD_APPSERVER = 2;
 
 
     static List<ApplicationServer> appServers;
@@ -151,7 +151,7 @@ public class Dispatcher {
         serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
         serverArgs[2] = STARTING_DBSERVER_IP;
         serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
-        serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+        serverArgs[4] = String.valueOf(DEFAULT_MAX_PLAYER_LOAD_APPSERVER);
 
         LOGGER.info("DISPATCHER Starting ApplicationServer with String args = {}", serverArgs);
 

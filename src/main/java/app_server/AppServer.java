@@ -170,7 +170,7 @@ public class AppServer {
             serverArgs[1] = String.valueOf(STARTING_APPSERVER_PORT);
             serverArgs[2] = STARTING_DBSERVER_IP;
             serverArgs[3] = String.valueOf(STARTING_DBSERVER_PORT);
-            serverArgs[4] = String.valueOf(DEFAULT_MAX_GAME_LOAD_APPSERVER);
+            serverArgs[4] = String.valueOf(DEFAULT_MAX_PLAYER_LOAD_APPSERVER);
          */
 
         String ip = args[0];
