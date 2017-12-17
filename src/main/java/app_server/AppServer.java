@@ -21,6 +21,8 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Date;
 
+import static security.JWTUtils.generateApiSecret;
+
 
 public class AppServer {
 
@@ -40,7 +42,7 @@ public class AppServer {
     private UserDbStub userDbService;
     private DispatcherStub dispatcherService;
 
-    private static String apiSecret;
+    public static String apiSecret;
 
     private Lobby lobby;
 
