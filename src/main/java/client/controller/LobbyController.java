@@ -122,16 +122,6 @@ public class LobbyController implements Observer {
         LOGGER.log(Level.INFO, "switched To CreateGameScene");
     }
 
-    //TODO: remove because unused? No direct access to game from lobby
-    private void switchToGameScene(Stage stage, String msg) {
-        LOGGER.log(Level.INFO, "switching To GameScene");
-
-        lobbyService.setInLobby(false);
-        stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
-
-        LOGGER.log(Level.INFO, "switched To GameScene");
-    }
-
     private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene, with currentGame = {0}", game);
 
@@ -154,8 +144,14 @@ public class LobbyController implements Observer {
         joinGameService.setOnSucceeded(event1 -> {
             String failMsg = (String) event1.getSource().getValue();
             if (failMsg == null) {
+                LOGGER.log(Level.INFO, "CLIENT RECEIVED ACK FROM SERVER: COULD JOIN GAME");
+
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToGameLobbyScene(stage, lobby.findGame(gameName));
+                Game game = lobby.findGame(gameName);
+
+                LOGGER.log(Level.INFO, "CLIENT found game in lobby = {}", game);
+
+                switchToGameLobbyScene(stage, game);
             } else {
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("UNO");

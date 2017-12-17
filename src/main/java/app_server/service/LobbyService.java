@@ -11,6 +11,8 @@ import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 
 public class LobbyService extends UnicastRemoteObject implements LobbyStub {
@@ -19,6 +21,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
 
     private Lobby lobby;
+    private ReadWriteLock lock = new ReentrantReadWriteLock();
     //private GameDbService gameDbService;
 
     public LobbyService(Lobby lobby) throws RemoteException {
@@ -42,6 +45,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 wait();
             }
 
+            lock.readLock().lock();
             List<Game> joinableGames = new LinkedList<>();
             for (Game game : lobby.getGameList()) {
                 if (game.isJoinable()) {
@@ -49,14 +53,15 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 }
             }
 
-            LOGGER.info("Found joinable games.");
+            LOGGER.info("Found joinable games, lobby = {}", lobby);
 
             return new Lobby(joinableGames, lobby.getVersion());
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return null;
+        lock.readLock().unlock();
 
+        return null;
     }
 
     /**
@@ -73,18 +78,24 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
             throws RemoteException {
         //TODO extend with password (if time)
 
-        LOGGER.info("createNewGame @Server");
+        try {
+            LOGGER.info("createNewGame @Server, readlocks = {}, writelocks = {}",lock.);
 
+            lock.writeLock().lock();
 
-        //TODO CHECK IF NAME IS UNIQUE!
-        Game game = new Game(gameName, gameSize, initPlayer);
-        game.setDeck();
-        lobby.addGame(game);
-        LOGGER.info("New game added to list");
+            Game game = new Game(gameName, gameSize, initPlayer);
 
-        lobbyUpdated();
+            game.setDeck();
+            lobby.addGame(game);
 
-        return game.getGameId();
+            LOGGER.info("New game added to list");
+
+            lobbyUpdated();
+
+            return game.getGameId();
+        } finally {
+            lock.writeLock().unlock();
+        }
     }
 
     /**
@@ -97,20 +108,33 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public synchronized String joinGame(Player player, String gameName) throws RemoteException {
+
+        LOGGER.info("Trying to join game!");
+
+        lock.readLock().lock();
+
         Game gameInLobby = lobby.findGame(gameName);
 
-        if (gameInLobby != null) {
-            if (gameInLobby.isJoinable()) {
+        lock.readLock().unlock();
 
-                gameInLobby.addPlayer(player);
-                gameUpdated(gameInLobby);
 
-                return null;
+        try {
+            if (gameInLobby != null) {
+                if (gameInLobby.isJoinable()) {
+
+                    lock.writeLock().lock();
+                    gameInLobby.addPlayer(player);
+                    gameUpdated(gameInLobby);
+                    lock.writeLock().unlock();
+
+                    return null;
+                } else {
+                    return "Could not join the game...";
+                }
             } else {
-                return "Could not join the game...";
+                return "game could not be found in the lobby...";
             }
-        } else {
-            return "game could not be found in the lobby...";
+        } finally {
         }
     }
 
@@ -124,36 +148,43 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
-        LOGGER.info( "Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
+        LOGGER.info("Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
 
-        Game gameInLobby = lobby.findGame(gameName);
+        lock.writeLock().lock();
 
-        if (gameInLobby != null) {
-            LOGGER.info("gameInLobby is found, and != null");
-            if (gameInLobby.getPlayerList().size() <= 1) {
-                LOGGER.info("Last player leaves, removing game");
+        try {
+
+            Game gameInLobby = lobby.findGame(gameName);
+
+            if (gameInLobby != null) {
+                LOGGER.info("gameInLobby is found, and != null");
+                if (gameInLobby.getPlayerList().size() <= 1) {
+                    LOGGER.info("Last player leaves, removing game");
 
 
-                lobby.getGameList().remove(gameInLobby);
-                gameUpdated(gameInLobby);
-
-                LOGGER.info("game removed");
-
-                return null;
-            } else {
-                if (gameInLobby.removePlayer(player)) {
-                    LOGGER.info("Player removed");
-
+                    lobby.getGameList().remove(gameInLobby);
                     gameUpdated(gameInLobby);
+
+                    LOGGER.info("game removed");
+
                     return null;
                 } else {
-                    LOGGER.info("Player could not be removed");
-                    return "Player could not be found in game playerlist...";
+                    if (gameInLobby.removePlayer(player)) {
+                        LOGGER.info("Player removed");
+
+                        gameUpdated(gameInLobby);
+                        return null;
+                    } else {
+                        LOGGER.info("Player could not be removed");
+                        return "Player could not be found in game playerlist...";
+                    }
                 }
+            } else {
+                LOGGER.info("Could not find game, gameInLobby is null");
+                return "game could not be found in the lobby...";
             }
-        } else {
-            LOGGER.info("Could not find game, gameInLobby is null");
-            return "game could not be found in the lobby...";
+        } finally {
+            lock.writeLock().unlock();
         }
     }
 
@@ -161,11 +192,13 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     public synchronized Game getGameLobbyInfo(int clientVersion, String gameName) throws RemoteException {
         LOGGER.info("Entering getGameLobbyInfo");
 
+        lock.readLock().lock();
         Game game = lobby.findGame(gameName);
+        lock.readLock().unlock();
 
         try {
 
-            LOGGER.info("getGameLobbyInfo, clientversion={}, gameName = '{}', found game={}",clientVersion,gameName,game);
+            LOGGER.info("getGameLobbyInfo, clientversion={}, gameName = '{}', found game={}", clientVersion, gameName, game);
             //Use while here, because otherwise for every total Lobby update, it will continue...
             while (clientVersion >= game.getVersion()) {
                 wait();
@@ -177,6 +210,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
             e.printStackTrace();
             LOGGER.error("Could not find the requested game for lobby info!");
         }
+
         return null;
     }
 
@@ -187,11 +221,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private synchronized void lobbyUpdated() {
         lobby.updateVersion();
-        LOGGER.info( "lobbyUpdated method");
+        LOGGER.info("LOBBY VERSION INCREMENTED");
 
         notifyAll();
 
-        LOGGER.info( "Notified everybody");
+        LOGGER.info("NOTIFIED OF LOBBY VERSION INCREMENTED");
 
     }
 }
