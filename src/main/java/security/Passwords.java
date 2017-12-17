@@ -1,4 +1,4 @@
-package model;
+package security;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

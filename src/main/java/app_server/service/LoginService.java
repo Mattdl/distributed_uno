@@ -37,9 +37,9 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
     @Override
     public String getLoginToken(String username, String password) throws RemoteException {
 
-        //TODO decrypt username & password
-
         //TODO check login with database
+
+
         //Get password in plain text from user, hash with salt from database, check with hash from database
         //return null if failed login
 
