@@ -60,13 +60,13 @@ public class AppServer {
             //Bind RMI implementations to service names
             registry.rebind("LoginService", new LoginService());
 
-            registry.rebind("GameService", new GameService(lobby, gameDbService));
+            registry.rebind("GameService", new GameService(lobby, gameDbService, userDbService));
 
             registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService));
 
             registry.rebind("LobbyService", new LobbyService(lobby));
 
-            registry.rebind("RegisterService", new RegisterService(userDbService));
+            registry.rebind("RegisterService", new  RegisterService(userDbService));
 
         } catch (Exception e) {
             e.printStackTrace();

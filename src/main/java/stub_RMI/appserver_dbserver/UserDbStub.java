@@ -1,5 +1,6 @@
 package stub_RMI.appserver_dbserver;
 
+import model.Player;
 import model.User;
 
 import java.rmi.Remote;
@@ -11,5 +12,7 @@ public interface UserDbStub extends Remote {
     boolean saveUserinfo() throws RemoteException;
 
     boolean persistUser(User user, boolean propagate) throws RemoteException;
+
+    void updateWinner(Player player, int score) throws RemoteException;
 
 }

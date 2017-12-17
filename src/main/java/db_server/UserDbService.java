@@ -9,6 +9,7 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -109,6 +110,38 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
         otherDatabasesLock.readLock().unlock();
 
+    }
+
+    /**
+     * Searches winning user in database and adds his score.
+     * @param player
+     * @param score
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized void updateWinner(Player player, int score) throws RemoteException {
+
+        LOGGER.info("FetchingUser in database");
+
+        try {
+            //Find corresponding user in database
+            List<User> user =
+                    userDao.query(
+                            userDao.queryBuilder().where()
+                                    .eq(User.PLAYER_FIELD_NAME, player)
+                                    .prepare());
+
+            if (user.size() == 1) {
+                User winner = user.get(0);
+                winner.addScore(score);
+                userDao.update(winner);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
     }
 
     public synchronized void updateOtherDatabases(List<DbServer> otherDatabases) {

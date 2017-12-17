@@ -2,14 +2,11 @@ package app_server.service;
 
 import db_server.GameDbService;
 import game_logic.GameLogic;
-import model.Card;
-import model.Game;
-import model.Lobby;
-import model.Move;
-import model.Player;
+import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
+import stub_RMI.appserver_dbserver.UserDbStub;
 import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.RemoteException;
@@ -29,12 +26,14 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     //RMI
     private GameDbStub gameDbService;
+    private UserDbStub userDbStub;
 
 
-    public GameService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
+    public GameService(Lobby lobby, GameDbStub gameDbService, UserDbStub userDbStub) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
         this.gameDbService = gameDbService;
+        this.userDbStub = userDbStub;
     }
 
     /**
@@ -276,7 +275,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         return null;
     }
 
-    private synchronized Card updateGame(Game game, Move move) {
+    private synchronized Card updateGame(Game game, Move move) throws RemoteException {
         LOGGER.info("Entering updateGame");
 
         try {
@@ -309,10 +308,53 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             notifyAll();
             LOGGER.info("updateGame: notified everybody!");
 
+            //Check if game is finished
+            if(serverPlayer.getHandSize() == 0){
+                finishGame(game, serverPlayer);
+            }
+
             return ret;
         }
         LOGGER.info("Player not found!");
 
         return null;
     }
+
+    /**
+     * Adds score to database.
+     * @param game
+     * @return
+     * @throws RemoteException
+     */
+    protected void finishGame(Game game, Player winner) throws RemoteException {
+        int score = gameLogic.calculateScore(game);
+
+        //Update userscore in database
+        userDbStub.updateWinner(winner, score);
+    }
+
+    /**
+     * Adds score to database and returns winnerName + score in list.
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
+    public synchronized List<String> getGameResults(String gameName) throws RemoteException {
+        Game game = lobby.findGame(gameName);
+
+        int score = gameLogic.calculateScore(game);
+
+        //Winner is player who played last move
+        Player winner = game.getLastPlayedMove().getPlayer();
+
+        List<String> results = new ArrayList<>();
+        results.add(winner.getName());
+        results.add(Integer.toString(score));
+
+        return results;
+    }
+
+
+
+
 }

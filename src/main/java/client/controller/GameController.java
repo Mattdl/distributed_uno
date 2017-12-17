@@ -2,12 +2,8 @@ package client.controller;
 
 
 import client.Main;
-import client.service.game.CheckPlayersService;
-import client.service.game.FetchCurrentPlayerAndCardService;
-import client.service.game.FetchPlayersInfoService;
-import client.service.game.FetchPlusCardsService;
-import client.service.game.InitService;
-import client.service.game.PlayMoveService;
+import client.service.game.*;
+import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import game_logic.GameLogic;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -59,9 +55,6 @@ public class GameController implements Observer {
 
     @FXML
     private Text lastPlayedCardText;
-
-    @FXML
-    private Button endGameButton;
 
     @FXML
     private Text player2info;
@@ -269,20 +262,26 @@ public class GameController implements Observer {
         }
     }
 
-    //TODO: implementeren zodat automatisch gebeurt wanneer spel gedaan is
-
     public void gameFinished() {
-        LOGGER.log(Level.INFO, "Game finished");
-        fetchPlayersInfoService.setGameFinished(true);
-        currentPlayerAndCardService.setGameFinished(true);
-        fetchPlusCardsService.setGameFinished(true);
+        EndGameService endGameService = new EndGameService(game);
+        endGameService.setOnSucceeded(event -> {
 
-        Stage stage = (Stage) endGameButton.getScene().getWindow();
-        switchToWinnerScene(stage, null);
-        game.deleteObservers();
+            List<String> results = endGameService.getValue();
+
+            LOGGER.log(Level.INFO, "Game finished");
+            fetchPlayersInfoService.setGameFinished(true);
+            currentPlayerAndCardService.setGameFinished(true);
+            fetchPlusCardsService.setGameFinished(true);
+
+            Stage stage = (Stage) handListView.getScene().getWindow();
+            switchToWinnerScene(stage, null, results.get(0), results.get(1));
+            game.deleteObservers();
+
+        });
+        endGameService.start();
     }
 
-    private void switchToWinnerScene(Stage stage, String msg) {
+    private void switchToWinnerScene(Stage stage, String msg, String winner, String score) {
         LOGGER.log(Level.INFO, "switching To WinnerScene");
 
         Stage popup = new Stage();
@@ -292,7 +291,7 @@ public class GameController implements Observer {
         popup.setTitle("Winner Screen");
 
 
-        popup.setScene(Main.sceneFactory.getWinnerScene(stage, game));
+        popup.setScene(Main.sceneFactory.getWinnerScene(stage, game, winner, score));
         popup.show();
 
         //stage.setScene(Main.sceneFactory.getWinnerScene(game));

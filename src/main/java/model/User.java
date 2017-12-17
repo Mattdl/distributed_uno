@@ -12,6 +12,7 @@ import java.util.Date;
 @DatabaseTable(tableName = "User")
 public class User implements Serializable{
     public static final String USERNAME_FIELD_NAME = "username";
+    public static final String PLAYER_FIELD_NAME = "player";
 
 
     @DatabaseField(generatedId = true)
@@ -26,7 +27,7 @@ public class User implements Serializable{
     @DatabaseField(canBeNull = false)
     private String salt;
 
-    @DatabaseField(foreign = true)
+    @DatabaseField(foreign = true, columnName = PLAYER_FIELD_NAME)
     private Player player;
 
     @DatabaseField
@@ -35,6 +36,9 @@ public class User implements Serializable{
     @DatabaseField
     private Date tokenExpTime;
 
+    @DatabaseField
+    private int highscore;
+
     public User() {
     }
 
@@ -42,6 +46,7 @@ public class User implements Serializable{
         this.username = username;
         this.hash = hash;
         this.salt = salt;
+        highscore = 0;
     }
 
     public Player getPlayer() {
@@ -74,5 +79,17 @@ public class User implements Serializable{
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public int getHighscore() {
+        return highscore;
+    }
+
+    public void setHighscore(int highscore) {
+        this.highscore = highscore;
+    }
+
+    public void addScore(int amount){
+        this.highscore += amount;
     }
 }

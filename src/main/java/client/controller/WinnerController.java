@@ -3,12 +3,18 @@ package client.controller;
 import client.Main;
 import client.service.game_lobby.LeaveGameService;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Stage;
+import model.Card;
 import model.Game;
+import model.Player;
 
+import javax.xml.soap.Text;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,11 +24,33 @@ public class WinnerController {
 
     private Game game;
     private Stage mainStage;
+    private String winner, score;
+
+    @FXML
+    private Label winnerText;
+
+    @FXML
+    private Label scoreText;
 
     //mainStage needed for popup window
-    public WinnerController(Stage mainStage, Game game){
+    public WinnerController(Stage mainStage, Game game, String winner, String score){
         this.mainStage = mainStage;
         this.game = game;
+        this.winner = winner;
+        this.score = score;
+    }
+
+    @FXML
+    public void initialize() {
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+                winnerText.setText(winner);
+                scoreText.setText(score);
+            }
+        });
+
     }
 
     @FXML
