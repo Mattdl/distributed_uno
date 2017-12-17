@@ -51,7 +51,7 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
     @Override
     public boolean loginWithToken(String token) throws RemoteException {
-        return false;
+        return validateJWT(token);
     }
 
     private String createJWT(String id, String issuer, String subject, long ttlMillis) {
