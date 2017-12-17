@@ -1,31 +1,30 @@
 package app_server.service;
 
-import io.jsonwebtoken.impl.crypto.MacProvider;
+import app_server.AppServer;
+import db_server.UserDbService;
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import security.JWTUtils;
+import security.Passwords;
+import stub_RMI.appserver_dbserver.UserDbStub;
 import stub_RMI.client_appserver.LoginStub;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-import java.security.Key;
-
-import io.jsonwebtoken.*;
-
-import java.security.SecureRandom;
+import java.util.Arrays;
 import java.util.Base64;
-import java.util.Date;
 
 public class LoginService extends UnicastRemoteObject implements LoginStub {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GameService.class.getName());
+    private final Logger LOGGER = LoggerFactory.getLogger(GameService.class.getName());
 
     private final long TTL = 24 * 60 * 60 * 1000; //24h Time to live
-    private String apiSecret;
 
-    public LoginService() throws RemoteException {
-        apiSecret = generateApiSecret(50);
+    private UserDbStub userDbService;
+
+    public LoginService(UserDbStub userDbService) throws RemoteException {
+        this.userDbService = userDbService;
     }
 
     @Override
@@ -35,82 +34,51 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
 
     @Override
-    public String getLoginToken(String username, String password) throws RemoteException {
+    public String getLoginToken(String username, String inputPassword) throws RemoteException {
+        LOGGER.info("GETTING LOGIN TOKEN FOR username = {}, password = {}", username, inputPassword);
 
-        //TODO decrypt username & password
+        // fetch login with database
+        User dbUser = userDbService.fetchUser(username);
 
-        //TODO check login with database
-        //Get password in plain text from user, hash with salt from database, check with hash from database
-        //return null if failed login
+        LOGGER.info("USER IN DATABASE FOUND user = {}", dbUser);
 
-        //TODO generate token
-        String token = createJWT(username, null, username, TTL);
+        if (dbUser == null) {
+            return null;
+        }
+
+        // Valid login?
+        if (!checkUserLogin(dbUser, username, inputPassword)) {
+            LOGGER.info("INVALID LOGIN, dbUser = {}, username = {}, password = {}", dbUser, username, inputPassword);
+            return null;
+        }
+
+        //Login valid!
+        LOGGER.info("VALID LOGIN");
+
+        // Generate JWT Token
+        String token = JWTUtils.createJWT(username, null, username, TTL, AppServer.apiSecret);
+
+        LOGGER.info("VALID LOGIN, RETURNING TOKEN = {}", token);
 
         return token;
+    }
+
+    private boolean checkUserLogin(User dbUser, String username, String inputPassword) {
+        byte[] actualSalt = Base64.getDecoder().decode(dbUser.getSalt());
+        byte[] actualHash = Base64.getDecoder().decode(dbUser.getHash());
+
+        byte[] inputHash = Passwords.hash(inputPassword.toCharArray(), actualSalt);
+
+        LOGGER.info("CHECKING USER LOGIN, inputHash = {}, actualHash = {}", inputHash, actualHash);
+
+
+        return Arrays.equals(inputHash, actualHash);
     }
 
     @Override
     public boolean loginWithToken(String token) throws RemoteException {
-        return false;
-    }
+        LOGGER.info("LOGING IN WITH TOKEN");
 
-    private String createJWT(String id, String issuer, String subject, long ttlMillis) {
-
-        //The JWT signature algorithm we will be using to sign the token
-        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
-
-        long nowMillis = System.currentTimeMillis();
-        Date now = new Date(nowMillis);
-
-        //We will sign our JWT with our ApiKey secret
-        byte[] apiKeySecretBytes = DatatypeConverter.parseBase64Binary(apiSecret);
-        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
-
-        //Let's set the JWT Claims
-        JwtBuilder builder = Jwts.builder().setId(id)
-                .setIssuedAt(now)
-                .setSubject(subject)
-                .setIssuer(issuer)
-                .signWith(signatureAlgorithm, signingKey);
-
-        //if it has been specified, let's add the expiration
-        if (ttlMillis >= 0) {
-            long expMillis = nowMillis + ttlMillis;
-            Date exp = new Date(expMillis);
-            builder.setExpiration(exp);
-        }
-
-        //Builds the JWT and serializes it to a compact, URL-safe string
-        return builder.compact();
-    }
-
-    /**
-     * Read and validate JWT token
-     *
-     * @param jwt
-     */
-    private boolean validateJWT(String jwt) {
-        LOGGER.info("Validating JWT, jwt = {}", jwt);
-
-        //This line will throw an exception if it is not a signed JWS (as expected)
-        try {
-            Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(apiSecret))
-                    .parseClaimsJws(jwt).getBody();
-
-            return claims.getExpiration().after(new Date());
-
-        } catch (SignatureException e) {
-            return false;
-        }
-    }
-
-    private String generateApiSecret(int length) {
-        SecureRandom random = new SecureRandom();
-        byte bytes[] = new byte[length];
-        random.nextBytes(bytes);
-        Base64.Encoder encoder = Base64.getUrlEncoder().withoutPadding();
-        String token = encoder.encodeToString(bytes);
-        return token;
+        return JWTUtils.validateJWT(token, AppServer.apiSecret);
     }
 }

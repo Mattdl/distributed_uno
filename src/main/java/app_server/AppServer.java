@@ -16,7 +16,10 @@ import stub_RMI.client_dispatcher.DispatcherStub;
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Base64;
 import java.util.Date;
+
+import static security.JWTUtils.generateApiSecret;
 
 
 public class AppServer {
@@ -37,6 +40,8 @@ public class AppServer {
     private UserDbStub userDbService;
     private DispatcherStub dispatcherService;
 
+    public static String apiSecret;
+
     private Lobby lobby;
 
     public AppServer(String ip, int port, String dbIp, int dbPort) {
@@ -45,6 +50,10 @@ public class AppServer {
         this.port = port;
         this.dbIp = dbIp;
         this.dbPort = dbPort;
+
+        if (apiSecret == null) {
+            apiSecret = generateApiSecret(50);
+        }
     }
 
     private void startServer() {
@@ -58,7 +67,7 @@ public class AppServer {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Bind RMI implementations to service names
-            registry.rebind("LoginService", new LoginService());
+            registry.rebind("LoginService", new LoginService(userDbService));
 
             registry.rebind("GameService", new GameService(lobby, gameDbService, userDbService));
 

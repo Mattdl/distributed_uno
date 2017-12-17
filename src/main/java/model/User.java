@@ -10,16 +10,11 @@ import java.util.Date;
  * Used for account purposes.
  */
 @DatabaseTable(tableName = "User")
-public class User implements Serializable{
-    public static final String USERNAME_FIELD_NAME = "username";
-    public static final String PLAYER_FIELD_NAME = "player";
-
+public class User implements Serializable {
+    public static final String PLAYERNAME_FIELD_NAME = "username";
 
     @DatabaseField(generatedId = true)
     private int id;
-
-    @DatabaseField(canBeNull = false, columnName = USERNAME_FIELD_NAME)
-    private String username;
 
     @DatabaseField(canBeNull = false)
     private String hash;
@@ -27,7 +22,7 @@ public class User implements Serializable{
     @DatabaseField(canBeNull = false)
     private String salt;
 
-    @DatabaseField(foreign = true, columnName = PLAYER_FIELD_NAME)
+    @DatabaseField(foreign = true, columnName = PLAYERNAME_FIELD_NAME)
     private Player player;
 
     @DatabaseField
@@ -43,9 +38,9 @@ public class User implements Serializable{
     }
 
     public User(String username, String hash, String salt) {
-        this.username = username;
         this.hash = hash;
         this.salt = salt;
+        this.player = new Player(username);
         highscore = 0;
     }
 
@@ -73,12 +68,16 @@ public class User implements Serializable{
         this.salt = salt;
     }
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", hash='" + hash + '\'' +
+                ", salt='" + salt + '\'' +
+                ", player=" + player +
+                ", token='" + token + '\'' +
+                ", tokenExpTime=" + tokenExpTime +
+                '}';
     }
 
     public int getHighscore() {
