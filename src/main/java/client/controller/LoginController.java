@@ -17,7 +17,6 @@ import javafx.stage.Stage;
 import model.Player;
 import model.Server;
 import stub_RMI.client_dispatcher.DispatcherStub;
-import sun.security.util.Password;
 
 
 import java.rmi.registry.LocateRegistry;

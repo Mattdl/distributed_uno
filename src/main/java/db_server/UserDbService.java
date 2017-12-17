@@ -64,7 +64,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         List<User> userList =
                 userDao.query(
                         userDao.queryBuilder().where()
-                                .eq(User.USERNAME_FIELD_NAME, userToPersist.getUsername())
+                                .eq(User.PLAYERNAME_FIELD_NAME, userToPersist.getPlayer().getName())
                                 .prepare());
 
         if (userList.isEmpty()) {
@@ -94,7 +94,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
                     userDbStub.persistUser(userToPersist, false);
 
-                    LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getUsername(), otherDbServer);
+                    LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getPlayer().getName(), otherDbServer);
 
                 } catch (Exception e) {
                     LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
@@ -121,7 +121,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         try {
             userList = userDao.query(
                     userDao.queryBuilder().where()
-                            .eq(User.USERNAME_FIELD_NAME, username)
+                            .eq(User.PLAYERNAME_FIELD_NAME, username)
                             .prepare());
         } catch (SQLException e) {
             e.printStackTrace();
