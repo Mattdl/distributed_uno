@@ -4,12 +4,11 @@ import model.User;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.SQLException;
 
 public interface UserDbStub extends Remote {
 
-    boolean saveUserinfo() throws RemoteException;
-
     boolean persistUser(User user, boolean propagate) throws RemoteException;
+
+    User fetchUser(String username) throws RemoteException;
 
 }

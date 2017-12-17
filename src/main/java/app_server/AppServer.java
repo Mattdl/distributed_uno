@@ -67,7 +67,7 @@ public class AppServer {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Bind RMI implementations to service names
-            registry.rebind("LoginService", new LoginService());
+            registry.rebind("LoginService", new LoginService(userDbService));
 
             registry.rebind("GameService", new GameService(lobby, gameDbService));
 

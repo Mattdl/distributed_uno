@@ -9,6 +9,7 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -20,7 +21,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     private List<DbServer> otherDatabases;
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
-    private Dao<User, String > userDao;
+    private Dao<User, String> userDao;
 
     public UserDbService() throws RemoteException {
     }
@@ -28,11 +29,6 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.userDao = userDao;
-    }
-
-    @Override
-    public boolean saveUserinfo() throws RemoteException {
-        return false;
     }
 
     public synchronized boolean persistUser(User userToPersist, boolean propagate) throws RemoteException {
@@ -63,7 +59,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     }
 
-    private boolean createUniqueUser(User userToPersist) throws SQLException{
+    private boolean createUniqueUser(User userToPersist) throws SQLException {
         //Query to ensure that username is unique
         List<User> userList =
                 userDao.query(
@@ -71,7 +67,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
                                 .eq(User.USERNAME_FIELD_NAME, userToPersist.getUsername())
                                 .prepare());
 
-        if(userList.isEmpty()){
+        if (userList.isEmpty()) {
             userDao.createIfNotExists(userToPersist);
             return true;
         }
@@ -111,7 +107,34 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     }
 
-    public synchronized void updateOtherDatabases(List<DbServer> otherDatabases) {
-        //TODO
+    /**
+     * Fetch user in the database.
+     *
+     * @param username
+     * @return null, if user not present
+     * @throws RemoteException
+     */
+    @Override
+    public User fetchUser(String username) throws RemoteException {
+        List<User> userList = new LinkedList<>();
+
+        try {
+            userList = userDao.query(
+                    userDao.queryBuilder().where()
+                            .eq(User.USERNAME_FIELD_NAME, username)
+                            .prepare());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        if (userList.size() == 1) {
+            return userList.get(0);
+        }
+
+        if (userList.size() > 1) {
+            LOGGER.error("USER TABLE HAS MULTIPLE USERS WITH SAME NAME");
+        }
+
+        return null;
     }
 }
