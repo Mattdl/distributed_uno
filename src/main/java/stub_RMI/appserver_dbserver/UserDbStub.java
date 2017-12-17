@@ -12,6 +12,4 @@ public interface UserDbStub extends Remote {
 
     User fetchUser(String username) throws RemoteException;
 
-    void updateWinner(Player player, int score) throws RemoteException;
-
 }

@@ -26,14 +26,11 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     //RMI
     private GameDbStub gameDbService;
-    private UserDbStub userDbStub;
 
-
-    public GameService(Lobby lobby, GameDbStub gameDbService, UserDbStub userDbStub) throws RemoteException {
+    public GameService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
         this.gameDbService = gameDbService;
-        this.userDbStub = userDbStub;
     }
 
     /**
@@ -309,7 +306,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             LOGGER.info("updateGame: notified everybody!");
 
             //Check if game is finished
-            if(serverPlayer.getHandSize() == 0){
+            if(serverPlayer.getHand().isEmpty()){
                 finishGame(game, serverPlayer);
             }
 
@@ -326,15 +323,19 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @return
      * @throws RemoteException
      */
-    protected void finishGame(Game game, Player winner) throws RemoteException {
+    protected synchronized void finishGame(Game game, Player winner) throws RemoteException {
+        LOGGER.warn("Game FINISHED");
+
         int score = gameLogic.calculateScore(game);
 
+        winner.addScore(score);
+
         //Update userscore in database
-        userDbStub.updateWinner(winner, score);
+        gameDbService.updateWinner(winner);
     }
 
     /**
-     * Adds score to database and returns winnerName + score in list.
+     * Returns winnerName + score in list.
      * @param gameName
      * @return
      * @throws RemoteException

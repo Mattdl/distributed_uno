@@ -31,9 +31,6 @@ public class User implements Serializable {
     @DatabaseField
     private Date tokenExpTime;
 
-    @DatabaseField
-    private int highscore;
-
     public User() {
     }
 
@@ -41,7 +38,6 @@ public class User implements Serializable {
         this.hash = hash;
         this.salt = salt;
         this.player = new Player(username);
-        highscore = 0;
     }
 
     public Player getPlayer() {
@@ -78,17 +74,5 @@ public class User implements Serializable {
                 ", token='" + token + '\'' +
                 ", tokenExpTime=" + tokenExpTime +
                 '}';
-    }
-
-    public int getHighscore() {
-        return highscore;
-    }
-
-    public void setHighscore(int highscore) {
-        this.highscore = highscore;
-    }
-
-    public void addScore(int amount){
-        this.highscore += amount;
     }
 }

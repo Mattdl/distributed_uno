@@ -315,6 +315,7 @@ public class GameController implements Observer {
                         if (player.getHandSize() == 0) {
                             LOGGER.log(Level.WARNING, "EMPTY HAND FOUND");
                             isGameFinished = true;
+                            gameFinished();
                         }
                     }
                 }
@@ -383,7 +384,6 @@ public class GameController implements Observer {
 
                 }
                 else{
-                    gameFinished();
                 }
             }
         });
