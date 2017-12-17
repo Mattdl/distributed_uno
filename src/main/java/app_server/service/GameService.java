@@ -56,7 +56,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             LOGGER.info("Found game for initCards");
             Player retPlayer = game.findPlayer(player);
             if (retPlayer != null) {
-                LOGGER.info( "Player not null for initCards: {0}", retPlayer);
+                LOGGER.info("Player not null for initCards: {0}", retPlayer);
 
                 if (retPlayer.getHand().isEmpty()) {
                     distributeHandsToPlayers(game);
@@ -65,7 +65,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 return retPlayer.getHand();
             }
         }
-        LOGGER.info( "Returning null for hand");
+        LOGGER.info("Returning null for hand");
 
         return null;
     }
@@ -76,15 +76,15 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @param game
      */
     private synchronized void distributeHandsToPlayers(Game game) {
-        LOGGER.info( "distributeHandsToPlayers");
+        LOGGER.info("distributeHandsToPlayers");
 
         for (Player player : game.getPlayerList()) {
             if (player.getHand().isEmpty()) {
-                LOGGER.info( "Distributing cards for player = {0}", player);
+                LOGGER.info("Distributing cards for player = {0}", player);
                 game.givePlayerInitHand(7, player);
-                LOGGER.info( "Player hand distributed = {0}", player.getHand());
+                LOGGER.info("Player hand distributed = {0}", player.getHand());
             }
-            LOGGER.info( "Player {0} already had a hand...", player);
+            LOGGER.info("Player {0} already had a hand...", player);
         }
     }
 
@@ -233,7 +233,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 wait();
             }
 
-            LOGGER.info("LEAVING WHILE, last card = {0}",game.getLastPlayedCard());
+            LOGGER.info("LEAVING WHILE, last card = {0}", game.getLastPlayedCard());
 
             game.getLastPlayedCard().setHasFetchedCards(true);
 
@@ -243,10 +243,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
                 LOGGER.info("Fetching PLUS2 playercards. Hand = {0}, HandSize = {1}", new Object[]{hand, hand.size()});
 
-                for(int i = hand.size() - 2 ; i < hand.size() ; i++)
+                for (int i = hand.size() - 2; i < hand.size(); i++)
                     ret.add(hand.get(i));
 
-                LOGGER.info("Fetching PLUS2 playercards. ret = {0}, retSize = {1}",new Object[]{ret,ret.size()});
+                LOGGER.info("Fetching PLUS2 playercards. ret = {0}, retSize = {1}", new Object[]{ret, ret.size()});
 
                 return ret;
             }
@@ -257,21 +257,21 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
                 LOGGER.info("Fetching PLUS4 playercards. Hand = {0}, HandSize = {1}", new Object[]{hand, hand.size()});
 
-                for(int i = hand.size() - 4 ; i < hand.size() ; i++)
+                for (int i = hand.size() - 4; i < hand.size(); i++)
                     ret.add(hand.get(i));
 
-                LOGGER.info("Fetching PLUS4 playercards. ret = {0}, retSize = {1}",new Object[]{ret,ret.size()});
+                LOGGER.info("Fetching PLUS4 playercards. ret = {0}, retSize = {1}", new Object[]{ret, ret.size()});
 
                 return ret;
             }
 
-            LOGGER.error("NO PLUS CARDS RETURNED! For player = {0}",serverSidePlayer);
+            LOGGER.error("NO PLUS CARDS RETURNED! For player = {0}", serverSidePlayer);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        LOGGER.error("Returning null for pluscards to player ={0}",serverSidePlayer);
+        LOGGER.error("Returning null for pluscards to player ={0}", serverSidePlayer);
 
         return null;
     }
@@ -283,13 +283,16 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             //gameDbService.fetchGame(game.getGameId());
             //LOGGER.info("FETCH GAME BEFORE MOVE, game = {}", game);
 
-            gameDbService.persistMove(game.getGameId(), move);
+            LOGGER.info("APPSERVER trying to persist MOVE for gameId = {},move={}", game.getGameId(), move);
+
+
+            gameDbService.persistMove(game.getGameId(), move, true);
             LOGGER.info("MOVE persisted to database for game = {}", game);
 
             //gameDbService.fetchGame(game.getGameId());
             //LOGGER.info("FETCH GAME AFTER MOVE, game = {}", game);
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

@@ -291,10 +291,20 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
-     * Method to draw first card from the deck.
+     * Method to draw first card from the deck. Checks if card isn't a special one.
      */
     public synchronized void drawFirstCard() {
-        Card firstCard = ((LinkedList<Card>) deck).pollFirst();
+        int i = 0;
+        Card firstCard = ((LinkedList<Card>) deck).get(i);
+
+
+        while(firstCard.getCardType() != Card.CardType.NORMAL && i < deck.size()){
+            i++;
+            firstCard = ((LinkedList<Card>) deck).get(i);
+        }
+
+        ((LinkedList<Card>) deck).remove(i);
+
         moves.add(new Move(null, firstCard));
     }
 
