@@ -19,6 +19,7 @@ import stub_RMI.client_dispatcher.DispatcherStub;
 import java.rmi.ConnectException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Base64;
 import java.util.Date;
 
 import static security.JWTUtils.generateApiSecret;
