@@ -28,12 +28,10 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
 
 
-
-
     public GameDbService() throws RemoteException {
     }
 
-    public GameDbService(List<DbServer> otherDatabases,Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
+    public GameDbService(List<DbServer> otherDatabases, Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.gameDao = gameDao;
         this.moveDao = moveDao;
@@ -51,7 +49,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
+    public synchronized boolean persistGame(Game gameToPersist, boolean propagate) throws RemoteException {
 
         LOGGER.info("Persisting Game = {}", gameToPersist);
 
@@ -64,17 +62,21 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
             LOGGER.info("Game was not in database. New entry inserted, Game = {}", gameToPersist);
 
+            return true;
 
         } catch (SQLException e) {
+
             e.printStackTrace();
             return false;
+
+        } finally {
+            LOGGER.info("Game persisted, Game = {}", gameToPersist);
+
+            if (propagate) {
+                persistGameToOtherDatabases(gameToPersist);
+            }
         }
 
-        LOGGER.info("Game persisted, Game = {}", gameToPersist);
-
-        persistGameToOtherDatabases(gameToPersist);
-
-        return true;
     }
 
     /**
@@ -94,7 +96,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
                 try {
 
-                    gameDbStub.persistGame(gameToPersist);
+                    gameDbStub.persistGame(gameToPersist, false);
 
                     LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
 
@@ -162,25 +164,34 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     //TODO test if works
     @Override
-    public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
-        LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameName);
+    public synchronized boolean persistMove(String gameId, Move move, boolean propagate) throws RemoteException {
+        LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameId);
 
         try {
-            Game game = gameDao.queryForId(gameName);
+            Game game = gameDao.queryForId(gameId);
 
             ForeignCollection<Move> movesForeign = (ForeignCollection<Move>) game.getMovesCollection();
 
             // Should add the move
             movesForeign.add(move);
 
+            LOGGER.info("DATABASE, Move was persisted = {}", move);
+
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+            LOGGER.info("PROPAGATE TO OTHER DATABASES = {}", propagate);
+
+            if (propagate) {
+                persistMoveToOtherDatabases(gameId, move);
+                LOGGER.info("PROPAGATED TO OTHER DATABASES ");
+            }
+
+            LOGGER.info("Ending persistMove");
         }
-
-        persistMoveToOtherDatabases(gameName, move);
-
-        return true;
     }
 
     private void persistMoveToOtherDatabases(String gameName, Move move) {
@@ -195,7 +206,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
                 try {
 
-                    gameDbStub.persistMove(gameName, move);
+                    gameDbStub.persistMove(gameName, move, false);
 
                     LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
@@ -257,9 +268,10 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     /**
      * Update the list of other databases
+     *
      * @param otherDatabases
      */
-    public void updateOtherDatabases(List<DbServer> otherDatabases){
+    public void updateOtherDatabases(List<DbServer> otherDatabases) {
         otherDatabasesLock.writeLock().lock();
         this.otherDatabases = otherDatabases;
         otherDatabasesLock.writeLock().unlock();
