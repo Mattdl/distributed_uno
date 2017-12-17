@@ -229,6 +229,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                     && game.isPlayerAfterLastPlayer(serverSidePlayer))
                     || game.getLastPlayedCard().isHasFetchedCards()) {
                 LOGGER.info("Nah the notify did not have plus cards for me, just waitin...");
+                LOGGER.info("Last played card: {}, hasFetchedCards: {}", game.getLastPlayedCard(), game.getLastPlayedCard().isHasFetchedCards());
                 wait();
             }
 

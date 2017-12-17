@@ -78,7 +78,10 @@ public class DeckBuilder {
 
         Collections.shuffle(deck);
 
+        LOGGER.log(Level.INFO, "Card on top of deck: " + deck.peek().getCardType());
+
         while(deck.peek().getCardType() != Card.CardType.NORMAL){
+            LOGGER.log(Level.INFO, "Special card on top ({}), reshuffling...", deck.peek());
             Collections.shuffle(deck);
         }
 
