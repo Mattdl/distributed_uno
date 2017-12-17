@@ -117,10 +117,7 @@ public class Card implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return id == card.id &&
-                value == card.value &&
-                hasFetchedCards == card.hasFetchedCards &&
-                Objects.equals(image, card.image) &&
+        return  value == card.value &&
                 cardType == card.cardType &&
                 color == card.color;
     }
