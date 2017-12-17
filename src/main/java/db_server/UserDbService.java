@@ -22,13 +22,16 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     private List<DbServer> otherDatabases;
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
     private Dao<User, String> userDao;
+    private Dao<Player, String> playerDao;
+
 
     public UserDbService() throws RemoteException {
     }
 
-    public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao) throws RemoteException {
+    public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao, Dao<Player, String> playerDao) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.userDao = userDao;
+        this.playerDao = playerDao;
     }
 
     public synchronized boolean persistUser(User userToPersist, boolean propagate) throws RemoteException {
@@ -68,11 +71,22 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
                                 .prepare());
 
         if (userList.isEmpty()) {
+
+            createPlayer(userToPersist.getPlayer());
+
             userDao.createIfNotExists(userToPersist);
+
             return true;
         }
 
         return false;
+    }
+
+    private void createPlayer(Player player) throws SQLException {
+        LOGGER.info("Creating player = {}", player);
+
+        //First object itself
+        playerDao.create(player);
     }
 
     /**

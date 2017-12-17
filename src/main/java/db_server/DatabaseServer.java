@@ -57,7 +57,7 @@ public class DatabaseServer {
         try {
             Registry registry = LocateRegistry.createRegistry(dbPort);
 
-            userDbService = new UserDbService(otherDatabases, userDao);
+            userDbService = new UserDbService(otherDatabases, userDao, playerDao);
             gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
 
             //Bind RMI implementations to service names
@@ -72,7 +72,7 @@ public class DatabaseServer {
         // Connect with other databases
         registerAsClientWithOtherDatabases();
 
-        LOGGER.info("DATABASE '{}:{}' is READY",dbIp,dbPort);
+        LOGGER.info("DATABASE '{}:{}' is READY", dbIp, dbPort);
     }
 
     private void initDb(String fileName) {
