@@ -1,9 +1,6 @@
 package app_server;
 
-import app_server.service.GameLobbyService;
-import app_server.service.GameService;
-import app_server.service.LobbyService;
-import app_server.service.LoginService;
+import app_server.service.*;
 import db_server.DatabaseServer;
 import db_server.GameDbService;
 import db_server.UserDbService;
@@ -68,6 +65,8 @@ public class AppServer {
             registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService));
 
             registry.rebind("LobbyService", new LobbyService(lobby));
+
+            registry.rebind("RegisterService", new RegisterService(userDbService));
 
         } catch (Exception e) {
             e.printStackTrace();

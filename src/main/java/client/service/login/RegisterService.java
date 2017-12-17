@@ -3,7 +3,6 @@ package client.service.login;
 import client.Main;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
-import stub_RMI.client_appserver.LoginStub;
 import stub_RMI.client_appserver.RegisterStub;
 
 import java.rmi.registry.LocateRegistry;
@@ -37,9 +36,9 @@ public class RegisterService extends Service<Boolean> {
                     Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                     RegisterStub registerService = (RegisterStub) myRegistry.lookup("RegisterService");
 
-                    boolean successfulRegister = registerService.Register(username, password);
+                    boolean successfulRegister = registerService.register(username, password);
 
-                    LOGGER.log(Level.INFO, "Register successful: ", successfulRegister);
+                    LOGGER.log(Level.INFO, "register successful: ", successfulRegister);
 
                     return successfulRegister;
                 } catch (Exception e) {

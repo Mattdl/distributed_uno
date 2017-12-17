@@ -120,13 +120,13 @@ public class LoginController {
 
     @FXML
     public void tryRegister() {
-        LOGGER.log(Level.INFO, "Trying Register");
+        LOGGER.log(Level.INFO, "Trying register");
 
         //Init background service for login
         RegisterService registerService = new RegisterService(usernameInput.getText(), passwordInput.getText());
 
         registerService.setOnSucceeded(e -> {
-            LOGGER.log(Level.INFO, "Register attempt finished");
+            LOGGER.log(Level.INFO, "register attempt finished");
 
             boolean isSuccessful = (Boolean) e.getSource().getValue();
 
@@ -136,7 +136,7 @@ public class LoginController {
                 connectionText.setText("Registered successful");
             } else {
                 connectionText.setText("Something went wrong with the registration");
-                LOGGER.log(Level.WARNING, "Register attempt FAILED");
+                LOGGER.log(Level.WARNING, "register attempt FAILED");
             }
         });
         registerService.start();
