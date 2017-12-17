@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import security.JWTUtils;
 import security.Passwords;
+import stub_RMI.appserver_dbserver.UserDbStub;
 import stub_RMI.client_appserver.LoginStub;
 
 import java.rmi.RemoteException;
@@ -19,9 +20,9 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
     private final long TTL = 24 * 60 * 60 * 1000; //24h Time to live
 
-    private UserDbService userDbService;
+    private UserDbStub userDbService;
 
-    public LoginService(UserDbService userDbService) throws RemoteException {
+    public LoginService(UserDbStub userDbService) throws RemoteException {
         this.userDbService = userDbService;
     }
 
