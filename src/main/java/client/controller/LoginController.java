@@ -3,6 +3,7 @@ package client.controller;
 import client.Main;
 import client.service.login.LoginService;
 import client.service.login.PingService;
+import client.service.login.RegisterService;
 import client.service.login.ServerInitiatorService;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -16,6 +17,7 @@ import javafx.stage.Stage;
 import model.Player;
 import model.Server;
 import stub_RMI.client_dispatcher.DispatcherStub;
+import sun.security.util.Password;
 
 
 import java.rmi.registry.LocateRegistry;
@@ -118,7 +120,26 @@ public class LoginController {
 
     @FXML
     public void tryRegister() {
-        //TODO similar as login
+        LOGGER.log(Level.INFO, "Trying register");
+
+        //Init background service for login
+        RegisterService registerService = new RegisterService(usernameInput.getText(), passwordInput.getText());
+
+        registerService.setOnSucceeded(e -> {
+            LOGGER.log(Level.INFO, "register attempt finished");
+
+            boolean isSuccessful = (Boolean) e.getSource().getValue();
+
+            //return msg if succesfull
+            String msg;
+            if (isSuccessful) {
+                connectionText.setText("Registered successful");
+            } else {
+                connectionText.setText("Something went wrong with the registration");
+                LOGGER.log(Level.WARNING, "register attempt FAILED");
+            }
+        });
+        registerService.start();
     }
 
     private void switchToLobbyScene(Stage stage, String msg) {
