@@ -78,10 +78,6 @@ public class DeckBuilder {
 
         Collections.shuffle(deck);
 
-        while(deck.peek().getCardType() != Card.CardType.NORMAL){
-            Collections.shuffle(deck);
-        }
-
         return deck;
     }
 
