@@ -37,9 +37,7 @@ public class RegisterService extends Service<Boolean> {
                     Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                     RegisterStub registerService = (RegisterStub) myRegistry.lookup("RegisterService");
 
-                    boolean successfulRegister = false;
-
-
+                    boolean successfulRegister = registerService.Register(username, password);
 
                     LOGGER.log(Level.INFO, "Register successful: ", successfulRegister);
 
