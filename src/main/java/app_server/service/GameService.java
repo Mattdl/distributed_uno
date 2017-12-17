@@ -189,7 +189,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 LOGGER.info("Card is not null in playMove");
 
                 if (gameLogic.isValidMove(move.getCard(), game.getLastPlayedCard())) {
-                    LOGGER.info("Card is not null in playMove");
+                    LOGGER.info("Valid move in playMove");
                     return updateGame(game, move);
                 }
 

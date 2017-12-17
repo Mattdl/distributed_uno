@@ -37,7 +37,7 @@ public class Game extends Observable implements Serializable {
     private Collection<Player> playerList;
 
     @ForeignCollectionField(eager = true, maxEagerLevel = 3)
-    private Collection<Card> deck = new LinkedList<Card>();
+    private Collection<Card> deck;
 
     @ForeignCollectionField(eager = true, maxEagerLevel = 3)
     private Collection<Move> moves;
