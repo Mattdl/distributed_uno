@@ -10,24 +10,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.GameController">
+<BorderPane id="gameBorderPane" fx:id="gameBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.GameController">
    <top>
       <VBox prefHeight="4.0" prefWidth="600.0" BorderPane.alignment="CENTER">
          <children>
-            <MenuBar>
-              <menus>
-                <Menu mnemonicParsing="false" text="File">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="Close" />
-                  </items>
-                </Menu>
-                <Menu mnemonicParsing="false" text="Help">
-                  <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
-                  </items>
-                </Menu>
-              </menus>
-            </MenuBar>
             <VBox alignment="CENTER" prefHeight="108.0" prefWidth="350.0">
                <children>
                   <ImageView fitHeight="150.0" fitWidth="75.0" pickOnBounds="true" preserveRatio="true">
@@ -84,9 +70,9 @@
             <ListView fx:id="handListView" onMouseClicked="#playCard" orientation="HORIZONTAL" prefHeight="207.0" prefWidth="600.0" />
             <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Text fx:id="serverInfoText" strokeType="OUTSIDE" strokeWidth="0.0" text="Serverinfo" />
+                  <Text fx:id="serverInfoText" fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Serverinfo" />
                   <Region prefHeight="20.0" prefWidth="578.0" HBox.hgrow="ALWAYS" />
-                  <Text fx:id="currentPlayerText" strokeType="OUTSIDE" strokeWidth="0.0" text="Player" />
+                  <Text fx:id="currentPlayerText" fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Player" />
                </children>
             </HBox>
          </children>

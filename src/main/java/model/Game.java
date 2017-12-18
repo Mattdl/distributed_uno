@@ -126,9 +126,10 @@ public class Game extends Observable implements Serializable {
         while (i < playerList.size()) {
             //LOGGER.log(Level.INFO,"In the while");
 
-            if (((List<Player>) playerList).get(i).equals(player)) {
-                playerList.remove(i);
-                LOGGER.log(Level.INFO, "Removed player: {0}", player);
+            Player tempPlayer = ((List<Player>) playerList).get(i);
+            if (tempPlayer.equals(player)) {
+                playerList.remove(tempPlayer);
+                LOGGER.log(Level.INFO, "Removed player: {0}", tempPlayer);
 
                 setChanged();
                 notifyObservers();

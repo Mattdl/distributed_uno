@@ -7,54 +7,49 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
+<BorderPane id="loginBorderPane" fx:id="loginBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LoginController">
    <center>
-      <VBox maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+      <VBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="236.0" BorderPane.alignment="CENTER">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Login / Register">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="20.0" />
-               </VBox.margin>
-            </Text>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="236.0">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Username">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Text>
-                  <TextField fx:id="usernameInput" promptText="Enter Username" />
+                  <TextField fx:id="usernameInput" alignment="TOP_CENTER" prefHeight="31.0" prefWidth="192.0" promptText="Enter Username" />
                </children>
             </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Password">
-                     <HBox.margin>
-                        <Insets right="10.0" />
-                     </HBox.margin>
-                  </Text>
-                  <PasswordField fx:id="passwordInput" promptText="Enter password" />
+                  <PasswordField fx:id="passwordInput" alignment="TOP_CENTER" prefHeight="31.0" prefWidth="193.0" promptText="Enter password" />
                </children>
             </HBox>
-            <HBox prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button fx:id="loginButton" mnemonicParsing="false" onAction="#tryLogin" text="Login" />
-                  <Button fx:id="registerButton" mnemonicParsing="false" onAction="#tryRegister" text="Register" />
+                  <Button fx:id="loginButton" mnemonicParsing="false" onAction="#tryLogin" text="Login">
+                     <HBox.margin>
+                        <Insets right="40.0" />
+                     </HBox.margin></Button>
+                  <Button fx:id="registerButton" mnemonicParsing="false" onAction="#tryRegister" text="Register">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin></Button>
                </children>
             </HBox>
          </children>
          <BorderPane.margin>
             <Insets />
          </BorderPane.margin>
-         <padding>
-            <Insets left="20.0" />
-         </padding>
       </VBox>
    </center>
    <bottom>
-      <Text fx:id="connectionText" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for connection..." BorderPane.alignment="CENTER" />
+      <Text fx:id="connectionText" fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Waiting for connection..." BorderPane.alignment="CENTER" />
    </bottom>
+   <top>
+      <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Login / Register" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets top="60.0" />
+         </BorderPane.margin>
+      </Text>
+   </top>
 </BorderPane>

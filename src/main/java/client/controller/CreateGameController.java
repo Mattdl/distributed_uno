@@ -11,21 +11,24 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import model.Game;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static client.Main.sceneFactory;
+
 public class CreateGameController {
     private static final Logger LOGGER = Logger.getLogger(CreateGameController.class.getName());
 
+    @FXML
+    private BorderPane createGameBorderPane;
 
     @FXML
     private ChoiceBox<Integer> numberOfPlayers;
-
-    @FXML
-    private PasswordField passwordField;
 
     @FXML
     private TextField gameName;
@@ -33,6 +36,11 @@ public class CreateGameController {
 
     @FXML
     public void initialize() {
+
+        BackgroundImage myBI= new BackgroundImage(new Image("background/Lobby-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+                BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        createGameBorderPane.setBackground(new Background(myBI));
 
         //Set choicebox values
         ObservableList<Integer> availableChoices = FXCollections.observableArrayList(2, 3, 4);
@@ -45,9 +53,8 @@ public class CreateGameController {
 
         int playerCount = numberOfPlayers.getSelectionModel().getSelectedItem();
         String name = gameName.getText();
-        String password = passwordField.getText(); //TODO encryption
 
-        CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer, password);
+        CreateGameService createGameService = new CreateGameService(name, playerCount, Main.currentPlayer);
 
         createGameService.setOnSucceeded(event1 -> {
             String gameId = (String) event1.getSource().getValue();

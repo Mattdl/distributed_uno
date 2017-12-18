@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 
-import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -318,4 +317,55 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         return new DeckBuilder().getAllCardImageMappings(isSpecialEdition);
     }
 
+
+    /**
+     * Method used to fetch highscore from player
+     *
+     * @param playerName
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized int fetchPlayerScore(String playerName) throws RemoteException {
+
+        try {
+
+            Player player = playerDao.queryForId(playerName);
+            int score = 0;
+
+            if (player != null) {
+                score = player.getHighscore();
+            }
+
+            return score;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Method used to recreate games from a database
+     * @return List of games
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized List<Game> copyDatabase() throws RemoteException{
+        List<Game> gameList = new ArrayList<>();
+        try {
+            List<Game> gameDbList = gameDao.queryForAll();
+            for(Game game : gameDbList){
+                game = fetchGame(game.getGameId());
+                gameList.add(game);
+            }
+            return gameList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
 }

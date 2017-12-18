@@ -21,13 +21,11 @@ public class CreateGameService extends Service<String> {
     private String name;
     private int size;
     private Player initPlayer;
-    private String password;
 
-    public CreateGameService(String name, int size, Player initPlayer, String password) {
+    public CreateGameService(String name, int size, Player initPlayer) {
         this.name = name;
         this.size = size;
         this.initPlayer = initPlayer;
-        this.password = password;
     }
 
     /**
@@ -48,7 +46,7 @@ public class CreateGameService extends Service<String> {
                 LOGGER.log(Level.INFO, "Lookup successful");
 
 
-                String gameId = lobbyService.createNewGame(initPlayer, name, size, password);
+                String gameId = lobbyService.createNewGame(initPlayer, name, size);
 
                 LOGGER.log(Level.INFO, "Return value, created game with Id = {0}",gameId);
 

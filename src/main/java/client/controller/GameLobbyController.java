@@ -7,7 +7,8 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
@@ -17,6 +18,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static client.Main.sceneFactory;
 
 public class GameLobbyController implements Observer {
 
@@ -38,6 +41,9 @@ public class GameLobbyController implements Observer {
     @FXML
     private Text numberOfPlayersText;
 
+    @FXML
+    private BorderPane gameLobbyBorderPane;
+
     public GameLobbyController(Game game) {
         this.currentGame = game;
     }
@@ -45,6 +51,11 @@ public class GameLobbyController implements Observer {
 
     @FXML
     public void initialize() {
+        BackgroundImage myBI= new BackgroundImage(new Image("background/GameLobby-Screen-Background.gif",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+                BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        gameLobbyBorderPane.setBackground(new Background(myBI));
+
         LOGGER.log(Level.INFO, "Initializing GameLobbyController, Currentgame={0}", currentGame);
         currentGame.addObserver(this); //TODO debug, this gives nullptr exception
         gameLobbyService = new GameLobbyService(currentGame);
@@ -99,7 +110,7 @@ public class GameLobbyController implements Observer {
                 //Set Playerlist
                 currentPlayersVBox.getChildren().clear();
                 for (Player p : currentGame.getPlayerList()) {
-                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
+                    currentPlayersVBox.getChildren().add(new Text(p.getName() + ": " + p.getHighscore()));
                 }
 
                 //Set playercount

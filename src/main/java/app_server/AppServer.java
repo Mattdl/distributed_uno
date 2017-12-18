@@ -73,7 +73,7 @@ public class AppServer {
 
             registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService));
 
-            registry.rebind("LobbyService", new LobbyService(lobby));
+            registry.rebind("LobbyService", new LobbyService(lobby, gameDbService));
 
             registry.rebind("RegisterService", new  RegisterService(userDbService));
 
