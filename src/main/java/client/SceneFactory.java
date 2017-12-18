@@ -170,4 +170,12 @@ public class SceneFactory {
         }
         return null;
     }
+
+    public int getWIDTH() {
+        return WIDTH;
+    }
+
+    public int getHEIGHT() {
+        return HEIGHT;
+    }
 }

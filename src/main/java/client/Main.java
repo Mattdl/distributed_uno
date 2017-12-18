@@ -36,7 +36,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("UNO");
         primaryStage.setAlwaysOnTop(false);
-        primaryStage.setResizable(true);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
         LOGGER.log(Level.INFO, "Client application LAUNCHED");

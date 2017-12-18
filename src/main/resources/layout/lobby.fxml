@@ -7,7 +7,7 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane fx:id="container" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LobbyController">
+<BorderPane id="lobbyBorderPane" fx:id="lobbyBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LobbyController">
    <bottom>
       <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#createNewGame" text="Create New Game" BorderPane.alignment="CENTER" />
    </bottom>
@@ -16,23 +16,15 @@
          <children>
             <VBox fx:id="vboxEntryList" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0">
                <children>
-                  <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby" textAlignment="CENTER">
-                     <font>
-                        <Font size="18.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets bottom="20.0" />
-                     </VBox.margin>
-                  </Text>
                   <HBox prefHeight="100.0" prefWidth="200.0">
                      <children>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="GAMENAME">
+                        <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="GAMENAME">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
                         </Text>
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Players:" />
-                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="#" />
+                        <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Players:" />
+                        <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="#" />
                         <Button mnemonicParsing="false" text="Join" />
                      </children>
                   </HBox>
@@ -44,4 +36,14 @@
          </children>
       </TilePane>
    </center>
+   <top>
+      <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Lobby" textAlignment="CENTER" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets top="60.0" />
+         </BorderPane.margin>
+      </Text>
+   </top>
 </BorderPane>

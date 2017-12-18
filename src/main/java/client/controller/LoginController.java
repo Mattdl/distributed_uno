@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Player;
@@ -26,6 +28,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static client.Main.appServer;
+import static client.Main.sceneFactory;
 import static client.service.login.ServerInitiatorService.DISPATCHER_IP;
 import static client.service.login.ServerInitiatorService.DISPATCHER_PORT;
 import static client.service.login.ServerInitiatorService.DISPATCHER_SERVICE;
@@ -43,9 +46,17 @@ public class LoginController {
     @FXML
     private Text connectionText;
 
+    @FXML
+    private BorderPane loginBorderPane;
+
 
     @FXML
     public void initialize() {
+
+        BackgroundImage myBI= new BackgroundImage(new Image("background/Login-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+                BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        loginBorderPane.setBackground(new Background(myBI));
 
         //TODO check if token is valid, if token is valid => go to Lobby
         ServerInitiatorService serverInitiatorService = new ServerInitiatorService();
@@ -128,7 +139,7 @@ public class LoginController {
 
     @FXML
     public void tryRegister() {
-        if(PasswordValidator.validate(passwordInput.getText()) && usernameInput.getText().length() != 0) {
+        if(PasswordValidator.validate(passwordInput.getText())) {
 
             LOGGER.log(Level.INFO, "Trying register");
 

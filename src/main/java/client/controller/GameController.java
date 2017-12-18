@@ -13,8 +13,10 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -29,6 +31,8 @@ import java.util.Observer;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static client.Main.sceneFactory;
 
 
 public class GameController implements Observer {
@@ -75,6 +79,9 @@ public class GameController implements Observer {
     @FXML
     private Text currentPlayerText;
 
+    @FXML
+    private BorderPane gameBorderPane;
+
     private FetchPlayersInfoService fetchPlayersInfoService;
 
     private FetchCurrentPlayerAndCardService currentPlayerAndCardService;
@@ -93,6 +100,11 @@ public class GameController implements Observer {
 
     @FXML
     public void initialize() {
+
+        BackgroundImage myBI= new BackgroundImage(new Image("background/Game-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+                BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        gameBorderPane.setBackground(new Background(myBI));
 
         Platform.runLater(new Runnable() {
             @Override

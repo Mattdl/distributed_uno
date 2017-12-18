@@ -67,18 +67,12 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @param initPlayer
      * @param gameName
      * @param gameSize
-     * @param password
      * @return Returns a message if failed, null if successful
      * @throws RemoteException
      */
-    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize, String password)
+    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize)
             throws RemoteException {
-        //TODO extend with password (if time)
-
         LOGGER.info("createNewGame @Server");
-
-
-        //TODO CHECK IF NAME IS UNIQUE!
         Game game = new Game(gameName, gameSize, initPlayer);
         game.setDeck();
         lobby.addGame(game);
