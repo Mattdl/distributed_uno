@@ -301,14 +301,14 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             Card ret = gameLogic.gameUpdate(game, move);
             LOGGER.info("game updated");
 
-            //Notify everybody that game has updated
-            notifyAll();
-            LOGGER.info("updateGame: notified everybody!");
-
             //Check if game is finished
             if(serverPlayer.getHand().isEmpty()){
                 finishGame(game, serverPlayer);
             }
+
+            //Notify everybody that game has updated
+            notifyAll();
+            LOGGER.info("updateGame: notified everybody!");
 
             return ret;
         }
@@ -340,7 +340,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @return
      * @throws RemoteException
      */
-    public synchronized List<String> getGameResults(String gameName) throws RemoteException {
+    public List<String> getGameResults(String gameName) throws RemoteException {
         Game game = lobby.findGame(gameName);
 
         int score = gameLogic.calculateScore(game);
