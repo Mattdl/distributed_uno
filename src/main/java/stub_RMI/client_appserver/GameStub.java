@@ -1,6 +1,5 @@
 package stub_RMI.client_appserver;
 
-import com.sun.org.apache.regexp.internal.RE;
 import model.Card;
 import model.Move;
 import model.Player;

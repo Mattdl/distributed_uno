@@ -3,7 +3,6 @@ package client.controller;
 
 import client.Main;
 import client.service.game.*;
-import com.sun.xml.internal.ws.api.ha.StickyFeature;
 import game_logic.GameLogic;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
