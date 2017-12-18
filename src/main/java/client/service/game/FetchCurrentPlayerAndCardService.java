@@ -22,7 +22,7 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
     public FetchCurrentPlayerAndCardService(Game game, boolean isInit, boolean isGameFinished) {
         this.game = game;
         this.isInit = isInit;
-        isGameFinished = isGameFinished;
+        this.isGameFinished = isGameFinished;
     }
 
     @Override
