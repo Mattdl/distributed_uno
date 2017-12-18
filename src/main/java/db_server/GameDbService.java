@@ -309,4 +309,31 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         this.otherDatabases = otherDatabases;
         otherDatabasesLock.writeLock().unlock();
     }
+
+    /**
+     * Method used to fetch highscore from player
+     *
+     * @param playerName
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized int fetchPlayerScore(String playerName) throws RemoteException {
+
+        try {
+
+            Player player = playerDao.queryForId(playerName);
+            int score = 0;
+
+            if (player != null) {
+                score = player.getHighscore();
+            }
+
+            return score;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
 }

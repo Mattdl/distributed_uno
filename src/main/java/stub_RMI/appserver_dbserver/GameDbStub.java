@@ -17,4 +17,6 @@ public interface GameDbStub extends Remote {
 
     void updateWinner(Player player) throws RemoteException;
 
+    int fetchPlayerScore(String playerName) throws RemoteException;
+
 }

@@ -99,7 +99,7 @@ public class GameLobbyController implements Observer {
                 //Set Playerlist
                 currentPlayersVBox.getChildren().clear();
                 for (Player p : currentGame.getPlayerList()) {
-                    currentPlayersVBox.getChildren().add(new Text(p.getName()));
+                    currentPlayersVBox.getChildren().add(new Text(p.getName() + ": " + p.getHighscore()));
                 }
 
                 //Set playercount

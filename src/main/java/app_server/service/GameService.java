@@ -22,7 +22,6 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     private final GameLogic gameLogic;
 
     private Lobby lobby;
-    //private GameDbService gameDbService;
 
     //RMI
     private GameDbStub gameDbService;

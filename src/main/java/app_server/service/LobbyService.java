@@ -5,6 +5,7 @@ import model.Lobby;
 import model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.LobbyStub;
 
 import java.rmi.RemoteException;
@@ -19,10 +20,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
 
     private Lobby lobby;
-    //private GameDbService gameDbService;
+    private GameDbStub gameDbService;
 
-    public LobbyService(Lobby lobby) throws RemoteException {
+    public LobbyService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
+        this.gameDbService = gameDbService;
     }
 
     /**
@@ -162,6 +164,9 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         LOGGER.info("Entering getGameLobbyInfo");
 
         Game game = lobby.findGame(gameName);
+        for(Player player: game.getPlayerList()){
+            player.setHighscore(gameDbService.fetchPlayerScore(player.getName()));
+        }
 
         try {
 
