@@ -314,6 +314,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     public List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException {
+        LOGGER.info("DATABASE FETCHING CARDS FOR APPSERVER");
         return new DeckBuilder().getAllCardImageMappings(isSpecialEdition);
     }
 

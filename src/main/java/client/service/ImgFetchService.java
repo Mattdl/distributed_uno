@@ -21,6 +21,8 @@ public class ImgFetchService extends Service<Void> {
 
     private static final Logger LOGGER = Logger.getLogger(ImgFetchService.class.getName());
 
+    public static Map<Card, WritableImage> imageMap;
+
     public static boolean hasFetchedAllCards = false;
 
     public ImgFetchService() {
@@ -34,17 +36,23 @@ public class ImgFetchService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
 
-                LOGGER.log(Level.INFO, "Calling background Task");
+                LOGGER.log(Level.INFO, "CLIENT STARTING: FETCH IMAGES");
 
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
+                LOGGER.log(Level.INFO, "CLIENT FETCHING IMAGES");
+
                 List<Card> ret = gameService.fetchCardImageMappings();
+
+                LOGGER.log(Level.INFO, "CLIENT FETCHED IMAGES, ret = {}", ret);
 
                 if (ret != null) {
                     initHashMap(ret);
                     hasFetchedAllCards = true;
                 }
+
+                LOGGER.log(Level.INFO, "CLIENT IMAGES MAP SIZE = {}", imageMap.size());
 
                 return null;
             }
@@ -52,7 +60,7 @@ public class ImgFetchService extends Service<Void> {
     }
 
     private void initHashMap(List<Card> ret) {
-        Map<Card, WritableImage> map = new HashMap<>();
+        imageMap = new HashMap<>();
 
         for (Card card : ret) {
 
@@ -60,7 +68,7 @@ public class ImgFetchService extends Service<Void> {
             WritableImage img = DeckBuilder.byteArrayToJavaFXImage(card.getSerializableImage());
 
             // See card object, only type + value + color are used
-            map.put(card, img);
+            imageMap.put(card, img);
         }
     }
 }
