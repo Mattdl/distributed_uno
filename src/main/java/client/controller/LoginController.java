@@ -128,7 +128,7 @@ public class LoginController {
 
     @FXML
     public void tryRegister() {
-        if(PasswordValidator.validate(passwordInput.getText())) {
+        if(PasswordValidator.validate(passwordInput.getText()) && usernameInput.getText().length() != 0) {
 
             LOGGER.log(Level.INFO, "Trying register");
 
