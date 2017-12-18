@@ -25,7 +25,7 @@ public class Main extends Application {
 
 
         //Multiple threads should run here (Service!)
-        //FetchService fetchService = new FetchService();
+        //ImgFetchService fetchService = new ImgFetchService();
         //fetchService.start();
 
         final int HEIGHT = 600;

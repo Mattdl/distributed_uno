@@ -1,5 +1,6 @@
 package db_server;
 
+import app_server.DeckBuilder;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import model.*;
@@ -7,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 
+import java.awt.image.BufferedImage;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -205,80 +207,81 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         }
     }
 
-        private void persistMoveToOtherDatabases (String gameName, Move move){
+    private void persistMoveToOtherDatabases(String gameName, Move move) {
 
-            otherDatabasesLock.readLock().lock();
+        otherDatabasesLock.readLock().lock();
 
-            for (DbServer otherDbServer : otherDatabases) {
+        for (DbServer otherDbServer : otherDatabases) {
 
-                if (otherDbServer.isConnected()) {
+            if (otherDbServer.isConnected()) {
 
-                    GameDbStub gameDbStub = otherDbServer.getGameDbStub();
+                GameDbStub gameDbStub = otherDbServer.getGameDbStub();
 
-                    try {
+                try {
 
-                        gameDbStub.persistMove(gameName, move, false);
+                    gameDbStub.persistMove(gameName, move, false);
 
-                        LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
+                    LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
-                    } catch (Exception e) {
-                        LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
-                        e.printStackTrace();
-                    }
+                } catch (Exception e) {
+                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        otherDatabasesLock.readLock().unlock();
+
+    }
+
+    /**
+     * Method used to restore a Game, when the appServer has crashed.
+     *
+     * @param gameName
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized Game fetchGame(String gameName) throws RemoteException {
+
+        LOGGER.info("Fetching Game with name = '{}'", gameName);
+
+        try {
+            Game game = gameDao.queryForId(gameName);
+
+            LOGGER.info("GAME FOUND IN QUERY = {}", game);
+
+
+            if (game != null) {
+
+                // Converting ForeignCollections to Arraylists
+                game.setMoves(new ArrayList<>(game.getMovesCollection()));
+                game.setDeck(new ArrayList<>(game.getDeckCollection()));
+                game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
+
+                LOGGER.info("FETCHED DECK = {}", game.getDeck());
+
+                for (Player player : game.getPlayerList()) {
+                    player.setHand(new ArrayList<>(player.getHandCollection()));
+
+                    LOGGER.info("PLAYER HAND = {}", player.getHand());
+
                 }
             }
 
-            otherDatabasesLock.readLock().unlock();
+            LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);
 
+            return game;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
-        /**
-         * Method used to restore a Game, when the appServer has crashed.
-         *
-         * @param gameName
-         * @return
-         * @throws RemoteException
-         */
-        @Override
-        public synchronized Game fetchGame (String gameName) throws RemoteException {
-
-            LOGGER.info("Fetching Game with name = '{}'", gameName);
-
-            try {
-                Game game = gameDao.queryForId(gameName);
-
-                LOGGER.info("GAME FOUND IN QUERY = {}", game);
-
-
-                if (game != null) {
-
-                    // Converting ForeignCollections to Arraylists
-                    game.setMoves(new ArrayList<>(game.getMovesCollection()));
-                    game.setDeck(new ArrayList<>(game.getDeckCollection()));
-                    game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
-
-                    LOGGER.info("FETCHED DECK = {}", game.getDeck());
-
-                    for (Player player : game.getPlayerList()) {
-                        player.setHand(new ArrayList<>(player.getHandCollection()));
-
-                        LOGGER.info("PLAYER HAND = {}", player.getHand());
-
-                    }
-                }
-
-                LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);
-
-                return game;
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
+        return null;
+    }
 
     /**
      * Searches winning player in database and adds his score.
+     *
      * @param player
      * @return
      * @throws RemoteException
@@ -309,4 +312,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         this.otherDatabases = otherDatabases;
         otherDatabasesLock.writeLock().unlock();
     }
+
+    public List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException {
+        return new DeckBuilder().getAllCardImageMappings(isSpecialEdition);
+    }
+
 }

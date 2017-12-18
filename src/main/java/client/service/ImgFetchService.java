@@ -6,14 +6,14 @@ import javafx.concurrent.Task;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class FetchService extends Service<Void> {
+public class ImgFetchService extends Service<Void> {
 
-    private static final Logger LOGGER = Logger.getLogger( FetchService.class.getName() );
+    private static final Logger LOGGER = Logger.getLogger(ImgFetchService.class.getName());
 
-    private boolean online;
+    private boolean hasFetchedAllCards;
 
-    public FetchService() {
-        this.online = true;
+    public ImgFetchService() {
+        this.hasFetchedAllCards = false;
     }
 
     @Override
@@ -23,19 +23,19 @@ public class FetchService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
 
-                LOGGER.log(Level.INFO,"Calling background Task");
+                LOGGER.log(Level.INFO, "Calling background Task");
 
                 //The fetching loop
-                while(online){
+                while (hasFetchedAllCards) {
 
                     //TODO RMI call to fetch game-data
 
-                    LOGGER.log(Level.INFO,"GameData fetch received: {0}");
+                    LOGGER.log(Level.INFO, "GameData fetch received: {0}");
 
                     //TODO update game-model
 
                     //tmp
-                    online=false;
+                    hasFetchedAllCards = false;
                 }
 
                 return null;

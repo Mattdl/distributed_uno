@@ -28,6 +28,8 @@ public class Card implements Serializable {
     @DatabaseField
     private boolean hasFetchedCards;
 
+    private byte[] serializableImage;
+
     // ORMLITE: Returning fields for foreign keys
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Player player;
@@ -41,6 +43,13 @@ public class Card implements Serializable {
 
     public Card(Image image, CardType cardType, CardColor color, int value) {
         this.image = image;
+        this.cardType = cardType;
+        this.color = color;
+        this.value = value;
+    }
+
+    public Card(byte[] image, CardType cardType, CardColor color, int value) {
+        this.serializableImage = image;
         this.cardType = cardType;
         this.color = color;
         this.value = value;
@@ -88,6 +97,14 @@ public class Card implements Serializable {
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public byte[] getSerializableImage() {
+        return serializableImage;
+    }
+
+    public void setSerializableImage(byte[] serializableImage) {
+        this.serializableImage = serializableImage;
     }
 
     /**
