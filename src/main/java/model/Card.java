@@ -110,7 +110,7 @@ public class Card implements Serializable {
     /**
      * Enum used to specify the color of the card
      */
-    public enum CardColor{
+    public enum CardColor {
         BLUE,
         RED,
         YELLOW,
@@ -120,7 +120,7 @@ public class Card implements Serializable {
     /**
      * Enum used to specify the functionality of the card
      */
-    public enum CardType{
+    public enum CardType {
         NORMAL,
         PLUS2,
         PLUS4,
@@ -134,7 +134,7 @@ public class Card implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return  value == card.value &&
+        return value == card.value &&
                 cardType == card.cardType &&
                 color == card.color;
     }
@@ -142,7 +142,7 @@ public class Card implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, image, cardType, color, value, hasFetchedCards);
+        return Objects.hash(cardType, color, value);
     }
 
     @Override

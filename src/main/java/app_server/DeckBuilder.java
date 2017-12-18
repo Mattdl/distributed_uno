@@ -1,6 +1,7 @@
 package app_server;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.WritableImage;
 import model.Card;
 
 import javax.imageio.ImageIO;
@@ -159,7 +160,7 @@ public class DeckBuilder {
         return deck;
     }
 
-    public byte[] bufferedImageToByteArray(BufferedImage image) {
+    public static byte[] bufferedImageToByteArray(BufferedImage image) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         try {
             javax.imageio.ImageIO.write(image, "png", baos);
@@ -169,7 +170,7 @@ public class DeckBuilder {
         return baos.toByteArray();
     }
 
-    public BufferedImage byteArrayToBufferedImage(byte[] rawImage) {
+    public static BufferedImage byteArrayToBufferedImage(byte[] rawImage) {
         try {
             BufferedImage image = javax.imageio.ImageIO.read(new ByteArrayInputStream(rawImage));
 
@@ -179,6 +180,12 @@ public class DeckBuilder {
         }
 
         return null;
+    }
+
+    public static WritableImage byteArrayToJavaFXImage(byte[] rawImage) {
+        BufferedImage img = byteArrayToBufferedImage(rawImage);
+
+        return SwingFXUtils.toFXImage(img, null);
     }
 
 
