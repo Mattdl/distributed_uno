@@ -153,6 +153,7 @@ public class GameController implements Observer {
 
             imageView = new ImageView(ImgFetchService.imageMap.get(backCard));
             text = new Text();
+            text.setStyle("-fx-text-fill: white;");
 
             otherPlayer.getChildren().add(imageView);
             otherPlayer.getChildren().add(text);

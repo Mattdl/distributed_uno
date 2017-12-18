@@ -146,6 +146,11 @@ public class Card implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
+
+        if(cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4){
+            return cardType == card.cardType;
+        }
+
         return value == card.value &&
                 cardType == card.cardType &&
                 color == card.color;
