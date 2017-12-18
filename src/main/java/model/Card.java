@@ -55,6 +55,11 @@ public class Card implements Serializable {
         this.value = value;
     }
 
+    public Card(CardType cardType, Integer value) {
+        this.cardType = cardType;
+        this.value = value;
+    }
+
     public Image getImage() {
         return image;
     }

@@ -108,7 +108,7 @@ public class Player implements Serializable {
     public boolean removeCard(Card card) {
         boolean successfull = hand.remove(card);
         if (!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)) {
-            successfull = hand.remove(new Card(null, card.getCardType(), null, card.getValue()));
+            successfull = hand.remove(new Card(card.getCardType(),card.getValue()));
         }
         return successfull;
     }

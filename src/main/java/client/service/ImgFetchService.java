@@ -6,20 +6,19 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import javafx.scene.image.WritableImage;
 import model.Card;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import stub_RMI.client_appserver.GameStub;
 
-import java.awt.image.BufferedImage;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class ImgFetchService extends Service<Void> {
 
-    private static final Logger LOGGER = Logger.getLogger(ImgFetchService.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(ImgFetchService.class.getName());
 
     public static Map<Card, WritableImage> imageMap;
 
@@ -36,23 +35,23 @@ public class ImgFetchService extends Service<Void> {
             @Override
             protected Void call() throws Exception {
 
-                LOGGER.log(Level.INFO, "CLIENT STARTING: FETCH IMAGES");
+                LOGGER.info("CLIENT STARTING: FETCH IMAGES");
 
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
-                LOGGER.log(Level.INFO, "CLIENT FETCHING IMAGES");
+                LOGGER.info( "CLIENT FETCHING IMAGES");
 
                 List<Card> ret = gameService.fetchCardImageMappings();
 
-                LOGGER.log(Level.INFO, "CLIENT FETCHED IMAGES, ret = {}", ret);
+                LOGGER.info("CLIENT FETCHED IMAGES, ret = {}", ret);
 
                 if (ret != null) {
                     initHashMap(ret);
                     hasFetchedAllCards = true;
                 }
 
-                LOGGER.log(Level.INFO, "CLIENT IMAGES MAP SIZE = {}", imageMap.size());
+                LOGGER.info("CLIENT IMAGES MAP SIZE = {}", imageMap.size());
 
                 return null;
             }

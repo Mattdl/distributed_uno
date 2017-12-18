@@ -352,26 +352,29 @@ public class GameController implements Observer {
 
 
                     //LOAD IMAGES FOR CARDS (SHOULD WORK WHEN IMAGES ARE FIXED)
-/*
-                ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
-                handListView.setItems(observableList);
-                handListView.setCellFactory(listView -> new ListCell<Card>() {
-                private ImageView imageView = new ImageView();
 
-                    @Override
-                    public void updateItem(Card card, boolean empty) {
-                        super.updateItem(card, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            LOGGER.log(Level.INFO,"cardImage: "+card.getImage());
-                            imageView.setImage(card.getImage());
-                            setGraphic(imageView);
-                        }
+                    if (Main.currentPlayer.hasHand()) {
+                        ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
+                        handListView.setItems(observableList);
+                        handListView.setCellFactory(listView -> new ListCell<Card>() {
+                            private ImageView imageView = new ImageView();
+
+                            @Override
+                            public void updateItem(Card card, boolean empty) {
+                                super.updateItem(card, empty);
+                                if (empty) {
+                                    setGraphic(null);
+                                } else {
+                                    LOGGER.log(Level.INFO, "SETTING IMAGE FOR CARD = {0}",card);
+                                    imageView.setImage(ImgFetchService.imageMap.get(card));
+                                    setGraphic(imageView);
+                                }
+                            }
+                        });
                     }
-                });*/
 
 
+                    /*
                     //Show cards as text
                     if (Main.currentPlayer.hasHand()) {
                         ObservableList<Card> observableList = FXCollections.observableList(Main.currentPlayer.getHand());
@@ -388,6 +391,7 @@ public class GameController implements Observer {
                             }
                         });
                     }
+                    */
 
                     //Update last played card image
                     //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
