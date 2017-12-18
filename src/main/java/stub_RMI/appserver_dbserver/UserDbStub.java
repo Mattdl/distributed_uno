@@ -1,5 +1,6 @@
 package stub_RMI.appserver_dbserver;
 
+import model.Player;
 import model.User;
 
 import java.rmi.Remote;

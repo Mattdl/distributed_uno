@@ -75,7 +75,6 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
             createPlayer(userToPersist.getPlayer());
 
             userDao.createIfNotExists(userToPersist);
-
             return true;
         }
 
@@ -151,4 +150,5 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
         return null;
     }
+
 }

@@ -277,14 +277,36 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             return null;
         }
 
-        /**
-         * Update the list of other databases
-         *
-         * @param otherDatabases
-         */
-        public void updateOtherDatabases (List < DbServer > otherDatabases) {
-            otherDatabasesLock.writeLock().lock();
-            this.otherDatabases = otherDatabases;
-            otherDatabasesLock.writeLock().unlock();
+    /**
+     * Searches winning player in database and adds his score.
+     * @param player
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized void updateWinner(Player player) throws RemoteException {
+
+        LOGGER.info("Fetching Player in database");
+
+        try {
+            //Find corresponding user in database
+            LOGGER.info("Old highscore: " + playerDao.queryForId(player.getName()).getHighscore());
+            playerDao.update(player);
+            LOGGER.info("New highscore: " + playerDao.queryForId(player.getName()).getHighscore());
+        } catch (SQLException e) {
+            e.printStackTrace();
+
         }
     }
+
+    /**
+     * Update the list of other databases
+     *
+     * @param otherDatabases
+     */
+    public void updateOtherDatabases(List<DbServer> otherDatabases) {
+        otherDatabasesLock.writeLock().lock();
+        this.otherDatabases = otherDatabases;
+        otherDatabasesLock.writeLock().unlock();
+    }
+}

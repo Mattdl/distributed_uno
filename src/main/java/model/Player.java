@@ -29,7 +29,7 @@ public class Player implements Serializable {
     private Collection<Card> hand = new LinkedList<Card>();
 
     @DatabaseField
-    private int score; //The total score over all games of the player
+    private int highscore; //The total score over all games of the player
 
 
     private int handSize; //used on server for lightweight Player object
@@ -45,11 +45,13 @@ public class Player implements Serializable {
     public Player(String name) {
         this.name = name;
         this.hand = new LinkedList<>();
+        this.highscore = 0;
     }
 
     public Player(String name, String hash) {
         this.name = name;
         this.hand = new LinkedList<>();
+        this.highscore = 0;
     }
 
     /**
@@ -61,6 +63,7 @@ public class Player implements Serializable {
     public Player(String name, int handSize) {
         this.name = name;
         this.handSize = handSize;
+        this.highscore = 0;
     }
 
     public void addCard(Card card) {
@@ -138,5 +141,18 @@ public class Player implements Serializable {
 
     public Collection<Card> getHandCollection() {
         return hand;
+    }
+
+
+    public int getHighscore() {
+        return highscore;
+    }
+
+    public void setHighscore(int highscore) {
+        this.highscore = highscore;
+    }
+
+    public void addScore(int amount){
+        this.highscore += amount;
     }
 }

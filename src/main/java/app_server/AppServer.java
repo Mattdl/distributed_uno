@@ -75,7 +75,7 @@ public class AppServer {
 
             registry.rebind("LobbyService", new LobbyService(lobby));
 
-            registry.rebind("RegisterService", new RegisterService(userDbService));
+            registry.rebind("RegisterService", new  RegisterService(userDbService));
 
         } catch (Exception e) {
             e.printStackTrace();

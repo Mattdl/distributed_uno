@@ -15,4 +15,6 @@ public interface GameDbStub extends Remote {
 
     Game fetchGame(String gameId) throws RemoteException;
 
+    void updateWinner(Player player) throws RemoteException;
+
 }

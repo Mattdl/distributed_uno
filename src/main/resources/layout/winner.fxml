@@ -12,11 +12,11 @@
    <center>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="140.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game ended" />
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Game finished" />
             <HBox>
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Winner: " />
-                  <Label text="Player" />
+                  <Label fx:id="winnerText" text="Player" />
                </children>
                <VBox.margin>
                   <Insets top="10.0" />
@@ -25,7 +25,7 @@
             <HBox>
                <children>
                   <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Score: " />
-                  <Label text="100" />
+                  <Label fx:id="scoreText" text="100" />
                </children>
                <VBox.margin>
                   <Insets bottom="35.0" />
