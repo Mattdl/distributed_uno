@@ -22,14 +22,13 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.util.Pair;
 import model.Card;
 import model.Game;
 import model.Move;
 import model.Player;
 
-import java.util.Observable;
-import java.util.Observer;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -83,6 +82,8 @@ public class GameController implements Observer {
     @FXML
     private BorderPane gameBorderPane;
 
+    private List<VBox> otherPlayers;
+
     private FetchPlayersInfoService fetchPlayersInfoService;
 
     private FetchCurrentPlayerAndCardService currentPlayerAndCardService;
@@ -107,6 +108,8 @@ public class GameController implements Observer {
                 BackgroundSize.DEFAULT);
         gameBorderPane.setBackground(new Background(myBI));
 
+        initOtherPlayers();
+
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -122,18 +125,63 @@ public class GameController implements Observer {
             }
         });
 
-        LOGGER.log(Level.INFO, "Everybody's waiting to start");
-
         initServices();
-
-        //Used to create ListView with images of cards in hand (UNTESTED)
-
 
         //Set choicebox values
         ObservableList<Card.CardColor> availableChoices = FXCollections.observableArrayList(Card.CardColor.BLUE, Card.CardColor.GREEN, Card.CardColor.RED, Card.CardColor.YELLOW);
         colorChoiceBox.setItems(availableChoices);
         colorChoiceBox.setValue(Card.CardColor.YELLOW);
         colorChoiceBox.setVisible(false);
+    }
+
+    //TODO tries to load background immediately, but first needs to wait on images to be loaded.
+    private void initOtherPlayers() {
+        otherPlayers = new ArrayList<>();
+
+        Card backCard = new Card(Card.CardType.BACK, null, -1);
+
+        VBox otherPlayer;
+        ImageView imageView;
+        Text text;
+
+        // Don't need to include yourself
+        for (int i = 0; i < game.getGameSize() - 1; i++) {
+
+            otherPlayer = new VBox();
+
+            imageView = new ImageView(ImgFetchService.imageMap.get(backCard));
+            text = new Text();
+
+            otherPlayer.getChildren().add(imageView);
+            otherPlayer.getChildren().add(text);
+
+            otherPlayers.add(otherPlayer);
+        }
+
+        if (game.getGameSize() == 2) {
+
+            VBox vboxOtherPlayer = otherPlayers.get(0);
+            gameBorderPane.setTop(vboxOtherPlayer);
+
+        } else if (game.getGameSize() == 3) {
+
+            VBox vboxOtherPlayer = otherPlayers.get(0);
+            gameBorderPane.setLeft(vboxOtherPlayer);
+
+            vboxOtherPlayer = otherPlayers.get(1);
+            gameBorderPane.setRight(vboxOtherPlayer);
+
+        } else if (game.getGameSize() == 4) {
+
+            VBox vboxOtherPlayer = otherPlayers.get(0);
+            gameBorderPane.setLeft(vboxOtherPlayer);
+
+            vboxOtherPlayer = otherPlayers.get(1);
+            gameBorderPane.setTop(vboxOtherPlayer);
+
+            vboxOtherPlayer = otherPlayers.get(2);
+            gameBorderPane.setRight(vboxOtherPlayer);
+        }
     }
 
     /**
@@ -413,9 +461,14 @@ public class GameController implements Observer {
 
 
                     //Set other players hand size
-                    player2info.setText(playerList.get((currentPlayerIndex + 1) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 1) % playerList.size()).getHandSize() + " cards");
-                    player3info.setText(playerList.get((currentPlayerIndex + 2) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 2) % playerList.size()).getHandSize() + " cards");
-                    player4info.setText(playerList.get((currentPlayerIndex + 3) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + 3) % playerList.size()).getHandSize() + " cards");
+                    for (int i = 0; i < otherPlayers.size(); i++) {
+                        VBox otherPlayer = otherPlayers.get(i);
+                        Text text = (Text) otherPlayer.getChildren().get(1);
+
+                        int playerOffset = i + 1;
+
+                        text.setText(playerList.get((currentPlayerIndex + playerOffset) % playerList.size()).getName() + " has " + playerList.get((currentPlayerIndex + playerOffset) % playerList.size()).getHandSize() + " cards");
+                    }
 
                 }
             }

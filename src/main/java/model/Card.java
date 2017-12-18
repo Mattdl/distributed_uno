@@ -154,6 +154,10 @@ public class Card implements Serializable {
     @Override
     public int hashCode() {
 
+        if(cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4){
+            return Objects.hash(cardType);
+        }
+
         return Objects.hash(cardType, color, value);
     }
 
