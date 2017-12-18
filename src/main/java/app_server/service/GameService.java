@@ -221,15 +221,16 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
             while (!mayFetchPlusCards(game, serverSidePlayer)) {
                 LOGGER.info("Nah the notify did not have plus cards for me, just waitin...");
-                LOGGER.info("Last played card: {}, hasFetchedCards: {}", game.getLastPlayedCard(), game.getLastPlayedCard().isHasFetchedCards());
                 wait();
             }
 
-            LOGGER.info("LEAVING WHILE, last card = {0}", game.getLastPlayedCard());
+            Move lastMove = game.getLastMove();
 
-            game.getLastPlayedCard().setHasFetchedCards(true);
+            lastMove.setHasFetchedCards(true);
 
-            if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2) {
+            LOGGER.info("LEAVING WHILE, last move = {}", lastMove);
+
+            if (lastMove.getCard().getCardType() == Card.CardType.PLUS2) {
                 LOGGER.info("Fetching PLUS2 playercards.");
                 List<Card> hand = serverSidePlayer.getHand();
 
@@ -243,7 +244,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                 return ret;
             }
 
-            if (game.getLastPlayedCard().getCardType() == Card.CardType.PLUS4) {
+            if (lastMove.getCard().getCardType() == Card.CardType.PLUS4) {
                 LOGGER.info("Fetching PLUS4 playercards.");
                 List<Card> hand = serverSidePlayer.getHand();
 
@@ -274,11 +275,12 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         boolean isLastCardPlusCard = lastMove.getMoveType() == Move.MoveType.PLUS_CARD;
         boolean isForCurrentPlayer = serverSidePlayer.equals(lastMove.getPlayer());
+        boolean hasAlreadyFetchedCards = lastMove.hasFetchedCards();
 
-        LOGGER.debug("PLUS CARDS FOR PLAYER '{}'? isLastCardPlusCard = {}, isForCurrentPlayer = {}",
-                isLastCardPlusCard, isForCurrentPlayer);
+        LOGGER.debug("PLUS CARDS FOR PLAYER '{}'? isLastCardPlusCard = {}, isForCurrentPlayer = {}, hasAlreadyFetchedCards = {}",
+                serverSidePlayer, isLastCardPlusCard, isForCurrentPlayer, hasAlreadyFetchedCards);
 
-        return isLastCardPlusCard && isForCurrentPlayer;
+        return isLastCardPlusCard && isForCurrentPlayer && !hasAlreadyFetchedCards;
     }
 
     private synchronized Card updateGame(Game game, Move move) throws RemoteException {

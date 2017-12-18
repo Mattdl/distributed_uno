@@ -29,6 +29,9 @@ public class Move implements Serializable {
     @DatabaseField
     private MoveType moveType;
 
+    @DatabaseField
+    private boolean hasFetchedCards;
+
 
     // ORMLITE: Returning fields for foreign keys
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -81,6 +84,14 @@ public class Move implements Serializable {
         this.moveType = moveType;
     }
 
+    public boolean hasFetchedCards() {
+        return hasFetchedCards;
+    }
+
+    public void setHasFetchedCards(boolean hasFetchedCards) {
+        this.hasFetchedCards = hasFetchedCards;
+    }
+
     /**
      * Called when a Move object get's a drawn Card assigned.
      *
@@ -102,7 +113,6 @@ public class Move implements Serializable {
                 "player=" + player +
                 ", card=" + card +
                 ", moveType=" + moveType +
-                ", game=" + game +
                 '}';
     }
 

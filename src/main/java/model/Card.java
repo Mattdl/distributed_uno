@@ -25,9 +25,6 @@ public class Card implements Serializable {
     @DatabaseField
     private int value; //TODO, changed from Integer to int => Bugchecking
 
-    @DatabaseField
-    private boolean hasFetchedCards;
-
     private byte[] serializableImage;
 
     // ORMLITE: Returning fields for foreign keys
@@ -66,6 +63,10 @@ public class Card implements Serializable {
         this.value = value;
     }
 
+    public Card(CardType cardType) {
+        this.cardType = cardType;
+    }
+
     public Image getImage() {
         return image;
     }
@@ -84,14 +85,6 @@ public class Card implements Serializable {
 
     public Integer getValue() {
         return value;
-    }
-
-    public boolean isHasFetchedCards() {
-        return hasFetchedCards;
-    }
-
-    public void setHasFetchedCards(boolean hasFetchedCards) {
-        this.hasFetchedCards = hasFetchedCards;
     }
 
     public Player getPlayer() {
@@ -147,7 +140,7 @@ public class Card implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
 
-        if(cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4){
+        if (cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4) {
             return cardType == card.cardType;
         }
 
@@ -159,7 +152,7 @@ public class Card implements Serializable {
     @Override
     public int hashCode() {
 
-        if(cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4){
+        if (cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4) {
             return Objects.hash(cardType);
         }
 

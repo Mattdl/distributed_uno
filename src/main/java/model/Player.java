@@ -87,6 +87,9 @@ public class Player implements Serializable {
     }
 
     public boolean equals(Player player) {
+        if(player == null){
+            return false;
+        }
         return this.name.equals(player.name);
     }
 
