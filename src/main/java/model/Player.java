@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The player object.
+ */
 @DatabaseTable
 public class Player implements Serializable {
 
@@ -51,6 +54,7 @@ public class Player implements Serializable {
 
     /**
      * Lightweight constructor used at server side
+     *
      * @param name
      * @param handSize
      */
@@ -71,7 +75,7 @@ public class Player implements Serializable {
         return (List<Card>) hand;
     }
 
-    public boolean hasHand(){
+    public boolean hasHand() {
         return !hand.isEmpty();
     }
 
@@ -98,20 +102,21 @@ public class Player implements Serializable {
      * @param card
      * @return
      */
-    public boolean removeCard(Card card){
+    public boolean removeCard(Card card) {
         boolean successfull = hand.remove(card);
-        if(!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)){
-            successfull = hand.remove(new Card(null,card.getCardType(),null,card.getValue()));
+        if (!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)) {
+            successfull = hand.remove(new Card(null, card.getCardType(), null, card.getValue()));
         }
         return successfull;
     }
 
-    public int handListSize(){
+    public int handListSize() {
         return hand.size();
     }
 
     /**
      * Method used for to get handsize of lightweight Player object returned by Server
+     *
      * @return
      */
     public int getHandSize() {
