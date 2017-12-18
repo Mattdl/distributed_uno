@@ -9,9 +9,12 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class UserDbService extends UnicastRemoteObject implements UserDbStub {
@@ -23,6 +26,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
     private Dao<User, String> userDao;
     private Dao<Player, String> playerDao;
+    private Lock lock = new ReentrantLock();
 
 
     public UserDbService() throws RemoteException {
@@ -35,6 +39,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     }
 
     public synchronized boolean persistUser(User userToPersist, boolean propagate) throws RemoteException {
+
 
         LOGGER.info("Persisting User = {}", userToPersist);
 
@@ -149,6 +154,26 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         }
 
         return null;
+    }
+
+    /**
+     * Method used to recreate games from a database
+     * @return List of games
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized List<User> copyDatabase() throws RemoteException{
+        try {
+            List<User> userList = userDao.queryForAll();
+
+            return userList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 
 }

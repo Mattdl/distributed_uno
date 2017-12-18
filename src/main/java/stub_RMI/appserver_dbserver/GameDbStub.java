@@ -19,4 +19,6 @@ public interface GameDbStub extends Remote {
 
     int fetchPlayerScore(String playerName) throws RemoteException;
 
+    List<Game> copyDatabase() throws RemoteException;
+
 }

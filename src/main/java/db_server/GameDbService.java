@@ -336,4 +336,28 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         return 0;
     }
+
+    /**
+     * Method used to recreate games from a database
+     * @return List of games
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized List<Game> copyDatabase() throws RemoteException{
+        List<Game> gameList = new ArrayList<>();
+        try {
+            List<Game> gameDbList = gameDao.queryForAll();
+            for(Game game : gameDbList){
+                game = fetchGame(game.getGameId());
+                gameList.add(game);
+            }
+            return gameList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
+    }
 }
