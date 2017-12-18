@@ -82,12 +82,14 @@ public class DeckBuilder {
         if (isHolliday) {
             try {
                 BufferedImage img = ImageIO.read(new File(getClass().getResource("/textures/UNO-Back-Special.png").toURI()));
+                deck.add(new Card(bufferedImageToByteArray(img), Card.CardType.BACK, null, -1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
             try {
                 BufferedImage img = ImageIO.read(new File(getClass().getResource("/textures/UNO-Back.png").toURI()));
+                deck.add(new Card(bufferedImageToByteArray(img), Card.CardType.BACK, null, -1));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -170,7 +172,9 @@ public class DeckBuilder {
     public static WritableImage byteArrayToJavaFXImage(byte[] rawImage) {
         BufferedImage img = byteArrayToBufferedImage(rawImage);
 
-        return SwingFXUtils.toFXImage(img, null);
+        BufferedImage resizedImg = resize(img,50,100);
+
+        return SwingFXUtils.toFXImage(resizedImg, null);
     }
 
     public static BufferedImage resize(BufferedImage img, int newW, int newH) {

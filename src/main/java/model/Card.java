@@ -137,7 +137,8 @@ public class Card implements Serializable {
         PLUS4,
         SKIP,
         REVERSE,
-        PICK_COLOR
+        PICK_COLOR,
+        BACK // For background img of the cards
     }
 
     @Override
