@@ -16,6 +16,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Player;
 import model.Server;
+import security.PasswordValidator;
 import stub_RMI.client_dispatcher.DispatcherStub;
 
 
@@ -90,55 +91,73 @@ public class LoginController {
 
         String username = usernameInput.getText();
 
-        //TODO encryption of username and password before giving to loginservice!
 
-        //Init background service for login
-        LoginService loginService = new LoginService(username, passwordInput.getText());
+        if(username.length() >= 1) {
+            //Init background service for login
+            LoginService loginService = new LoginService(username, passwordInput.getText());
 
-        loginService.setOnSucceeded(e -> {
-            LOGGER.log(Level.INFO, "Login attempt finished");
+            loginService.setOnSucceeded(e -> {
+                LOGGER.log(Level.INFO, "Login attempt finished");
 
-            boolean isSuccessful = (Boolean) e.getSource().getValue();
+                boolean isSuccessful = (Boolean) e.getSource().getValue();
 
-            //return msg if succesfull
-            String msg;
-            if (isSuccessful) {
-                Main.currentPlayer = new Player(username);
-                msg = "Successfully logged in as " + username; //TODO
-                LOGGER.log(Level.INFO, "Login attempt was SUCCESSFUL");
+                //return msg if succesfull
+                String msg;
+                if (isSuccessful) {
+                    Main.currentPlayer = new Player(username);
+                    msg = "Successfully logged in as " + username;
+                    LOGGER.log(Level.INFO, "Login attempt was SUCCESSFUL");
 
-                Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-                switchToLobbyScene(stage, msg);
-            } else {
-                msg = "Could not login, try again.";
-                LOGGER.log(Level.WARNING, "Login attempt FAILED");
-            }
-        });
-        loginService.start();
+                    Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                    switchToLobbyScene(stage, msg);
+                } else {
+                    usernameInput.clear();
+                    passwordInput.clear();
+                    connectionText.setText("Invalid username/password combination");
+                    LOGGER.log(Level.WARNING, "Login attempt FAILED");
+                }
+            });
+            loginService.start();
+        }
+        else{
+            usernameInput.clear();
+            passwordInput.clear();
+            connectionText.setText("Please fill in a username");
+        }
     }
 
     @FXML
     public void tryRegister() {
-        LOGGER.log(Level.INFO, "Trying register");
+        if(PasswordValidator.validate(passwordInput.getText())) {
 
-        //Init background service for login
-        RegisterService registerService = new RegisterService(usernameInput.getText(), passwordInput.getText());
+            LOGGER.log(Level.INFO, "Trying register");
 
-        registerService.setOnSucceeded(e -> {
-            LOGGER.log(Level.INFO, "register attempt finished");
+            //Init background service for login
+            RegisterService registerService = new RegisterService(usernameInput.getText(), passwordInput.getText());
 
-            boolean isSuccessful = (Boolean) e.getSource().getValue();
+            registerService.setOnSucceeded(e -> {
+                LOGGER.log(Level.INFO, "register attempt finished");
 
-            //return msg if succesfull
-            String msg;
-            if (isSuccessful) {
-                connectionText.setText("Registered successful");
-            } else {
-                connectionText.setText("Something went wrong with the registration");
-                LOGGER.log(Level.WARNING, "register attempt FAILED");
-            }
-        });
-        registerService.start();
+                boolean isSuccessful = (Boolean) e.getSource().getValue();
+
+                //return msg if succesfull
+                String msg;
+                if (isSuccessful) {
+                    connectionText.setText("Registered successful");
+                } else {
+                    connectionText.setText("Something went wrong with the registration");
+                    LOGGER.log(Level.WARNING, "register attempt FAILED");
+                }
+
+                usernameInput.clear();
+                passwordInput.clear();
+            });
+            registerService.start();
+        }
+        else{
+            passwordInput.clear();
+            connectionText.setText("Invalid password. Use 6 chars containing lower/upper char, special char and digit.");
+        }
     }
 
     private void switchToLobbyScene(Stage stage, String msg) {
