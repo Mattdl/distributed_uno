@@ -10,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListCell;
@@ -148,6 +149,7 @@ public class GameController implements Observer {
         for (int i = 0; i < game.getGameSize() - 1; i++) {
 
             otherPlayer = new VBox();
+            otherPlayer.setAlignment(Pos.CENTER);
 
             imageView = new ImageView(ImgFetchService.imageMap.get(backCard));
             text = new Text();
