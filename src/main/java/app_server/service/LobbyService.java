@@ -1,5 +1,6 @@
 package app_server.service;
 
+import model.Card;
 import model.Game;
 import model.Lobby;
 import model.Player;

@@ -1,11 +1,13 @@
 package stub_RMI.client_appserver;
 
+import model.Card;
 import model.Game;
 import model.Lobby;
 import model.Player;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.util.List;
 
 public interface LobbyStub extends Remote {
 
@@ -18,4 +20,5 @@ public interface LobbyStub extends Remote {
     String joinGame(Player player, String gameName) throws RemoteException;
 
     String leaveGame(Player player, String gameName) throws RemoteException;
+
 }

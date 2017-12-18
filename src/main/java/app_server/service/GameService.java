@@ -17,6 +17,8 @@ import java.util.Random;
 
 public class GameService extends UnicastRemoteObject implements GameStub {
 
+    private final boolean isHolliday = false;
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GameService.class.getName());
 
     private final GameLogic gameLogic;
@@ -302,7 +304,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             LOGGER.info("game updated");
 
             //Check if game is finished
-            if(serverPlayer.getHand().isEmpty()){
+            if (serverPlayer.getHand().isEmpty()) {
                 finishGame(game, serverPlayer);
             }
 
@@ -319,6 +321,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     /**
      * Adds score to database.
+     *
      * @param game
      * @return
      * @throws RemoteException
@@ -336,6 +339,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     /**
      * Returns winnerName + score in list.
+     *
      * @param gameName
      * @return
      * @throws RemoteException
@@ -356,6 +360,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     }
 
 
+    @Override
+    public List<Card> fetchCardImageMappings() throws RemoteException {
+        LOGGER.info("APPSERVER REQUESTING IMAGES");
 
+        List<Card> ret = gameDbService.fetchCardImageMappings(isHolliday);
 
+        LOGGER.info("APPSERVER RETURNING IMAGES = {}", ret);
+        return ret;
+    }
 }
