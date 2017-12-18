@@ -135,6 +135,7 @@ public class LobbyController implements Observer {
     private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene, with currentGame = {0}", game);
 
+        lobbyService.setInLobby(false);
         stage.setScene(Main.sceneFactory.getGameLobbyScene(game));
 
         LOGGER.log(Level.INFO, "switched To GameLobbyScene, with currentGame = {0}", game);
@@ -157,6 +158,7 @@ public class LobbyController implements Observer {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToGameLobbyScene(stage, lobby.findGame(gameName));
             } else {
+                lobbyService.setInLobby(true);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("UNO");
                 alert.setHeaderText("Joining is not possible");
@@ -164,6 +166,7 @@ public class LobbyController implements Observer {
                 alert.showAndWait();
             }
         });
+        lobbyService.setInLobby(false);
         joinGameService.start();
     }
 }
