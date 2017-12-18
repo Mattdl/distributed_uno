@@ -308,20 +308,20 @@ public class GameController implements Observer {
                 LOGGER.log(Level.INFO, "updating UI");
                 List<Player> playerList = game.getPlayerList();
 
-                //Check if game hasn't ended
-                if(successfulGameStart) {
-                    for (Player player : playerList) {
-                        LOGGER.log(Level.INFO, "Player " + player.getName() + " has " + player.getHandSize() + " cards");
-                        if (player.getHandSize() == 0) {
-                            LOGGER.log(Level.WARNING, "EMPTY HAND FOUND");
-                            isGameFinished = true;
-                            gameFinished();
-                        }
-                    }
-                }
-
 
                 if (!isGameFinished) {
+
+                    //Check if game hasn't ended
+                    if(successfulGameStart) {
+                        for (Player player : playerList) {
+                            LOGGER.log(Level.INFO, "Player " + player.getName() + " has " + player.getHandSize() + " cards");
+                            if (player.getHandSize() == 0) {
+                                LOGGER.log(Level.WARNING, "EMPTY HAND FOUND");
+                                isGameFinished = true;
+                                gameFinished();
+                            }
+                        }
+                    }
 
                     if (game.getCurrentPlayer() != null) {
                         if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
