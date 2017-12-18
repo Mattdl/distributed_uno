@@ -102,7 +102,7 @@ public class GameController implements Observer {
     @FXML
     public void initialize() {
 
-        BackgroundImage myBI= new BackgroundImage(new Image("background/Game-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+        BackgroundImage myBI = new BackgroundImage(new Image("background/Game-Screen-Background.jpg", sceneFactory.getWIDTH(), sceneFactory.getHEIGHT() * 1.02, false, true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
         gameBorderPane.setBackground(new Background(myBI));
@@ -377,7 +377,7 @@ public class GameController implements Observer {
                                 if (empty) {
                                     setGraphic(null);
                                 } else {
-                                    LOGGER.log(Level.INFO, "SETTING IMAGE FOR CARD = {0}",card);
+                                    LOGGER.log(Level.INFO, "SETTING IMAGE FOR CARD = {0}", card);
                                     imageView.setImage(ImgFetchService.imageMap.get(card));
                                     setGraphic(imageView);
                                 }
@@ -406,9 +406,9 @@ public class GameController implements Observer {
                     */
 
                     //Update last played card image
-                    //lastCardPlayed.setImage(game.getLastPlayedCard().getImage());
                     if (game.hasPlayedCards()) {
                         lastPlayedCardText.setText(game.getLastPlayedCard().toString());
+                        lastCardPlayed.setImage(ImgFetchService.imageMap.get(game.getLastPlayedCard()));
                     }
 
 
