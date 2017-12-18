@@ -87,18 +87,18 @@ public class GameLogic {
                 case PLUS2:
                     game.drawCards(game.getNextPlayer(1), 2);
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1),null, Move.MoveType.PLUS_CARD)); //Adding dummy move for logic
                     break;
                 //Next player draws 4 cards and skips turn
                 case PLUS4:
                     game.drawCards(game.getNextPlayer(1), 4);
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1),null, Move.MoveType.PLUS_CARD)); //Adding dummy move for logic
                     break;
                 //Skips next player
                 case SKIP:
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1),null, Move.MoveType.SKIP)); //Adding dummy move for logic
                     break;
                 //Sets next player
                 case NORMAL:

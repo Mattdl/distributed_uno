@@ -1,12 +1,10 @@
 package app_server.service;
 
-import db_server.GameDbService;
 import game_logic.GameLogic;
 import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
-import stub_RMI.appserver_dbserver.UserDbStub;
 import stub_RMI.client_appserver.GameStub;
 
 import java.rmi.RemoteException;
@@ -221,10 +219,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         try {
 
-            while (!((game.getLastPlayedCard().getCardType() == Card.CardType.PLUS2
-                    || game.getLastPlayedCard().getCardType() == Card.CardType.PLUS4)
-                    && game.isPlayerAfterLastPlayer(serverSidePlayer))
-                    || game.getLastPlayedCard().isHasFetchedCards()) {
+            while (!mayFetchPlusCards(game, serverSidePlayer)) {
                 LOGGER.info("Nah the notify did not have plus cards for me, just waitin...");
                 LOGGER.info("Last played card: {}, hasFetchedCards: {}", game.getLastPlayedCard(), game.getLastPlayedCard().isHasFetchedCards());
                 wait();
@@ -271,6 +266,19 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         LOGGER.error("Returning null for pluscards to player ={0}", serverSidePlayer);
 
         return null;
+    }
+
+    private boolean mayFetchPlusCards(Game game, Player serverSidePlayer) {
+
+        Move lastMove = game.getLastMove();
+
+        boolean isLastCardPlusCard = lastMove.getMoveType() == Move.MoveType.PLUS_CARD;
+        boolean isForCurrentPlayer = serverSidePlayer.equals(lastMove.getPlayer());
+
+        LOGGER.debug("PLUS CARDS FOR PLAYER '{}'? isLastCardPlusCard = {}, isForCurrentPlayer = {}",
+                isLastCardPlusCard, isForCurrentPlayer);
+
+        return isLastCardPlusCard && isForCurrentPlayer;
     }
 
     private synchronized Card updateGame(Game game, Move move) throws RemoteException {
@@ -349,7 +357,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         int score = gameLogic.calculateScore(game);
 
         //Winner is player who played last move
-        Player winner = game.getLastPlayedMove().getPlayer();
+        Player winner = game.getLastPlayedMoveNotDrawnCard().getPlayer();
 
         List<String> results = new ArrayList<>();
         results.add(winner.getName());

@@ -61,6 +61,7 @@ public class Game extends Observable implements Serializable {
 
     /**
      * Used at ApplicationServer to instantiate a new game (with unique id)
+     *
      * @param gameName
      * @param gameSize
      * @param initialPlayer
@@ -189,7 +190,7 @@ public class Game extends Observable implements Serializable {
 
         while (i >= 0) {
             Move move = ((List<Move>) moves).get(i);
-            if (!move.isHasDrawnCard() && move.getCard() != null) {
+            if (move.getMoveType() == Move.MoveType.NORMAL && move.getCard() != null) {
                 LOGGER.log(Level.INFO, "Last played card is on deck is {0}", move.getCard());
                 return move.getCard();
             }
@@ -298,7 +299,7 @@ public class Game extends Observable implements Serializable {
         Card firstCard = ((LinkedList<Card>) deck).get(i);
 
 
-        while(firstCard.getCardType() != Card.CardType.NORMAL && i < deck.size()){
+        while (firstCard.getCardType() != Card.CardType.NORMAL && i < deck.size()) {
             i++;
             firstCard = ((LinkedList<Card>) deck).get(i);
         }
@@ -403,12 +404,12 @@ public class Game extends Observable implements Serializable {
      *
      * @return
      */
-    public Move getLastPlayedMove() {
+    public Move getLastPlayedMoveNotDrawnCard() {
         int i = moves.size() - 1;
 
         while (i >= 0) {
             Move move = ((List<Move>) moves).get(i);
-            if (!move.isHasDrawnCard() && move.getCard() != null) {
+            if (move.getMoveType() == Move.MoveType.NORMAL && move.getCard() != null) {
                 LOGGER.log(Level.INFO, "Last played move is on deck is {0}", move);
                 return move;
             }
@@ -446,7 +447,7 @@ public class Game extends Observable implements Serializable {
         int currentPlayerIndex = ((List<Player>) playerList).indexOf(currentPlayer);
 
         //Get last player of a move, NOT a drawcard
-        Player lastPlayer = getLastPlayedMove().getPlayer();
+        Player lastPlayer = getLastMove().getPlayer();
 
         if (lastPlayer == null) {
             return false;
@@ -499,7 +500,7 @@ public class Game extends Observable implements Serializable {
         return (List<Player>) playerList;
     }
 
-    public Collection<Player> getPlayerListCollection(){
+    public Collection<Player> getPlayerListCollection() {
         return playerList;
     }
 
@@ -519,7 +520,7 @@ public class Game extends Observable implements Serializable {
         return ((List<Card>) deck);
     }
 
-    public Collection<Card> getDeckCollection(){
+    public Collection<Card> getDeckCollection() {
         return deck;
     }
 
@@ -531,7 +532,7 @@ public class Game extends Observable implements Serializable {
         return ((List<Move>) moves);
     }
 
-    public Collection<Move> getMovesCollection(){
+    public Collection<Move> getMovesCollection() {
         return moves;
     }
 
