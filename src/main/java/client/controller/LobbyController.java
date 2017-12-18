@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.Main;
+import client.service.ImgFetchService;
 import client.service.lobby.JoinGameService;
 import client.service.lobby.LobbyService;
 import javafx.application.Platform;
@@ -58,6 +59,9 @@ public class LobbyController implements Observer {
 
         lobbyService = new LobbyService(lobby);
         lobbyService.start();
+
+        ImgFetchService imgFetchService = new ImgFetchService();
+        imgFetchService.start();
     }
 
 

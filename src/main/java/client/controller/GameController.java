@@ -2,6 +2,7 @@ package client.controller;
 
 
 import client.Main;
+import client.service.ImgFetchService;
 import client.service.game.*;
 import game_logic.GameLogic;
 import javafx.application.Platform;
@@ -116,7 +117,6 @@ public class GameController implements Observer {
         //Used to create ListView with images of cards in hand (UNTESTED)
 
 
-
         //Set choicebox values
         ObservableList<Card.CardColor> availableChoices = FXCollections.observableArrayList(Card.CardColor.BLUE, Card.CardColor.GREEN, Card.CardColor.RED, Card.CardColor.YELLOW);
         colorChoiceBox.setItems(availableChoices);
@@ -187,26 +187,30 @@ public class GameController implements Observer {
     public void drawCard(ActionEvent event) {
         LOGGER.info("Entering drawCard");
 
-        if (haveAllPlayersJoined) {
-            if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        LOGGER.info("Running drawCard thread");
-                        PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, null));
-                        playMoveService.setOnSucceeded(event -> {
+        if (ImgFetchService.hasFetchedAllCards) {
+            if (haveAllPlayersJoined) {
+                if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            LOGGER.info("Running drawCard thread");
+                            PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, null));
+                            playMoveService.setOnSucceeded(event -> {
 
-                            LOGGER.info("Draw card successfully passed to server!");
-                            serverInfoText.setText("Draw card is passed to server, enjoy!");
-                        });
-                        playMoveService.start();
+                                LOGGER.info("Draw card successfully passed to server!");
+                                serverInfoText.setText("Draw card is passed to server, enjoy!");
+                            });
+                            playMoveService.start();
 
-                        LOGGER.info("Ended drawCard thread");
-                    }
-                });
+                            LOGGER.info("Ended drawCard thread");
+                        }
+                    });
+                }
+            } else {
+                serverInfoText.setText("Still waiting on other players to start...");
             }
         } else {
-            serverInfoText.setText("Still waiting on other players to start...");
+            serverInfoText.setText("Not all card images are fetched!");
         }
     }
 
@@ -217,58 +221,63 @@ public class GameController implements Observer {
      */
     @FXML
     public void playCard(MouseEvent click) {
-        if (haveAllPlayersJoined) {
+        if (ImgFetchService.hasFetchedAllCards) {
 
-            if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
-                Platform.runLater(new Runnable() {
-                    @Override
-                    public void run() {
+            if (haveAllPlayersJoined) {
 
-                        Card playedCard = handListView.getSelectionModel().getSelectedItem();
+                if (game.getCurrentPlayer().equals(Main.currentPlayer)) {
+                    Platform.runLater(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        if (click.getClickCount() % 2 == 0) {
-                            if ((playedCard.getCardType() == Card.CardType.PICK_COLOR || playedCard.getCardType() == Card.CardType.PLUS4) && !colorChoiceBox.isVisible())
-                                colorChoiceBox.setVisible(true);
-                            else {
+                            Card playedCard = handListView.getSelectionModel().getSelectedItem();
 
-                                Card lastPlayedCard = game.getLastPlayedCard();
+                            if (click.getClickCount() % 2 == 0) {
+                                if ((playedCard.getCardType() == Card.CardType.PICK_COLOR || playedCard.getCardType() == Card.CardType.PLUS4) && !colorChoiceBox.isVisible())
+                                    colorChoiceBox.setVisible(true);
+                                else {
 
-                                boolean isValidMove = gameLogic.isValidMove(playedCard, lastPlayedCard);
+                                    Card lastPlayedCard = game.getLastPlayedCard();
 
-                                LOGGER.log(Level.INFO, "Trying to play: " + playedCard.toString() + " on " + lastPlayedCard.toString());
-                                LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
+                                    boolean isValidMove = gameLogic.isValidMove(playedCard, lastPlayedCard);
 
-                                if (isValidMove) {
-                                    if (playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR) {
-                                        playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
+                                    LOGGER.log(Level.INFO, "Trying to play: " + playedCard.toString() + " on " + lastPlayedCard.toString());
+                                    LOGGER.log(Level.INFO, "Move is valid: " + isValidMove);
+
+                                    if (isValidMove) {
+                                        if (playedCard.getCardType() == Card.CardType.PLUS4 || playedCard.getCardType() == Card.CardType.PICK_COLOR) {
+                                            playedCard.setColor(colorChoiceBox.getSelectionModel().getSelectedItem());
+                                        }
+
+                                        PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
+                                        playMoveService.setOnSucceeded(event -> {
+
+                                            game.removeCardFromPlayerHand(new Move(Main.currentPlayer, playedCard));
+
+                                            LOGGER.info("Move successfully passed to server!");
+                                            serverInfoText.setText("Move is passed to server, enjoy!");
+                                        });
+
+                                        colorChoiceBox.setVisible(false);
+
+                                        playMoveService.start();
+
+                                    } else {
+                                        LOGGER.info("Unvalid move");
+                                        serverInfoText.setText("Move is not valid. Please pick another card.");
                                     }
-
-                                    PlayMoveService playMoveService = new PlayMoveService(game, new Move(Main.currentPlayer, playedCard));
-                                    playMoveService.setOnSucceeded(event -> {
-
-                                        game.removeCardFromPlayerHand(new Move(Main.currentPlayer, playedCard));
-
-                                        LOGGER.info("Move successfully passed to server!");
-                                        serverInfoText.setText("Move is passed to server, enjoy!");
-                                    });
-
-                                    colorChoiceBox.setVisible(false);
-
-                                    playMoveService.start();
-
-                                } else {
-                                    LOGGER.info("Unvalid move");
-                                    serverInfoText.setText("Move is not valid. Please pick another card.");
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                } else {
+                    serverInfoText.setText("It is not your turn...");
+                }
             } else {
-                serverInfoText.setText("It is not your turn...");
+                serverInfoText.setText("Still waiting on other players to start...");
             }
         } else {
-            serverInfoText.setText("Still waiting on other players to start...");
+            serverInfoText.setText("Not all card images are fetched!");
         }
     }
 
@@ -322,7 +331,7 @@ public class GameController implements Observer {
                 if (!isGameFinished) {
 
                     //Check if game hasn't ended
-                    if(successfulGameStart) {
+                    if (successfulGameStart) {
                         for (Player player : playerList) {
                             LOGGER.log(Level.INFO, "Player " + player.getName() + " has " + player.getHandSize() + " cards");
                             if (player.getHandSize() == 0) {
