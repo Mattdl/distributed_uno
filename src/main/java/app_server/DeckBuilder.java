@@ -5,12 +5,14 @@ import javafx.scene.image.WritableImage;
 import model.Card;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,12 +20,15 @@ public class DeckBuilder {
 
     private static final Logger LOGGER = Logger.getLogger(DeckBuilder.class.getName());
 
+    public DeckBuilder() {
+    }
+
     /**
      * Generates a shuffled deck containing each colored card twice and each special uncolored card 4 times
      *
      * @return Deck
      */
-    public LinkedList<Card> makeDeck() {
+    public LinkedList<Card> makeDeckWithoutImg() {
         LinkedList<Card> deck = new LinkedList<>();
 
         //Generate each colored card twice
@@ -31,15 +36,8 @@ public class DeckBuilder {
             for (Card.CardColor color : Card.CardColor.values()) {
                 //Generate all numbered cards
                 for (Number number : Number.values()) {
-                    BufferedImage img = null;
-                    try {
-                        img = ImageIO.read(new File(getClass().getResource("/textures/" + number + "_" + color + ".png").toURI()));
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                        LOGGER.info("Error loading card image: " + "/textures/" + number + "_" + color + ".png");
-                    }
                     //LOGGER.log(Level.INFO,"Creating normal card");
-                    Card card = new Card(SwingFXUtils.toFXImage(img, null), Card.CardType.NORMAL, color, number.getValue());
+                    Card card = new Card(Card.CardType.NORMAL, color, number.getValue());
                     //LOGGER.log(Level.INFO,"Created normal card");
                     deck.add(card);
                 }
@@ -49,27 +47,14 @@ public class DeckBuilder {
                     if (cardType == Card.CardType.NORMAL)
                         continue;
 
-                    BufferedImage img = null;
-
                     if (i == 0 && (cardType == Card.CardType.PLUS4 || cardType == Card.CardType.PICK_COLOR)) {
                         //Make each special uncolored card four times, once for each color only in first iteration
-                        try {
-                            img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + ".png").toURI()));
-                        } catch (Exception e) {
-                            LOGGER.info("Error loading card image :" + "/textures/" + cardType + ".png");
-                        }
-                        //LOGGER.log(Level.INFO,"Creating PLUS4/COLOR card");
-                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, null, -1));
+
+                        deck.add(new Card(cardType, null, -1));
                     }
 
                     if (cardType == Card.CardType.PLUS2 || cardType == Card.CardType.SKIP || cardType == Card.CardType.REVERSE) {
-                        try {
-                            img = ImageIO.read(new File(getClass().getResource("/textures/" + cardType + "_" + color + ".png").toURI()));
-                        } catch (Exception e) {
-                            LOGGER.info("Error loading card image : " + "/textures/" + cardType + "_" + color + ".png");
-                        }
-                        //LOGGER.log(Level.INFO, "Creating special card: " + cardType.toString() + ", " + color.toString());
-                        deck.add(new Card(SwingFXUtils.toFXImage(img, null), cardType, color, -1));
+                        deck.add(new Card(cardType, color, -1));
                     }
                 }
             }
@@ -186,6 +171,17 @@ public class DeckBuilder {
         BufferedImage img = byteArrayToBufferedImage(rawImage);
 
         return SwingFXUtils.toFXImage(img, null);
+    }
+
+    public static BufferedImage resize(BufferedImage img, int newW, int newH) {
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
     }
 
 

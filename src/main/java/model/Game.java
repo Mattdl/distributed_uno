@@ -2,7 +2,6 @@ package model;
 
 import app_server.DeckBuilder;
 import client.Main;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -470,7 +469,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public void setDeck() {
-        this.deck = new DeckBuilder().makeDeck();
+        this.deck = new DeckBuilder().makeDeckWithoutImg();
     }
 
     //GETTERS & SETTERS
@@ -524,7 +523,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public void setDeck(List<Card> deck) {
-        this.deck = new DeckBuilder().makeDeck();
+        this.deck = new DeckBuilder().makeDeckWithoutImg();
     }
 
     public List<Move> getMoves() {

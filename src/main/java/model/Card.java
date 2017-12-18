@@ -60,6 +60,12 @@ public class Card implements Serializable {
         this.value = value;
     }
 
+    public Card(CardType cardType, CardColor color, int value) {
+        this.cardType = cardType;
+        this.color = color;
+        this.value = value;
+    }
+
     public Image getImage() {
         return image;
     }
