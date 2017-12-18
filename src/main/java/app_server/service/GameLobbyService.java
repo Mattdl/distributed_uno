@@ -38,10 +38,8 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
         LOGGER.info("Entering hasEverybodyJoined");
 
         try {
-
             Game game = lobby.findGame(gameName);
             game.addJoinedPlayer();
-
             if (game.getJoinedPlayers() < game.getPlayerList().size()) {
                 LOGGER.info("Waiting on other players");
                 wait();
