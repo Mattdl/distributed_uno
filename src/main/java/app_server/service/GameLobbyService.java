@@ -38,8 +38,10 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
         LOGGER.info("Entering hasEverybodyJoined");
 
         try {
+
             Game game = lobby.findGame(gameName);
             game.addJoinedPlayer();
+
             if (game.getJoinedPlayers() < game.getPlayerList().size()) {
                 LOGGER.info("Waiting on other players");
                 wait();
@@ -52,10 +54,10 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                     game.setInitialyPersisted(true);
 
                     //TODO delete this, just for testing
-                    Game gameRet = gameDbService.fetchGame(game.getGameId());
-                    LOGGER.info("FETCHED GAME FROM DATABASE = {}", gameRet);
+                    //Game gameRet = gameDbService.fetchGame(game.getGameId());
+                    //LOGGER.info("FETCHED GAME FROM DATABASE = {}", gameRet);
 
-                    LOGGER.info("CONTENT OF PLAYERLIST = {}", gameRet.getPlayerList());
+                    //LOGGER.info("CONTENT OF PLAYERLIST = {}", gameRet.getPlayerList());
 
 
                     LOGGER.info("Game Object PERSISTED to Database!");

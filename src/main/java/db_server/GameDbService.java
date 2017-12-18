@@ -70,11 +70,16 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             return false;
 
         } finally {
-            LOGGER.info("Game persisted, Game = {}", gameToPersist);
+            new Thread() {
+                @Override
+                public void run() {
+                    LOGGER.info("Game persisted, Game = {}", gameToPersist);
 
-            if (propagate) {
-                persistGameToOtherDatabases(gameToPersist);
-            }
+                    if (propagate) {
+                        persistGameToOtherDatabases(gameToPersist);
+                    }
+                }
+            }.start();
         }
 
     }
@@ -183,97 +188,103 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             e.printStackTrace();
             return false;
         } finally {
-            LOGGER.info("PROPAGATE TO OTHER DATABASES = {}", propagate);
 
-            if (propagate) {
-                persistMoveToOtherDatabases(gameId, move);
-                LOGGER.info("PROPAGATED TO OTHER DATABASES ");
-            }
+            new Thread() {
+                @Override
+                public void run() {
+                    LOGGER.info("PROPAGATE TO OTHER DATABASES = {}", propagate);
 
-            LOGGER.info("Ending persistMove");
-        }
-    }
+                    if (propagate) {
+                        persistMoveToOtherDatabases(gameId, move);
+                        LOGGER.info("PROPAGATED TO OTHER DATABASES ");
+                    }
 
-    private void persistMoveToOtherDatabases(String gameName, Move move) {
-
-        otherDatabasesLock.readLock().lock();
-
-        for (DbServer otherDbServer : otherDatabases) {
-
-            if (otherDbServer.isConnected()) {
-
-                GameDbStub gameDbStub = otherDbServer.getGameDbStub();
-
-                try {
-
-                    gameDbStub.persistMove(gameName, move, false);
-
-                    LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
-
-                } catch (Exception e) {
-                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
-                    e.printStackTrace();
+                    LOGGER.info("Ending persistMove");
                 }
-            }
+            }.start();
         }
-
-        otherDatabasesLock.readLock().unlock();
-
     }
 
-    /**
-     * Method used to restore a Game, when the appServer has crashed.
-     *
-     * @param gameName
-     * @return
-     * @throws RemoteException
-     */
-    @Override
-    public synchronized Game fetchGame(String gameName) throws RemoteException {
+        private void persistMoveToOtherDatabases (String gameName, Move move){
 
-        LOGGER.info("Fetching Game with name = '{}'", gameName);
+            otherDatabasesLock.readLock().lock();
 
-        try {
-            Game game = gameDao.queryForId(gameName);
+            for (DbServer otherDbServer : otherDatabases) {
 
-            LOGGER.info("GAME FOUND IN QUERY = {}", game);
+                if (otherDbServer.isConnected()) {
 
+                    GameDbStub gameDbStub = otherDbServer.getGameDbStub();
 
-            if (game != null) {
+                    try {
 
-                // Converting ForeignCollections to Arraylists
-                game.setMoves(new ArrayList<>(game.getMovesCollection()));
-                game.setDeck(new ArrayList<>(game.getDeckCollection()));
-                game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
+                        gameDbStub.persistMove(gameName, move, false);
 
-                LOGGER.info("FETCHED DECK = {}", game.getDeck());
+                        LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
-                for (Player player : game.getPlayerList()) {
-                    player.setHand(new ArrayList<>(player.getHandCollection()));
-
-                    LOGGER.info("PLAYER HAND = {}", player.getHand());
-
+                    } catch (Exception e) {
+                        LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
+                        e.printStackTrace();
+                    }
                 }
             }
 
-            LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);
+            otherDatabasesLock.readLock().unlock();
 
-            return game;
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
 
-        return null;
-    }
+        /**
+         * Method used to restore a Game, when the appServer has crashed.
+         *
+         * @param gameName
+         * @return
+         * @throws RemoteException
+         */
+        @Override
+        public synchronized Game fetchGame (String gameName) throws RemoteException {
 
-    /**
-     * Update the list of other databases
-     *
-     * @param otherDatabases
-     */
-    public void updateOtherDatabases(List<DbServer> otherDatabases) {
-        otherDatabasesLock.writeLock().lock();
-        this.otherDatabases = otherDatabases;
-        otherDatabasesLock.writeLock().unlock();
+            LOGGER.info("Fetching Game with name = '{}'", gameName);
+
+            try {
+                Game game = gameDao.queryForId(gameName);
+
+                LOGGER.info("GAME FOUND IN QUERY = {}", game);
+
+
+                if (game != null) {
+
+                    // Converting ForeignCollections to Arraylists
+                    game.setMoves(new ArrayList<>(game.getMovesCollection()));
+                    game.setDeck(new ArrayList<>(game.getDeckCollection()));
+                    game.setPlayerList(new ArrayList<>(game.getPlayerListCollection()));
+
+                    LOGGER.info("FETCHED DECK = {}", game.getDeck());
+
+                    for (Player player : game.getPlayerList()) {
+                        player.setHand(new ArrayList<>(player.getHandCollection()));
+
+                        LOGGER.info("PLAYER HAND = {}", player.getHand());
+
+                    }
+                }
+
+                LOGGER.info("Game fetched with name = '{}', result = {}", gameName, game);
+
+                return game;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        /**
+         * Update the list of other databases
+         *
+         * @param otherDatabases
+         */
+        public void updateOtherDatabases (List < DbServer > otherDatabases) {
+            otherDatabasesLock.writeLock().lock();
+            this.otherDatabases = otherDatabases;
+            otherDatabasesLock.writeLock().unlock();
+        }
     }
-}
