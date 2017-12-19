@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
-    public static HashMap<DatabaseServer,Registry> databaseInstances = new HashMap<>();
+    public static HashMap<DatabaseServer, Registry> databaseInstances = new HashMap<>();
 
     static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
     private boolean instanceRunning = true;
@@ -66,10 +66,11 @@ public class DatabaseServer {
 
             Registry registry = databaseInstances.get(this);
 
-            if(registry == null) {
+            if (registry == null) {
                 registry = LocateRegistry.createRegistry(dbPort);
-            }else{
-                databaseInstances.replace(this,registry);
+                databaseInstances.put(this, registry);
+            } else {
+                databaseInstances.replace(this, registry);
             }
 
             userDbService = new UserDbService(otherDatabases, userDao, playerDao);
@@ -197,6 +198,7 @@ public class DatabaseServer {
 
         Map.Entry<DatabaseServer, Registry> pair = null;
 
+        LOGGER.info("STOPPING DATABASE: before while, entrysize = {}", databaseInstances.size());
         while (it.hasNext() && !found) {
 
             pair = it.next();
@@ -206,7 +208,7 @@ public class DatabaseServer {
 
 
             if (databaseServer.instanceRunning
-                    &&databaseServer.dbIp.equals(targetDbServer.getIp())
+                    && databaseServer.dbIp.equals(targetDbServer.getIp())
                     && databaseServer.dbPort == targetDbServer.getPort()) {
                 found = true;
 
@@ -225,8 +227,8 @@ public class DatabaseServer {
                     LOGGER.info("In the while: 3");
 
 
-                    UnicastRemoteObject.unexportObject(databaseServer.gameDbService, false);
-                    UnicastRemoteObject.unexportObject(databaseServer.userDbService, false);
+                    UnicastRemoteObject.unexportObject(databaseServer.gameDbService, true);
+                    UnicastRemoteObject.unexportObject(databaseServer.userDbService, true);
                     databaseServer.timerTask.cancel();
 
                     LOGGER.info("In the while: 4");
