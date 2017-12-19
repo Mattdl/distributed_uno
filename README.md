@@ -8,4 +8,4 @@ Thereafter run Main class in the client package to run an UNO client.
 See javadoc package for our API.
 
 ## Report
-The report can be found in the rootfolder, with name format 'verslag_uno_<author>_<author>.pdf'
+The report can be found in the rootfolder, with name format 'verslag_uno_matthias_de_lange_sander_sienaert.pdf'
