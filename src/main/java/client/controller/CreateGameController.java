@@ -48,6 +48,10 @@ public class CreateGameController {
         numberOfPlayers.setValue(2);
     }
 
+    /**
+     * Creates a new game, based on name and amount of players, with a click on the button. Calls switchToGameLobbyScene
+     * @param event
+     */
     @FXML
     public void createGame(ActionEvent event) {
 
@@ -81,14 +85,6 @@ public class CreateGameController {
             }
         });
         createGameService.start();
-    }
-
-    private void switchToLobbyScene(Stage stage, String msg) {
-        LOGGER.log(Level.INFO, "switching To LobbyScene");
-
-        stage.setScene(Main.sceneFactory.getLobbyScene(msg));
-
-        LOGGER.log(Level.INFO, "switched To LobbyScene");
     }
 
     private void switchToGameLobbyScene(Stage stage, Game game) {

@@ -15,6 +15,9 @@ import model.Game;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Used to create scenes for JavaFX
+ */
 public class SceneFactory {
 
     private static final Logger LOGGER = Logger.getLogger(SceneFactory.class.getName());
