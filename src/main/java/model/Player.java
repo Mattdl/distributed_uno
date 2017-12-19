@@ -12,6 +12,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * The player object.
+ */
 @DatabaseTable
 public class Player implements Serializable {
 
@@ -26,7 +29,7 @@ public class Player implements Serializable {
     private Collection<Card> hand = new LinkedList<Card>();
 
     @DatabaseField
-    private int score; //The total score over all games of the player
+    private int highscore; //The total score over all games of the player
 
 
     private int handSize; //used on server for lightweight Player object
@@ -42,21 +45,25 @@ public class Player implements Serializable {
     public Player(String name) {
         this.name = name;
         this.hand = new LinkedList<>();
+        this.highscore = 0;
     }
 
     public Player(String name, String hash) {
         this.name = name;
         this.hand = new LinkedList<>();
+        this.highscore = 0;
     }
 
     /**
      * Lightweight constructor used at server side
+     *
      * @param name
      * @param handSize
      */
     public Player(String name, int handSize) {
         this.name = name;
         this.handSize = handSize;
+        this.highscore = 0;
     }
 
     public void addCard(Card card) {
@@ -71,7 +78,7 @@ public class Player implements Serializable {
         return (List<Card>) hand;
     }
 
-    public boolean hasHand(){
+    public boolean hasHand() {
         return !hand.isEmpty();
     }
 
@@ -80,6 +87,9 @@ public class Player implements Serializable {
     }
 
     public boolean equals(Player player) {
+        if(player == null){
+            return false;
+        }
         return this.name.equals(player.name);
     }
 
@@ -98,20 +108,21 @@ public class Player implements Serializable {
      * @param card
      * @return
      */
-    public boolean removeCard(Card card){
+    public boolean removeCard(Card card) {
         boolean successfull = hand.remove(card);
-        if(!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)){
-            successfull = hand.remove(new Card(null,card.getCardType(),null,card.getValue()));
+        if (!successfull && (card.getCardType() == Card.CardType.PLUS4 || card.getCardType() == Card.CardType.PICK_COLOR)) {
+            successfull = hand.remove(new Card(card.getCardType(),card.getValue()));
         }
         return successfull;
     }
 
-    public int handListSize(){
+    public int handListSize() {
         return hand.size();
     }
 
     /**
      * Method used for to get handsize of lightweight Player object returned by Server
+     *
      * @return
      */
     public int getHandSize() {
@@ -133,5 +144,18 @@ public class Player implements Serializable {
 
     public Collection<Card> getHandCollection() {
         return hand;
+    }
+
+
+    public int getHighscore() {
+        return highscore;
+    }
+
+    public void setHighscore(int highscore) {
+        this.highscore = highscore;
+    }
+
+    public void addScore(int amount){
+        this.highscore += amount;
     }
 }

@@ -1,5 +1,6 @@
 package db_server;
 
+import app_server.DeckBuilder;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.ForeignCollection;
 import model.*;
@@ -28,12 +29,10 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
 
 
-
-
     public GameDbService() throws RemoteException {
     }
 
-    public GameDbService(List<DbServer> otherDatabases,Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
+    public GameDbService(List<DbServer> otherDatabases, Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.gameDao = gameDao;
         this.moveDao = moveDao;
@@ -51,7 +50,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized boolean persistGame(Game gameToPersist) throws RemoteException {
+    public synchronized boolean persistGame(Game gameToPersist, boolean propagate) throws RemoteException {
 
         LOGGER.info("Persisting Game = {}", gameToPersist);
 
@@ -64,17 +63,26 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
             LOGGER.info("Game was not in database. New entry inserted, Game = {}", gameToPersist);
 
+            return true;
 
         } catch (SQLException e) {
+
             e.printStackTrace();
             return false;
+
+        } finally {
+            new Thread() {
+                @Override
+                public void run() {
+                    LOGGER.info("Game persisted, Game = {}", gameToPersist);
+
+                    if (propagate) {
+                        persistGameToOtherDatabases(gameToPersist);
+                    }
+                }
+            }.start();
         }
 
-        LOGGER.info("Game persisted, Game = {}", gameToPersist);
-
-        persistGameToOtherDatabases(gameToPersist);
-
-        return true;
     }
 
     /**
@@ -94,7 +102,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
                 try {
 
-                    gameDbStub.persistGame(gameToPersist);
+                    gameDbStub.persistGame(gameToPersist, false);
 
                     LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
 
@@ -162,25 +170,40 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     //TODO test if works
     @Override
-    public synchronized boolean persistMove(String gameName, Move move) throws RemoteException {
-        LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameName);
+    public synchronized boolean persistMove(String gameId, Move move, boolean propagate) throws RemoteException {
+        LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameId);
 
         try {
-            Game game = gameDao.queryForId(gameName);
+            Game game = gameDao.queryForId(gameId);
 
             ForeignCollection<Move> movesForeign = (ForeignCollection<Move>) game.getMovesCollection();
 
             // Should add the move
             movesForeign.add(move);
 
+            LOGGER.info("DATABASE, Move was persisted = {}", move);
+
+            return true;
+
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
+        } finally {
+
+            new Thread() {
+                @Override
+                public void run() {
+                    LOGGER.info("PROPAGATE TO OTHER DATABASES = {}", propagate);
+
+                    if (propagate) {
+                        persistMoveToOtherDatabases(gameId, move);
+                        LOGGER.info("PROPAGATED TO OTHER DATABASES ");
+                    }
+
+                    LOGGER.info("Ending persistMove");
+                }
+            }.start();
         }
-
-        persistMoveToOtherDatabases(gameName, move);
-
-        return true;
     }
 
     private void persistMoveToOtherDatabases(String gameName, Move move) {
@@ -195,7 +218,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
                 try {
 
-                    gameDbStub.persistMove(gameName, move);
+                    gameDbStub.persistMove(gameName, move, false);
 
                     LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
@@ -256,7 +279,31 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     /**
+     * Searches winning player in database and adds his score.
+     *
+     * @param player
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized void updateWinner(Player player) throws RemoteException {
+
+        LOGGER.info("Fetching Player in database");
+
+        try {
+            //Find corresponding user in database
+            LOGGER.info("Old highscore: " + playerDao.queryForId(player.getName()).getHighscore());
+            playerDao.update(player);
+            LOGGER.info("New highscore: " + playerDao.queryForId(player.getName()).getHighscore());
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+    }
+
+    /**
      * Update the list of other databases
+     *
      * @param otherDatabases
      */
     public void updateOtherDatabases(List<DbServer> otherDatabases){
@@ -265,5 +312,62 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         otherDatabasesLock.writeLock().lock();
         this.otherDatabases = otherDatabases;
         otherDatabasesLock.writeLock().unlock();
+    }
+
+    public List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException {
+        LOGGER.info("DATABASE FETCHING CARDS FOR APPSERVER");
+        return new DeckBuilder().getAllCardImageMappings(isSpecialEdition);
+    }
+
+
+    /**
+     * Method used to fetch highscore from player
+     *
+     * @param playerName
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized int fetchPlayerScore(String playerName) throws RemoteException {
+
+        try {
+
+            Player player = playerDao.queryForId(playerName);
+            int score = 0;
+
+            if (player != null) {
+                score = player.getHighscore();
+            }
+
+            return score;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    /**
+     * Method used to recreate games from a database
+     * @return List of games
+     * @throws RemoteException
+     */
+    @Override
+    public synchronized List<Game> copyDatabase() throws RemoteException{
+        List<Game> gameList = new ArrayList<>();
+        try {
+            List<Game> gameDbList = gameDao.queryForAll();
+            for(Game game : gameDbList){
+                game = fetchGame(game.getGameId());
+                gameList.add(game);
+            }
+            return gameList;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 }

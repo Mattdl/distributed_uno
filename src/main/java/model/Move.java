@@ -5,6 +5,10 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
+import static model.Move.MoveType.DRAW_CARD;
+import static model.Move.MoveType.NORMAL;
+import static model.Move.MoveType.PLUS_CARD;
+
 /**
  * The Move object represents the played Move. The Player (client) that Played the card and the Card of the Move.
  * If the hasDrawnCard attribute is true, this means that the card attribute represents the Card that is drawn from the
@@ -16,14 +20,18 @@ public class Move implements Serializable {
     @DatabaseField(generatedId = true)
     private int id;
 
-    @DatabaseField( foreign = true)
+    @DatabaseField(foreign = true)
     private Player player;
 
-    @DatabaseField( foreign = true)
+    @DatabaseField(foreign = true)
     private Card card;
 
     @DatabaseField
-    private boolean hasDrawnCard;
+    private MoveType moveType;
+
+    @DatabaseField
+    private boolean hasFetchedCards;
+
 
     // ORMLITE: Returning fields for foreign keys
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -35,13 +43,13 @@ public class Move implements Serializable {
     public Move(Player player, Card card) {
         this.player = player;
         this.card = card;
-        this.hasDrawnCard = false;
+        this.moveType = NORMAL;
     }
 
-    public Move(Player player, Card card, boolean hasDrawnCard) {
+    public Move(Player player, Card card, MoveType moveType) {
         this.player = player;
         this.card = card;
-        this.hasDrawnCard = hasDrawnCard;
+        this.moveType = moveType;
     }
 
     public Player getPlayer() {
@@ -60,20 +68,28 @@ public class Move implements Serializable {
         this.card = card;
     }
 
-    public boolean isHasDrawnCard() {
-        return hasDrawnCard;
-    }
-
-    public void setHasDrawnCard(boolean hasDrawnCard) {
-        this.hasDrawnCard = hasDrawnCard;
-    }
-
     public Game getGame() {
         return game;
     }
 
     public void setGame(Game game) {
         this.game = game;
+    }
+
+    public MoveType getMoveType() {
+        return moveType;
+    }
+
+    public void setMoveType(MoveType moveType) {
+        this.moveType = moveType;
+    }
+
+    public boolean hasFetchedCards() {
+        return hasFetchedCards;
+    }
+
+    public void setHasFetchedCards(boolean hasFetchedCards) {
+        this.hasFetchedCards = hasFetchedCards;
     }
 
     /**
@@ -83,7 +99,12 @@ public class Move implements Serializable {
      */
     public void setDrawnCard(Card drawnCard) {
         this.card = drawnCard;
-        hasDrawnCard = true;
+        moveType = DRAW_CARD;
+    }
+
+    public void setPlusCard(Card plusCard) {
+        this.card = plusCard;
+        moveType = PLUS_CARD;
     }
 
     @Override
@@ -91,7 +112,11 @@ public class Move implements Serializable {
         return "Move{" +
                 "player=" + player +
                 ", card=" + card +
-                ", hasDrawnCard=" + hasDrawnCard +
+                ", moveType=" + moveType +
                 '}';
+    }
+
+    public enum MoveType {
+        NORMAL, DRAW_CARD, PLUS_CARD, SKIP
     }
 }

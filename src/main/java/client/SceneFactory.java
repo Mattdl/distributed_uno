@@ -136,7 +136,7 @@ public class SceneFactory {
         return null;
     }
 
-    public Scene getWinnerScene(Stage stage, Game game) {
+    public Scene getWinnerScene(Stage stage, Game game, String winner, String score) {
         try {
 
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("layout/winner.fxml"));
@@ -146,7 +146,7 @@ public class SceneFactory {
                 @Override
                 public Object call(Class<?> controllerClass) {
                     if (controllerClass == WinnerController.class) {
-                        WinnerController winnerController = new WinnerController(stage, game);
+                        WinnerController winnerController = new WinnerController(stage, game, winner, score);
 
                         LOGGER.log(Level.INFO, "SceneFactory winnerController created with parameters");
 
@@ -169,5 +169,13 @@ public class SceneFactory {
             LOGGER.log(Level.SEVERE, "Could not load winner.fxml");
         }
         return null;
+    }
+
+    public int getWIDTH() {
+        return WIDTH;
+    }
+
+    public int getHEIGHT() {
+        return HEIGHT;
     }
 }

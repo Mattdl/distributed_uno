@@ -1,10 +1,12 @@
 package app_server.service;
 
+import model.Card;
 import model.Game;
 import model.Lobby;
 import model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.LobbyStub;
 
 import java.rmi.RemoteException;
@@ -19,10 +21,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
 
     private Lobby lobby;
-    //private GameDbService gameDbService;
+    private GameDbStub gameDbService;
 
-    public LobbyService(Lobby lobby) throws RemoteException {
+    public LobbyService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
         this.lobby = lobby;
+        this.gameDbService = gameDbService;
     }
 
     /**
@@ -65,18 +68,12 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @param initPlayer
      * @param gameName
      * @param gameSize
-     * @param password
      * @return Returns a message if failed, null if successful
      * @throws RemoteException
      */
-    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize, String password)
+    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize)
             throws RemoteException {
-        //TODO extend with password (if time)
-
         LOGGER.info("createNewGame @Server");
-
-
-        //TODO CHECK IF NAME IS UNIQUE!
         Game game = new Game(gameName, gameSize, initPlayer);
         game.setDeck();
         lobby.addGame(game);
@@ -162,6 +159,9 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         LOGGER.info("Entering getGameLobbyInfo");
 
         Game game = lobby.findGame(gameName);
+        for(Player player: game.getPlayerList()){
+            player.setHighscore(gameDbService.fetchPlayerScore(player.getName()));
+        }
 
         try {
 

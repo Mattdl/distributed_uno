@@ -25,7 +25,7 @@ public class PlayMoveService extends Service<Boolean> {
         this.playedMove = playedMove;
 
         if (playedMove.getCard() == null) {
-            playedMove.setHasDrawnCard(true);
+            playedMove.setMoveType(Move.MoveType.DRAW_CARD);
         }
     }
 

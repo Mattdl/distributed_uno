@@ -1,6 +1,7 @@
 package client.controller;
 
 import client.Main;
+import client.service.ImgFetchService;
 import client.service.lobby.JoinGameService;
 import client.service.lobby.LobbyService;
 import javafx.application.Platform;
@@ -9,9 +10,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.TilePane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.Image;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
@@ -21,6 +21,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static client.Main.sceneFactory;
 
 public class LobbyController implements Observer {
 
@@ -32,8 +34,8 @@ public class LobbyController implements Observer {
 
     private LobbyService lobbyService;
 
-    //@FXML
-    // private VBox vboxEntryList;
+    @FXML
+    private BorderPane lobbyBorderPane;
 
     @FXML
     private TilePane centerContainer;
@@ -45,6 +47,11 @@ public class LobbyController implements Observer {
 
     @FXML
     public void initialize() {
+
+        BackgroundImage myBI= new BackgroundImage(new Image("background/Lobby-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+                BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+                BackgroundSize.DEFAULT);
+        lobbyBorderPane.setBackground(new Background(myBI));
 
         //Don't show if succesfully logged in or registered
 
@@ -58,6 +65,9 @@ public class LobbyController implements Observer {
 
         lobbyService = new LobbyService(lobby);
         lobbyService.start();
+
+        ImgFetchService imgFetchService = new ImgFetchService();
+        imgFetchService.start();
     }
 
 
@@ -135,6 +145,7 @@ public class LobbyController implements Observer {
     private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene, with currentGame = {0}", game);
 
+        lobbyService.setInLobby(false);
         stage.setScene(Main.sceneFactory.getGameLobbyScene(game));
 
         LOGGER.log(Level.INFO, "switched To GameLobbyScene, with currentGame = {0}", game);
@@ -157,6 +168,7 @@ public class LobbyController implements Observer {
                 Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 switchToGameLobbyScene(stage, lobby.findGame(gameName));
             } else {
+                lobbyService.setInLobby(true);
                 Alert alert = new Alert(Alert.AlertType.WARNING);
                 alert.setTitle("UNO");
                 alert.setHeaderText("Joining is not possible");
@@ -164,6 +176,7 @@ public class LobbyController implements Observer {
                 alert.showAndWait();
             }
         });
+        lobbyService.setInLobby(false);
         joinGameService.start();
     }
 }

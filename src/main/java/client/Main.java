@@ -25,7 +25,7 @@ public class Main extends Application {
 
 
         //Multiple threads should run here (Service!)
-        //FetchService fetchService = new FetchService();
+        //ImgFetchService fetchService = new ImgFetchService();
         //fetchService.start();
 
         final int HEIGHT = 600;
@@ -36,7 +36,7 @@ public class Main extends Application {
 
         primaryStage.setTitle("UNO");
         primaryStage.setAlwaysOnTop(false);
-        primaryStage.setResizable(true);
+        primaryStage.setResizable(false);
         primaryStage.show();
 
         LOGGER.log(Level.INFO, "Client application LAUNCHED");

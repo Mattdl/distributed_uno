@@ -2,7 +2,6 @@ package model;
 
 import app_server.DeckBuilder;
 import client.Main;
-import com.j256.ormlite.dao.ForeignCollection;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.field.ForeignCollectionField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -37,7 +36,7 @@ public class Game extends Observable implements Serializable {
     private Collection<Player> playerList;
 
     @ForeignCollectionField(eager = true, maxEagerLevel = 3)
-    private Collection<Card> deck = new LinkedList<Card>();
+    private Collection<Card> deck;
 
     @ForeignCollectionField(eager = true, maxEagerLevel = 3)
     private Collection<Move> moves;
@@ -62,6 +61,7 @@ public class Game extends Observable implements Serializable {
 
     /**
      * Used at ApplicationServer to instantiate a new game (with unique id)
+     *
      * @param gameName
      * @param gameSize
      * @param initialPlayer
@@ -127,9 +127,10 @@ public class Game extends Observable implements Serializable {
         while (i < playerList.size()) {
             //LOGGER.log(Level.INFO,"In the while");
 
-            if (((List<Player>) playerList).get(i).equals(player)) {
-                playerList.remove(i);
-                LOGGER.log(Level.INFO, "Removed player: {0}", player);
+            Player tempPlayer = ((List<Player>) playerList).get(i);
+            if (tempPlayer.equals(player)) {
+                playerList.remove(tempPlayer);
+                LOGGER.log(Level.INFO, "Removed player: {0}", tempPlayer);
 
                 setChanged();
                 notifyObservers();
@@ -189,7 +190,7 @@ public class Game extends Observable implements Serializable {
 
         while (i >= 0) {
             Move move = ((List<Move>) moves).get(i);
-            if (!move.isHasDrawnCard() && move.getCard() != null) {
+            if (move.getMoveType() == Move.MoveType.NORMAL && move.getCard() != null) {
                 LOGGER.log(Level.INFO, "Last played card is on deck is {0}", move.getCard());
                 return move.getCard();
             }
@@ -291,10 +292,20 @@ public class Game extends Observable implements Serializable {
     }
 
     /**
-     * Method to draw first card from the deck.
+     * Method to draw first card from the deck. Checks if card isn't a special one.
      */
     public synchronized void drawFirstCard() {
-        Card firstCard = ((LinkedList<Card>) deck).pollFirst();
+        int i = 0;
+        Card firstCard = ((LinkedList<Card>) deck).get(i);
+
+
+        while (firstCard.getCardType() != Card.CardType.NORMAL && i < deck.size()) {
+            i++;
+            firstCard = ((LinkedList<Card>) deck).get(i);
+        }
+
+        ((LinkedList<Card>) deck).remove(i);
+
         moves.add(new Move(null, firstCard));
     }
 
@@ -393,12 +404,12 @@ public class Game extends Observable implements Serializable {
      *
      * @return
      */
-    public Move getLastPlayedMove() {
+    public Move getLastPlayedMoveNotDrawnCard() {
         int i = moves.size() - 1;
 
         while (i >= 0) {
             Move move = ((List<Move>) moves).get(i);
-            if (!move.isHasDrawnCard() && move.getCard() != null) {
+            if (move.getMoveType() == Move.MoveType.NORMAL && move.getCard() != null) {
                 LOGGER.log(Level.INFO, "Last played move is on deck is {0}", move);
                 return move;
             }
@@ -436,7 +447,7 @@ public class Game extends Observable implements Serializable {
         int currentPlayerIndex = ((List<Player>) playerList).indexOf(currentPlayer);
 
         //Get last player of a move, NOT a drawcard
-        Player lastPlayer = getLastPlayedMove().getPlayer();
+        Player lastPlayer = getLastMove().getPlayer();
 
         if (lastPlayer == null) {
             return false;
@@ -460,7 +471,7 @@ public class Game extends Observable implements Serializable {
     }
 
     public void setDeck() {
-        this.deck = new DeckBuilder().makeDeck();
+        this.deck = new DeckBuilder().makeDeckWithoutImg();
     }
 
     //GETTERS & SETTERS
@@ -489,7 +500,7 @@ public class Game extends Observable implements Serializable {
         return (List<Player>) playerList;
     }
 
-    public Collection<Player> getPlayerListCollection(){
+    public Collection<Player> getPlayerListCollection() {
         return playerList;
     }
 
@@ -509,19 +520,19 @@ public class Game extends Observable implements Serializable {
         return ((List<Card>) deck);
     }
 
-    public Collection<Card> getDeckCollection(){
+    public Collection<Card> getDeckCollection() {
         return deck;
     }
 
     public void setDeck(List<Card> deck) {
-        this.deck = new DeckBuilder().makeDeck();
+        this.deck = new DeckBuilder().makeDeckWithoutImg();
     }
 
     public List<Move> getMoves() {
         return ((List<Move>) moves);
     }
 
-    public Collection<Move> getMovesCollection(){
+    public Collection<Move> getMovesCollection() {
         return moves;
     }
 

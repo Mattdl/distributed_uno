@@ -77,28 +77,29 @@ public class GameLogic {
             switch (move.getCard().getCardType()) {
                 //Change direction
                 case REVERSE:
-                    if(game.getGameSize() == 2){
+                    if (game.getGameSize() == 2) {
                         game.setCurrentPlayer(game.getNextPlayer(2));
-                    } else{
-                    game.setClockwise(!game.isClockwise());
-                    game.setCurrentPlayer(game.getNextPlayer(1));}
+                    } else {
+                        game.setClockwise(!game.isClockwise());
+                        game.setCurrentPlayer(game.getNextPlayer(1));
+                    }
                     break;
                 //Next player draws 2 cards and skips turn
                 case PLUS2:
                     game.drawCards(game.getNextPlayer(1), 2);
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1), new Card(Card.CardType.PLUS2), Move.MoveType.PLUS_CARD)); //Adding dummy move for logic
                     break;
                 //Next player draws 4 cards and skips turn
                 case PLUS4:
                     game.drawCards(game.getNextPlayer(1), 4);
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1), new Card(Card.CardType.PLUS4), Move.MoveType.PLUS_CARD)); //Adding dummy move for logic
                     break;
                 //Skips next player
                 case SKIP:
                     game.setCurrentPlayer(game.getNextPlayer(2));
-                    game.addMove(new Move(game.getNextPlayer(1),null,true));
+                    game.addMove(new Move(game.getNextPlayer(1), null, Move.MoveType.SKIP)); //Adding dummy move for logic
                     break;
                 //Sets next player
                 case NORMAL:
@@ -128,27 +129,29 @@ public class GameLogic {
 
     /**
      * Calculates winning player's score based on remaining cards in other players hands
+     *
      * @param game
      * @return score
      */
-    public int calculateScore(Game game){
+    public int calculateScore(Game game) {
         int score = 0;
 
         List<Card> remainingCards =
                 game.getPlayerList().stream()
-                        .flatMap(e->e.getHand().stream())
+                        .flatMap(e -> e.getHand().stream())
                         .collect(Collectors.toList());
 
-        for(Card card : remainingCards){
+        for (Card card : remainingCards) {
             switch (card.getCardType()) {
                 case NORMAL:
                     score += card.getValue();
                     break;
                 case PICK_COLOR:
                 case PLUS4:
-                    score +=50;
+                    score += 50;
                     break;
-                default: score += 20;
+                default:
+                    score += 20;
             }
         }
         return score;

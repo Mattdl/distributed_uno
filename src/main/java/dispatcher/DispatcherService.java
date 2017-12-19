@@ -32,7 +32,9 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
 
 
         for (ApplicationServer applicationServer : Dispatcher.appServers) {
+
             if (applicationServer.getAssignedClientsCount() < Dispatcher.DEFAULT_MAX_PLAYER_LOAD_APPSERVER) {
+
                 applicationServer.incrementClientCount();
                 LOGGER.info("UPDATED DISPATCHER STATUS: dbServers = {}, appServers = {}", dbServers, appServers);
 

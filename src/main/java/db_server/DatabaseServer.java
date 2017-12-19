@@ -43,6 +43,7 @@ public class DatabaseServer {
     private Dao<Move, String> moveDao;
     private Dao<Player, String> playerDao;
     private Dao<Card, String> cardDao;
+    private Dao<User, String> userDao;
 
     private int connRefreshTime = 60 * 1000;
     private TimerTask timerTask;
@@ -71,7 +72,7 @@ public class DatabaseServer {
                 databaseInstances.replace(this,registry);
             }
 
-            userDbService = new UserDbService(otherDatabases);
+            userDbService = new UserDbService(otherDatabases, userDao, playerDao);
             gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
 
             //Bind RMI implementations to service names
@@ -105,12 +106,14 @@ public class DatabaseServer {
             gameDao = DaoManager.createDao(conn, Game.class);
             cardDao = DaoManager.createDao(conn, Card.class);
             playerDao = DaoManager.createDao(conn, Player.class);
+            userDao = DaoManager.createDao(conn, User.class);
 
             //CREATE TABLES
             TableUtils.createTableIfNotExists(conn, Game.class);
             TableUtils.createTableIfNotExists(conn, Card.class);
             TableUtils.createTableIfNotExists(conn, Move.class);
             TableUtils.createTableIfNotExists(conn, Player.class);
+            TableUtils.createTableIfNotExists(conn, User.class);
 
         } catch (SQLException e) {
             LOGGER.error(e.getMessage());

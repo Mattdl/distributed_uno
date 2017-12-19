@@ -25,8 +25,7 @@ public class Card implements Serializable {
     @DatabaseField
     private int value; //TODO, changed from Integer to int => Bugchecking
 
-    @DatabaseField
-    private boolean hasFetchedCards;
+    private byte[] serializableImage;
 
     // ORMLITE: Returning fields for foreign keys
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
@@ -44,6 +43,28 @@ public class Card implements Serializable {
         this.cardType = cardType;
         this.color = color;
         this.value = value;
+    }
+
+    public Card(byte[] image, CardType cardType, CardColor color, int value) {
+        this.serializableImage = image;
+        this.cardType = cardType;
+        this.color = color;
+        this.value = value;
+    }
+
+    public Card(CardType cardType, Integer value) {
+        this.cardType = cardType;
+        this.value = value;
+    }
+
+    public Card(CardType cardType, CardColor color, int value) {
+        this.cardType = cardType;
+        this.color = color;
+        this.value = value;
+    }
+
+    public Card(CardType cardType) {
+        this.cardType = cardType;
     }
 
     public Image getImage() {
@@ -66,14 +87,6 @@ public class Card implements Serializable {
         return value;
     }
 
-    public boolean isHasFetchedCards() {
-        return hasFetchedCards;
-    }
-
-    public void setHasFetchedCards(boolean hasFetchedCards) {
-        this.hasFetchedCards = hasFetchedCards;
-    }
-
     public Player getPlayer() {
         return player;
     }
@@ -90,10 +103,18 @@ public class Card implements Serializable {
         this.game = game;
     }
 
+    public byte[] getSerializableImage() {
+        return serializableImage;
+    }
+
+    public void setSerializableImage(byte[] serializableImage) {
+        this.serializableImage = serializableImage;
+    }
+
     /**
      * Enum used to specify the color of the card
      */
-    public enum CardColor{
+    public enum CardColor {
         BLUE,
         RED,
         YELLOW,
@@ -103,13 +124,14 @@ public class Card implements Serializable {
     /**
      * Enum used to specify the functionality of the card
      */
-    public enum CardType{
+    public enum CardType {
         NORMAL,
         PLUS2,
         PLUS4,
         SKIP,
         REVERSE,
-        PICK_COLOR
+        PICK_COLOR,
+        BACK // For background img of the cards
     }
 
     @Override
@@ -117,10 +139,12 @@ public class Card implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Card card = (Card) o;
-        return id == card.id &&
-                value == card.value &&
-                hasFetchedCards == card.hasFetchedCards &&
-                Objects.equals(image, card.image) &&
+
+        if (cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4) {
+            return cardType == card.cardType;
+        }
+
+        return value == card.value &&
                 cardType == card.cardType &&
                 color == card.color;
     }
@@ -128,7 +152,11 @@ public class Card implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, image, cardType, color, value, hasFetchedCards);
+        if (cardType == CardType.PICK_COLOR || cardType == CardType.PLUS4) {
+            return Objects.hash(cardType);
+        }
+
+        return Objects.hash(cardType, color, value);
     }
 
     @Override
