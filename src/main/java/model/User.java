@@ -25,12 +25,6 @@ public class User implements Serializable {
     @DatabaseField(foreign = true, columnName = PLAYERNAME_FIELD_NAME)
     private Player player;
 
-    @DatabaseField
-    private String token;
-
-    @DatabaseField
-    private Date tokenExpTime;
-
     public User() {
     }
 
