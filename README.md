@@ -1,5 +1,8 @@
-# distributed_uno
+# UNO Distributed
 
-## TODO
- -  Database
- -  2 person
+## Instructions
+First run DispatcherUI to startup all databases, application servers and dispatcher.
+Thereafter run Main class in the client package to run an UNO client.
+
+## API
+See javadoc package for our API.
