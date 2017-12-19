@@ -23,7 +23,7 @@ public class DatabaseServer {
     public static HashMap<DatabaseServer, Registry> databaseInstances = new HashMap<>();
 
     static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
-    private boolean instanceRunning = true;
+    private boolean instanceRunning;
 
     private String dbIp;
     private int dbPort;
@@ -187,6 +187,16 @@ public class DatabaseServer {
         timer.scheduleAtFixedRate(timerTask, 2 * 1000, connRefreshTime);
     }
 
+    public DbServer findDbServer(Server server) {
+
+        for (DbServer dbServer : otherDatabases) {
+            if (server.equals(dbServer)) {
+                return dbServer;
+            }
+        }
+        return null;
+    }
+
     /**
      * Shuts down the target database. This is a simulation, as unexporting RemoteObjects in RMI removes them from the whole runtime.
      *
@@ -240,7 +250,6 @@ public class DatabaseServer {
                 databaseServer.instanceRunning = false;
 
                 LOGGER.info("STOPPED DATABASE  '{}:{}'", databaseServer.dbIp, databaseServer.dbPort);
-
             }
         }
     }

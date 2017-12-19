@@ -1,9 +1,6 @@
 package stub_RMI.appserver_dbserver;
 
-import model.Card;
-import model.Game;
-import model.Move;
-import model.Player;
+import model.*;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -21,7 +18,9 @@ public interface GameDbStub extends Remote {
 
     int fetchPlayerScore(String playerName) throws RemoteException;
 
-    List<Game> copyDatabase() throws RemoteException;
+    List<Game> fetchQueueingGameUpdates(Server requestingDbServer) throws RemoteException;
+
+    List<Game> fetchQueueingMoveUpdates(Server requestingDbServer) throws RemoteException;
 
     List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException;
 }

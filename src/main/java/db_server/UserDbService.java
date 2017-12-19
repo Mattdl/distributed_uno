@@ -121,6 +121,9 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
                 } catch (Exception e) {
                     LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
                     //e.printStackTrace();
+
+                    otherDbServer.addUserToQueue(userToPersist);
+                    LOGGER.error("DATABASE '{}' ADDED USER TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
                 }
             }
         }
@@ -163,12 +166,14 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         return null;
     }
 
+
     /**
      * Method used to recreate games from a database
      *
      * @return List of games
      * @throws RemoteException
      */
+    /*
     @Override
     public synchronized List<User> copyDatabase() throws RemoteException {
 
@@ -185,6 +190,30 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
         return null;
 
+    }*/
+    @Override
+    public List<User> fetchQueueingUserUpdates(Server requestingDbServer) throws RemoteException {
+        LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES", requestingDbServer);
+
+        DbServer dbServer = databaseServer.findDbServer(requestingDbServer);
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: found dbServer = {}", requestingDbServer, dbServer);
+
+        if (dbServer != null) {
+            List<User> ret = new ArrayList<>(dbServer.getUserUpdateQueue());
+
+            dbServer.getUserUpdateQueue().clear();
+
+            LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: cleared db update list size = {}", requestingDbServer, dbServer.getUserUpdateQueue().size());
+
+            LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: returning = {}", requestingDbServer, ret);
+
+            return ret;
+        }
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: Database not found!", requestingDbServer);
+
+        return null;
     }
 
     /**

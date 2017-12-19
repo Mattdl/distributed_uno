@@ -3,6 +3,7 @@ package model;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.appserver_dbserver.UserDbStub;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -12,6 +13,10 @@ public class DbServer extends Server {
     private UserDbStub userDbStub;
     private int assignedAppServerCount;
     private boolean isOnline;
+
+    private List<Game> gameUpdateQueue = new ArrayList<>();
+    private List<Move> moveUpdateQueue = new ArrayList<>();
+    private List<User> userUpdateQueue = new ArrayList<>();
 
 
     public DbServer(String ip, int port) {
@@ -68,6 +73,42 @@ public class DbServer extends Server {
 
     public void setOnline(boolean online) {
         isOnline = online;
+    }
+
+    public List<Game> getGameUpdateQueue() {
+        return gameUpdateQueue;
+    }
+
+    public void addGameToQueue(Game game){
+        gameUpdateQueue.add(game);
+    }
+
+    public void setGameUpdateQueue(List<Game> gameUpdateQueue) {
+        this.gameUpdateQueue = gameUpdateQueue;
+    }
+
+    public List<Move> getMoveUpdateQueue() {
+        return moveUpdateQueue;
+    }
+
+    public void addMoveToQueue(Move move){
+        moveUpdateQueue.add(move);
+    }
+
+    public void setMoveUpdateQueue(List<Move> moveUpdateQueue) {
+        this.moveUpdateQueue = moveUpdateQueue;
+    }
+
+    public List<User> getUserUpdateQueue() {
+        return userUpdateQueue;
+    }
+
+    public void addUserToQueue(User user){
+        userUpdateQueue.add(user);
+    }
+
+    public void setUserUpdateQueue(List<User> userUpdateQueue) {
+        this.userUpdateQueue = userUpdateQueue;
     }
 
     @Override
