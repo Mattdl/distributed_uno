@@ -70,12 +70,12 @@ public class DatabaseServer {
                 registry = LocateRegistry.createRegistry(dbPort);
                 databaseInstances.put(this, registry);
             } else {
-                databaseInstances.remove(this, registry);
+                databaseInstances.remove(this);
                 databaseInstances.put(this, registry);
             }
 
-            userDbService = new UserDbService(otherDatabases, userDao, playerDao, this);
-            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao, this);
+            userDbService = new UserDbService(userDao, playerDao, this);
+            gameDbService = new GameDbService(gameDao, moveDao, playerDao, cardDao, this);
 
             //Bind RMI implementations to service names
             registry.rebind("UserDbService", userDbService);
