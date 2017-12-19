@@ -65,8 +65,6 @@ public class User implements Serializable {
                 ", hash='" + hash + '\'' +
                 ", salt='" + salt + '\'' +
                 ", player=" + player +
-                ", token='" + token + '\'' +
-                ", tokenExpTime=" + tokenExpTime +
                 '}';
     }
 }
