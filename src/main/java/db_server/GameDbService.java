@@ -100,23 +100,26 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         for (DbServer otherDbServer : otherDatabases) {
 
-            if (otherDbServer.isConnected()) {
 
-                GameDbStub gameDbStub = otherDbServer.getGameDbStub();
+            GameDbStub gameDbStub = otherDbServer.getGameDbStub();
 
-                try {
+            if (gameDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                gameDbStub = otherDbServer.getGameDbStub();
+            }
 
-                    gameDbStub.persistGame(gameToPersist, false);
+            try {
 
-                    LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
+                gameDbStub.persistGame(gameToPersist, false);
 
-                } catch (Exception e) {
-                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST GAME TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
-                    //e.printStackTrace();
+                LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
 
-                    otherDbServer.addGameToQueue(gameToPersist);
-                    LOGGER.error("DATABASE '{}' ADDED GAME TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
-                }
+            } catch (Exception e) {
+                LOGGER.error("DATABASE '{}'COULD NOT PERSIST GAME TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                //e.printStackTrace();
+
+                otherDbServer.addGameToQueue(gameToPersist);
+                LOGGER.error("DATABASE '{}' ADDED GAME TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
             }
         }
 
@@ -222,25 +225,28 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
         for (DbServer otherDbServer : otherDatabases) {
 
-            if (otherDbServer.isConnected()) {
 
-                GameDbStub gameDbStub = otherDbServer.getGameDbStub();
+            GameDbStub gameDbStub = otherDbServer.getGameDbStub();
 
-                try {
+            if (gameDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                gameDbStub = otherDbServer.getGameDbStub();
+            }
 
-                    gameDbStub.persistMove(gameName, move, false);
+            try {
 
-                    LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
+                gameDbStub.persistMove(gameName, move, false);
 
-                } catch (Exception e) {
-                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST MOVE TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
-                    //e.printStackTrace();
+                LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
-                    move.setGame(new Game(gameName));
-                    otherDbServer.addMoveToQueue(move);
+            } catch (Exception e) {
+                LOGGER.error("DATABASE '{}'COULD NOT PERSIST MOVE TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                //e.printStackTrace();
 
-                    LOGGER.error("DATABASE '{}' ADDED MOVE TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
-                }
+                move.setGame(new Game(gameName));
+                otherDbServer.addMoveToQueue(move);
+
+                LOGGER.error("DATABASE '{}' ADDED MOVE TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
             }
         }
 
@@ -476,7 +482,14 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private void fetchGameUpdates(DbServer otherDbServer, Server currentServer) {
         try {
             LOGGER.info("FETCHING GAME UPDATES FROM dbServer = {}", otherDbServer);
-            List<Game> games = otherDbServer.getGameDbStub().fetchQueueingGameUpdates(currentServer);
+
+            GameDbStub gameDbStub = otherDbServer.getGameDbStub();
+
+            if (gameDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                gameDbStub = otherDbServer.getGameDbStub();
+            }
+            List<Game> games = gameDbStub.fetchQueueingGameUpdates(currentServer);
 
             LOGGER.info("FETCHED GAME UPDATES FROM dbServer = {}, RETURNED GAME UPDATES = {}", otherDbServer, games);
 
@@ -485,6 +498,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     persistGame(game, false);
                 }
             }
+        } catch (NullPointerException e) {
+            LOGGER.error("DATABASE '{}'COULD NOT CONNECT TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+
         } catch (Exception e) {
             LOGGER.error("ERROR FETCHING GAME UPDATES FROM dbServer = {}", otherDbServer);
             e.printStackTrace();
@@ -494,7 +510,15 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private void fetchMoveUpdates(DbServer otherDbServer, Server currentServer) {
         try {
             LOGGER.info("FETCHING MOVE UPDATES FROM dbServer = {}", otherDbServer);
-            List<Move> moves = otherDbServer.getGameDbStub().fetchQueueingMoveUpdates(currentServer);
+
+            GameDbStub gameDbStub = otherDbServer.getGameDbStub();
+
+            if (gameDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                gameDbStub = otherDbServer.getGameDbStub();
+            }
+
+            List<Move> moves = gameDbStub.fetchQueueingMoveUpdates(currentServer);
 
             LOGGER.info("FETCHED MOVE UPDATES FROM dbServer = {}, RETURNED MOVE UPDATES = {}", otherDbServer, moves);
 
@@ -503,6 +527,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     persistMove(move.getGame().getGameId(), move, false); //TODO check if game is passed also
                 }
             }
+        } catch (NullPointerException e) {
+            LOGGER.error("DATABASE '{}'COULD NOT CONNECT TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+
         } catch (Exception e) {
             LOGGER.error("ERROR FETCHING MOVE UPDATES FROM dbServer = {}", otherDbServer);
             e.printStackTrace();
