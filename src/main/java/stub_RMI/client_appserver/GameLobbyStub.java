@@ -4,5 +4,5 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 public interface GameLobbyStub extends Remote {
-    boolean hasEverybodyJoined(String gameName) throws RemoteException;
+    boolean hasEverybodyJoined(String gameName, String token) throws RemoteException;
 }

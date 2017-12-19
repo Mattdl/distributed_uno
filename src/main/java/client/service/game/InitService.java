@@ -38,7 +38,7 @@ public class InitService extends Service<Boolean> {
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
                 //Fetch init cards
-                List<Card> cards = gameService.initCards(game.getGameId(), Main.currentPlayer);
+                List<Card> cards = gameService.initCards(game.getGameId(), Main.currentPlayer, Main.token);
 
                 boolean isSuccessful = cards != null;
 
@@ -50,7 +50,7 @@ public class InitService extends Service<Boolean> {
                 }
 
                 //Get current player and top card
-                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameId(), true);
+                Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameId(), true, Main.token);
 
                 isSuccessful = ret != null;
 
@@ -63,7 +63,7 @@ public class InitService extends Service<Boolean> {
                 }
 
                 //Fetch player info
-                List<Player> retList = gameService.getPlayerUpdates(game.getGameId(), Main.currentPlayer, true);
+                List<Player> retList = gameService.getPlayerUpdates(game.getGameId(), Main.currentPlayer, true, Main.token);
 
                 isSuccessful = retList != null;
 

@@ -43,7 +43,7 @@ public class GameLobbyService extends Service<Void> {
                 while (inGameLobby) {
 
                     LOGGER.info("Requesting GameLobby info, for game = {}",clientGame.getGameId());
-                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getGameId());
+                    Game serverSideGame = lobbyService.getGameLobbyInfo(clientGame.getVersion(), clientGame.getGameId(), Main.token);
 
 
                     //We have to make copy in order to notify the observers of the game

@@ -38,6 +38,7 @@ public class JWTUtils {
         if (ttlMillis >= 0) {
             long expMillis = nowMillis + ttlMillis;
             Date exp = new Date(expMillis);
+            System.out.println(exp);
             builder.setExpiration(exp);
         }
 
@@ -53,13 +54,16 @@ public class JWTUtils {
     public static boolean validateJWT(String jwt, String apiSecret) {
         LOGGER.info("Validating JWT, jwt = {}", jwt);
 
+        byte[] apiKeySecretBytes = apiSecret.getBytes();
+        SignatureAlgorithm signatureAlgorithm = SignatureAlgorithm.HS256;
+        Key signingKey = new SecretKeySpec(apiKeySecretBytes, signatureAlgorithm.getJcaName());
+
         //This line will throw an exception if it is not a signed JWS (as expected)
         try {
             Claims claims = Jwts.parser()
-                    .setSigningKey(DatatypeConverter.parseBase64Binary(apiSecret))
+                    .setSigningKey(signingKey)
                     .parseClaimsJws(jwt).getBody();
-
-            return claims.getExpiration().after(new Date());
+            return claims.getExpiration().after(new Date(System.currentTimeMillis()));
 
         } catch (SignatureException e) {
             return false;

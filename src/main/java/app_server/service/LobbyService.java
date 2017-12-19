@@ -1,11 +1,13 @@
 package app_server.service;
 
+import app_server.AppServer;
 import model.Card;
 import model.Game;
 import model.Lobby;
 import model.Player;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import security.JWTUtils;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.LobbyStub;
 
@@ -35,7 +37,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @return
      * @throws RemoteException
      */
-    public synchronized Lobby getJoinableGames(int version) throws RemoteException {
+    @Override
+    public synchronized Lobby getJoinableGames(int version, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
 
         LOGGER.info("Getting joinable games.");
 
@@ -71,8 +76,14 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @return Returns a message if failed, null if successful
      * @throws RemoteException
      */
-    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize)
-            throws RemoteException {
+    @Override
+    public synchronized String createNewGame(Player initPlayer, String gameName, int gameSize, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret)){
+            System.out.println("Creating new game: validating token...");
+            System.out.println("Token valid?: " + JWTUtils.validateJWT(token, AppServer.apiSecret));
+            System.out.println("TOken value: " + token);
+            return null;
+        }
         LOGGER.info("createNewGame @Server");
         Game game = new Game(gameName, gameSize, initPlayer);
         game.setDeck();
@@ -93,7 +104,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized String joinGame(Player player, String gameName) throws RemoteException {
+    public synchronized String joinGame(Player player, String gameName, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         Game gameInLobby = lobby.findGame(gameName);
 
         if (gameInLobby != null) {
@@ -120,7 +134,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
+    public synchronized String leaveGame(Player player, String gameName, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         LOGGER.info( "Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
 
         Game gameInLobby = lobby.findGame(gameName);
@@ -155,7 +172,10 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     }
 
     @Override
-    public synchronized Game getGameLobbyInfo(int clientVersion, String gameName) throws RemoteException {
+    public synchronized Game getGameLobbyInfo(int clientVersion, String gameName, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         LOGGER.info("Entering getGameLobbyInfo");
 
         Game game = lobby.findGame(gameName);

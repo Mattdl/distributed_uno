@@ -45,7 +45,7 @@ public class FetchPlayersInfoService extends Service<Boolean> {
                 //must only be performed once for the initialization
                 do {
                     //RMI call
-                    List<Player> ret = gameService.getPlayerUpdates(game.getGameId(), Main.currentPlayer, isInit);
+                    List<Player> ret = gameService.getPlayerUpdates(game.getGameId(), Main.currentPlayer, isInit, Main.token);
                     isSuccessful = ret != null;
 
                     if (isSuccessful) {

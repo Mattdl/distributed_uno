@@ -42,7 +42,7 @@ public class ImgFetchService extends Service<Void> {
 
                 LOGGER.info( "CLIENT FETCHING IMAGES");
 
-                List<Card> ret = gameService.fetchCardImageMappings();
+                List<Card> ret = gameService.fetchCardImageMappings(Main.token);
 
                 LOGGER.info("CLIENT FETCHED IMAGES, ret = {}", ret);
 
