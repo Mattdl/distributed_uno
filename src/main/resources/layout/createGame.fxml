@@ -14,22 +14,17 @@
          <children>
             <HBox alignment="TOP_CENTER" prefHeight="38.0" prefWidth="300.0">
                <children>
-                  <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Game name " />
-                  <TextField fx:id="gameName" promptText="Insert game name" />
+                  <TextField fx:id="gameName" prefHeight="31.0" prefWidth="155.0" promptText="Insert game name" />
+                  <ChoiceBox fx:id="numberOfPlayers" prefHeight="31.0" prefWidth="40.0">
+                     <HBox.margin>
+                        <Insets left="10.0" />
+                     </HBox.margin></ChoiceBox>
                </children>
                <VBox.margin>
                   <Insets top="10.0" />
                </VBox.margin>
             </HBox>
-            <HBox alignment="TOP_CENTER" prefHeight="40.0" prefWidth="300.0">
-               <children>
-                  <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Amount of players" textAlignment="CENTER" />
-                  <ChoiceBox fx:id="numberOfPlayers" prefHeight="31.0" prefWidth="138.0">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin></ChoiceBox>
-               </children>
-            </HBox>
+            <HBox alignment="TOP_CENTER" prefHeight="40.0" prefWidth="300.0" />
             <HBox alignment="TOP_CENTER">
                <children>
                   <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#createGame" text="Create game" />

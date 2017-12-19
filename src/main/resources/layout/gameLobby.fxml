@@ -12,22 +12,7 @@
    <center>
       <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="200.0" prefWidth="300.0" BorderPane.alignment="CENTER">
          <children>
-            <HBox alignment="CENTER">
-               <children>
-                  <Text fx:id="gameNameText" fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="NAME">
-                     <font>
-                        <Font size="16.0" />
-                     </font>
-                  </Text>
-                  <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Gamelobby">
-                     <HBox.margin>
-                        <Insets left="10.0" />
-                     </HBox.margin>
-                     <font>
-                        <Font size="16.0" />
-                     </font></Text>
-               </children>
-            </HBox>
+            <HBox alignment="CENTER" />
             <Text fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="Current players in gamelobby: ">
                <VBox.margin>
                   <Insets top="10.0" />
@@ -56,6 +41,16 @@
       </VBox>
    </center>
    <bottom>
-      <Label text="Game status (waiting, starting)" textFill="#ffeded" BorderPane.alignment="CENTER" />
+      <Label fx:id="statusbar" text="Game status (waiting, starting)" textFill="#ffeded" BorderPane.alignment="CENTER" />
    </bottom>
+   <top>
+      <Text fx:id="gameNameText" fill="#ffeded" strokeType="OUTSIDE" strokeWidth="0.0" text="NAME" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="36.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets top="40.0" />
+         </BorderPane.margin>
+      </Text>
+   </top>
 </BorderPane>

@@ -38,7 +38,6 @@ public class JWTUtils {
         if (ttlMillis >= 0) {
             long expMillis = nowMillis + ttlMillis;
             Date exp = new Date(expMillis);
-            System.out.println(exp);
             builder.setExpiration(exp);
         }
 
