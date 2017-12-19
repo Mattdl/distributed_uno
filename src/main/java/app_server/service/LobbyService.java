@@ -188,12 +188,15 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
                 try {
                     highscore = appServer.getGameDbService().fetchPlayerScore(player.getName());
                     persistedToDb = true;
+                    LOGGER.info("APPSERVER SUCCESSFUL PERSIST");
+
                 } catch (Exception e) {
                     LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-                    e.printStackTrace();
+                    //e.printStackTrace();
 
                     AppServer.retrieveNewDatabaseInfo(appServer);
                     AppServer.registerAsClientWithDatabase(appServer);
+                    LOGGER.info("APPSERVER RETRYING PERSIST");
                 }
             }
 

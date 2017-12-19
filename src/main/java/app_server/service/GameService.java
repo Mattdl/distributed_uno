@@ -3,7 +3,6 @@ package app_server.service;
 import app_server.AppServer;
 import dispatcher.Dispatcher;
 import game_logic.GameLogic;
-import jdk.nashorn.internal.parser.Token;
 import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -314,11 +313,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
                     appServer.getGameDbService().persistMove(game.getGameId(), move, true);
                     LOGGER.info("MOVE persisted to database for game = {}", game);
                     persistedToDb = true;
+                    LOGGER.info("APPSERVER SUCCESSFUL PERSIST");
 
                 } catch (Exception e) {
                     LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
                     AppServer.retrieveNewDatabaseInfo(appServer);
                     AppServer.registerAsClientWithDatabase(appServer);
+                    LOGGER.info("APPSERVER RETRYING PERSIST");
                 }
             }
 
@@ -377,10 +378,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             try {
                 appServer.getGameDbService().updateWinner(winner);
                 persistedToDb = true;
+                LOGGER.info("APPSERVER SUCCESSFUL PERSIST");
+
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
                 AppServer.retrieveNewDatabaseInfo(appServer);
                 AppServer.registerAsClientWithDatabase(appServer);
+                LOGGER.info("APPSERVER RETRYING PERSIST");
             }
         }
     }
@@ -425,10 +429,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             try {
                 ret = appServer.getGameDbService().fetchCardImageMappings(Dispatcher.isHolliday);
                 persistedToDb = true;
+                LOGGER.info("APPSERVER SUCCESSFUL PERSIST");
+
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
                 AppServer.retrieveNewDatabaseInfo(appServer);
                 AppServer.registerAsClientWithDatabase(appServer);
+                LOGGER.info("APPSERVER RETRYING PERSIST");
             }
         }
 

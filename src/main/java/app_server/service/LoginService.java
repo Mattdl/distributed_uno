@@ -45,10 +45,13 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
             try {
                 dbUser = appServer.getUserDbService().fetchUser(username);
                 persistedToDb = true;
+                LOGGER.info("APPSERVER SUCCESSFUL PERSIST");
+
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
                 AppServer.retrieveNewDatabaseInfo(appServer);
                 AppServer.registerAsClientWithDatabase(appServer);
+                LOGGER.info("APPSERVER RETRYING PERSIST");
             }
         }
 
