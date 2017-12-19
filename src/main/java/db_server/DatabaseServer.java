@@ -17,6 +17,8 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
@@ -30,6 +32,8 @@ public class DatabaseServer {
     private int dbPort;
 
     private List<DbServer> otherDatabases;
+    private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
+
 
     private String databaseUrl;
 
@@ -229,11 +233,6 @@ public class DatabaseServer {
                     }
                 }
 
-                if (updated) {
-                    gameDbService.updateOtherDatabases(otherDatabases);
-                    userDbService.updateOtherDatabases(otherDatabases);
-                }
-
                 LOGGER.info("CHECKED PEER DATABASE CONNECTIONS OF '{}:{}', update = {}", dbIp, dbPort, updated);
             }
         };
@@ -323,6 +322,14 @@ public class DatabaseServer {
 
     public int getDbPort() {
         return dbPort;
+    }
+
+    public List<DbServer> getOtherDatabases() {
+        return otherDatabases;
+    }
+
+    public ReadWriteLock getOtherDatabasesLock() {
+        return otherDatabasesLock;
     }
 
     @Override

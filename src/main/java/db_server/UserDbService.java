@@ -22,8 +22,6 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     final Logger LOGGER = LoggerFactory.getLogger(UserDbService.class);
 
-    private List<DbServer> otherDatabases;
-    private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
     private Dao<User, String> userDao;
     private Dao<Player, String> playerDao;
     private Lock lock = new ReentrantLock();
@@ -33,8 +31,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     public UserDbService() throws RemoteException {
     }
 
-    public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao, Dao<Player, String> playerDao, DatabaseServer databaseServer) throws RemoteException {
-        this.otherDatabases = otherDatabases;
+    public UserDbService(Dao<User, String> userDao, Dao<Player, String> playerDao, DatabaseServer databaseServer) throws RemoteException {
         this.userDao = userDao;
         this.playerDao = playerDao;
         this.databaseServer = databaseServer;
@@ -105,9 +102,9 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
      */
     private void persistUserToOtherDatabases(User userToPersist) {
 
-        otherDatabasesLock.readLock().lock();
+        databaseServer.getOtherDatabasesLock().readLock().lock();
 
-        for (DbServer otherDbServer : otherDatabases) {
+        for (DbServer otherDbServer :  databaseServer.getOtherDatabases()) {
 
             UserDbStub userDbStub = otherDbServer.getUserDbStub();
 
@@ -135,7 +132,7 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
         }
 
-        otherDatabasesLock.readLock().unlock();
+        databaseServer.getOtherDatabasesLock().readLock().unlock();
 
     }
 
@@ -211,19 +208,6 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     }
 
     /**
-     * Update the list of other databases
-     *
-     * @param otherDatabases
-     */
-    public void updateOtherDatabases(List<DbServer> otherDatabases) {
-        LOGGER.info("DATABASE GAMESERVICE UPDATING CONNECTIONS");
-
-        otherDatabasesLock.writeLock().lock();
-        this.otherDatabases = otherDatabases;
-        otherDatabasesLock.writeLock().unlock();
-    }
-
-    /**
      * Throws RemoteException if the instance is not running
      *
      * @throws RemoteException
@@ -238,7 +222,6 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     @Override
     public String toString() {
         return "UserDbService{" +
-                "otherDatabases=" + otherDatabases +
                 ", userDao=" + userDao +
                 ", playerDao=" + playerDao +
                 ", databaseServer=" + databaseServer +
