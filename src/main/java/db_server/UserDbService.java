@@ -37,6 +37,13 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         this.databaseServer = databaseServer;
     }
 
+    /**
+     * Persist user to database. Checks if username is unique with the createUniqueUser method.
+     * @param userToPersist
+     * @param propagate
+     * @return
+     * @throws RemoteException
+     */
     public synchronized boolean persistUser(User userToPersist, boolean propagate) throws RemoteException {
 
         throwIfNotRunning();
@@ -68,6 +75,12 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     }
 
+    /**
+     * Method used to determine if username is unique
+     * @param userToPersist
+     * @return boolean
+     * @throws SQLException
+     */
     private boolean createUniqueUser(User userToPersist) throws SQLException {
         //Query to ensure that username is unique
         List<User> userList =

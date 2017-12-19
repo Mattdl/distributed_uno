@@ -22,6 +22,13 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
         this.appServer = appServer;
     }
 
+    /**
+     * This service is used to register new clients. A new salt will be generated for each new user. The hashed password and the salt will be persisted to the database.
+     * @param username
+     * @param password
+     * @return
+     * @throws RemoteException
+     */
     public boolean register(String username, String password) throws RemoteException {
         LOGGER.info("Registering for username = {}, password = {}", username, password);
 

@@ -297,6 +297,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         return isLastCardPlusCard && isForCurrentPlayer && !hasAlreadyFetchedCards;
     }
 
+    /**
+     * Method used to update the game and to persist the played Move. Notifies everybody to tell that game has changed.
+     * @param game
+     * @param move
+     * @return
+     * @throws RemoteException
+     */
     private synchronized Card updateGame(Game game, Move move) throws RemoteException {
         LOGGER.info("Entering updateGame");
 

@@ -33,6 +33,13 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
     }
 
 
+    /**
+     * This method checks if a valid user/password combination is given. If so, the player will be granted a JWT.
+     * @param username
+     * @param inputPassword
+     * @return JWT
+     * @throws RemoteException
+     */
     @Override
     public String getLoginToken(String username, String inputPassword) throws RemoteException {
         LOGGER.info("GETTING LOGIN TOKEN FOR username = {}, password = {}", username, inputPassword);
@@ -78,6 +85,13 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
         return token;
     }
 
+    /**
+     * This method checks if the hashed given password matches the hash in the database
+     * @param dbUser
+     * @param username
+     * @param inputPassword
+     * @return
+     */
     private boolean checkUserLogin(User dbUser, String username, String inputPassword) {
         byte[] actualSalt = Base64.getDecoder().decode(dbUser.getSalt());
         byte[] actualHash = Base64.getDecoder().decode(dbUser.getHash());
