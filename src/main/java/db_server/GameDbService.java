@@ -25,17 +25,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private Dao<Player, String> playerDao;
     private Dao<Card, String> cardDao;
 
-    private List<DbServer> otherDatabases;
-    private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
-
     private DatabaseServer databaseServer;
 
 
     public GameDbService() throws RemoteException {
     }
 
-    public GameDbService(List<DbServer> otherDatabases, Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao, DatabaseServer databaseServer) throws RemoteException {
-        this.otherDatabases = otherDatabases;
+    public GameDbService(Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao, DatabaseServer databaseServer) throws RemoteException {
         this.gameDao = gameDao;
         this.moveDao = moveDao;
         this.playerDao = playerDao;
@@ -96,9 +92,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      */
     private void persistGameToOtherDatabases(Game gameToPersist) {
 
-        otherDatabasesLock.readLock().lock();
+        databaseServer.getOtherDatabasesLock().readLock().lock();
 
-        for (DbServer otherDbServer : otherDatabases) {
+        for (DbServer otherDbServer : databaseServer.getOtherDatabases()) {
 
 
             GameDbStub gameDbStub = otherDbServer.getGameDbStub();
@@ -123,7 +119,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             }
         }
 
-        otherDatabasesLock.readLock().unlock();
+        databaseServer.getOtherDatabasesLock().readLock().unlock();
 
     }
 
@@ -221,9 +217,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     private void persistMoveToOtherDatabases(String gameName, Move move) {
 
-        otherDatabasesLock.readLock().lock();
+        databaseServer.getOtherDatabasesLock().readLock().lock();
 
-        for (DbServer otherDbServer : otherDatabases) {
+        for (DbServer otherDbServer : databaseServer.getOtherDatabases()) {
 
 
             GameDbStub gameDbStub = otherDbServer.getGameDbStub();
@@ -250,7 +246,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             }
         }
 
-        otherDatabasesLock.readLock().unlock();
+        databaseServer.getOtherDatabasesLock().readLock().unlock();
 
     }
 
@@ -324,19 +320,6 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
             e.printStackTrace();
 
         }
-    }
-
-    /**
-     * Update the list of other databases
-     *
-     * @param otherDatabases
-     */
-    public void updateOtherDatabases(List<DbServer> otherDatabases) {
-        LOGGER.info("DATABASE GAMESERVICE UPDATING CONNECTIONS");
-
-        otherDatabasesLock.writeLock().lock();
-        this.otherDatabases = otherDatabases;
-        otherDatabasesLock.writeLock().unlock();
     }
 
     /**
