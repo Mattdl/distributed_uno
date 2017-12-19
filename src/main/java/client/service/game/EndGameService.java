@@ -13,6 +13,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Service to obtain score and winner when the game is finished
+ */
 public class EndGameService extends Service<List<String>> {
     private static final Logger LOGGER = Logger.getLogger(CheckPlayersService.class.getName());
 

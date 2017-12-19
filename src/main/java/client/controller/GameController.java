@@ -135,7 +135,9 @@ public class GameController implements Observer {
         colorChoiceBox.setVisible(false);
     }
 
-    //TODO tries to load background immediately, but first needs to wait on images to be loaded.
+    /**
+     * Method that determines the view based on the amount of players.
+     */
     private void initOtherPlayers() {
         otherPlayers = new ArrayList<>();
 
@@ -242,7 +244,7 @@ public class GameController implements Observer {
     }
 
     /**
-     * Method called when a player draws a card.
+     * Method called when a player draws a card. Checks if player is authorized to draw a card.
      *
      * @param event
      */
@@ -278,8 +280,7 @@ public class GameController implements Observer {
     }
 
     /**
-     * Method called when player plays a card from his hand.
-     *
+     * Method called when player plays a card from his hand. Checks if player is authorized to play to card and checks if move is valid at client-side.
      * @param click
      */
     @FXML

@@ -138,16 +138,6 @@ public class LobbyController implements Observer {
         LOGGER.log(Level.INFO, "switched To CreateGameScene");
     }
 
-    //TODO: remove because unused? No direct access to game from lobby
-    private void switchToGameScene(Stage stage, String msg) {
-        LOGGER.log(Level.INFO, "switching To GameScene");
-
-        lobbyService.setInLobby(false);
-        stage.setScene(Main.sceneFactory.getCreateGameScene(msg));
-
-        LOGGER.log(Level.INFO, "switched To GameScene");
-    }
-
     private void switchToGameLobbyScene(Stage stage, Game game) {
         LOGGER.log(Level.INFO, "switching To GameLobbyScene, with currentGame = {0}", game);
 

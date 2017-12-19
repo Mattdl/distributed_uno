@@ -16,6 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Service used for fetching images from the server
+ */
 public class ImgFetchService extends Service<Void> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ImgFetchService.class.getName());
