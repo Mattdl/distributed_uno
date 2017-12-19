@@ -98,7 +98,8 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
     }
 
     /**
-     * Propagate the persisting to all other databases
+     * Propagate the persisting to all other databases.
+     * If no connection, retry to connect!
      *
      * @param userToPersist
      */
@@ -110,15 +111,23 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
             UserDbStub userDbStub = otherDbServer.getUserDbStub();
 
+            if (userDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                userDbStub = otherDbServer.getUserDbStub();
+            }
+
             try {
 
                 userDbStub.persistUser(userToPersist, false);
 
                 LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getPlayer().getName(), otherDbServer);
 
+            } catch (NullPointerException e) {
+                LOGGER.error("DATABASE '{}'COULD NOT CONNECT TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+
             } catch (Exception e) {
                 LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
-                //e.printStackTrace();
+                e.printStackTrace();
 
                 otherDbServer.addUserToQueue(userToPersist);
                 LOGGER.error("DATABASE '{}' ADDED USER TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
@@ -166,31 +175,17 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
 
     /**
-     * Method used to recreate games from a database
+     * The server-side method of the database to return all pending updates for the requesting db server.
      *
-     * @return List of games
+     * @param requestingDbServer
+     * @return
      * @throws RemoteException
      */
-    /*
     @Override
-    public synchronized List<User> copyDatabase() throws RemoteException {
+    public List<User> fetchQueueingUserUpdates(Server requestingDbServer) throws RemoteException {
 
         throwIfNotRunning();
 
-        try {
-            List<User> userList = userDao.queryForAll();
-
-            return userList;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-
-    }*/
-    @Override
-    public List<User> fetchQueueingUserUpdates(Server requestingDbServer) throws RemoteException {
         LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES", requestingDbServer);
 
         DbServer dbServer = databaseServer.findDbServer(requestingDbServer);
@@ -198,12 +193,13 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
         LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: found dbServer = {}", requestingDbServer, dbServer);
 
         if (dbServer != null) {
+
             List<User> ret = new ArrayList<>(dbServer.getUserUpdateQueue());
 
+            // Clear the updates
             dbServer.getUserUpdateQueue().clear();
 
             LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: cleared db update list size = {}", requestingDbServer, dbServer.getUserUpdateQueue().size());
-
             LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: returning = {}", requestingDbServer, ret);
 
             return ret;
@@ -247,5 +243,42 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
                 ", playerDao=" + playerDao +
                 ", databaseServer=" + databaseServer +
                 '}';
+    }
+
+    /**
+     * This is the client side method of the database to fetch updates from other databases.
+     *
+     * @param otherDbServer
+     * @param currentServer
+     * @throws RemoteException
+     */
+    public void fetchUpdatesFromOtherDatabase(DbServer otherDbServer, Server currentServer) throws RemoteException {
+
+        try {
+            LOGGER.info("FETCHING USER UPDATES FROM dbServer = {}", otherDbServer);
+
+            UserDbStub userDbStub = otherDbServer.getUserDbStub();
+
+            if (userDbStub == null) {
+                databaseServer.tryConnectionWithDatabase(otherDbServer);
+                userDbStub = otherDbServer.getUserDbStub();
+            }
+
+            List<User> users = userDbStub.fetchQueueingUserUpdates(currentServer);
+
+            LOGGER.info("FETCHED USER UPDATES FROM dbServer = {}, RETURNED USER UPDATES = {}", otherDbServer, users);
+
+            if (users != null) {
+                for (User user : users) {
+                    persistUser(user, false);
+                }
+            }
+        } catch (NullPointerException e) {
+            LOGGER.error("DATABASE '{}'COULD NOT CONNECT TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+
+        } catch (Exception e) {
+            LOGGER.error("ERROR FETCHING USER UPDATES FROM dbServer = {}", otherDbServer);
+            e.printStackTrace();
+        }
     }
 }

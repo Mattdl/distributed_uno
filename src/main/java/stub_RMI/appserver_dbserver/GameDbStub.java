@@ -20,7 +20,7 @@ public interface GameDbStub extends Remote {
 
     List<Game> fetchQueueingGameUpdates(Server requestingDbServer) throws RemoteException;
 
-    List<Game> fetchQueueingMoveUpdates(Server requestingDbServer) throws RemoteException;
+    List<Move> fetchQueueingMoveUpdates(Server requestingDbServer) throws RemoteException;
 
     List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException;
 }

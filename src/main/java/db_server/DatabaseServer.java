@@ -25,6 +25,7 @@ public class DatabaseServer {
     static final Logger LOGGER = LoggerFactory.getLogger(DatabaseServer.class);
     private boolean instanceRunning;
 
+    private Server currentServer;
     private String dbIp;
     private int dbPort;
 
@@ -45,6 +46,7 @@ public class DatabaseServer {
     private TimerTask timerTask;
 
     public DatabaseServer(String dbIp, int dbPort, List<DbServer> otherDatabases) {
+        this.currentServer = new Server(dbIp, dbPort);
         this.dbIp = dbIp;
         this.dbPort = dbPort;
         this.otherDatabases = otherDatabases;
@@ -62,11 +64,14 @@ public class DatabaseServer {
 
             Registry registry = databaseInstances.get(this);
 
-            if (registry == null) {
+            boolean instanceAlreadyExists = registry != null;
+
+            if (!instanceAlreadyExists) {
                 registry = LocateRegistry.createRegistry(dbPort);
                 databaseInstances.put(this, registry);
             } else {
-                databaseInstances.replace(this, registry);
+                databaseInstances.remove(this, registry);
+                databaseInstances.put(this, registry);
             }
 
             userDbService = new UserDbService(otherDatabases, userDao, playerDao, this);
@@ -82,9 +87,56 @@ public class DatabaseServer {
 
 
         // Connect with other databases
-        registerAsClientWithOtherDatabases();
+        //registerAsClientWithOtherDatabases();
+        fetchUpdatesFromOtherDatabases();
 
         LOGGER.info("DATABASE '{}:{}' is READY", dbIp, dbPort);
+    }
+
+    /**
+     * Iterates over all other databases and fetches all pending updates.
+     */
+    private void fetchUpdatesFromOtherDatabases() {
+
+        LOGGER.info("CHECKING PEER DATABASE CONNECTIONS OF '{}:{}'", dbIp, dbPort);
+
+        for (DbServer otherDbServer : otherDatabases) {
+
+            tryConnectionWithDatabase(otherDbServer);
+
+        }
+
+        LOGGER.info("CHECKED PEER DATABASE CONNECTIONS OF '{}:{}'", dbIp, dbPort);
+    }
+
+    public void tryConnectionWithDatabase(DbServer otherDbServer) {
+        Registry myRegistry;
+        GameDbStub gameDbStub = null;
+        UserDbStub userDbStub = null;
+
+        try {
+            myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
+
+            if (myRegistry != null) {
+                gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
+                userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
+            }
+
+            // If new connection
+            otherDbServer.setGameDbStub(gameDbStub);
+            otherDbServer.setUserDbStub(userDbStub);
+
+            // Fetch updates
+            userDbService.fetchUpdatesFromOtherDatabase(otherDbServer, currentServer);
+            gameDbService.fetchUpdatesFromOtherDatabase(otherDbServer, currentServer);
+
+            LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+
+        } catch (Exception e) {
+            LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+            //e.printStackTrace();
+        }
     }
 
     private void initDb(String fileName) {
@@ -129,6 +181,8 @@ public class DatabaseServer {
      * @return
      */
     private synchronized void registerAsClientWithOtherDatabases() {
+
+        //TODO remove timer task
 
         Timer timer = new Timer();
 
@@ -190,12 +244,17 @@ public class DatabaseServer {
     public DbServer findDbServer(Server server) {
 
         for (DbServer dbServer : otherDatabases) {
-            if (server.equals(dbServer)) {
+            if (dbServer.getIp().equals(server.getIp()) && dbServer.getPort() == server.getPort()) {
                 return dbServer;
             }
         }
         return null;
     }
+
+    public static void restartDatabaseServer(DbServer targetDbServer) {
+
+    }
+
 
     /**
      * Shuts down the target database. This is a simulation, as unexporting RemoteObjects in RMI removes them from the whole runtime.
@@ -230,14 +289,14 @@ public class DatabaseServer {
                 Registry registry = pair.getValue();
 
                 try {
-                    registry.unbind("GameDbService");
-                    registry.unbind("UserDbService");
+                    //registry.unbind("GameDbService");
+                    //registry.unbind("UserDbService");
 
                     LOGGER.info("STOPPING PROCEDURE: Step2 = Unbinding services");
 
-                    UnicastRemoteObject.unexportObject(databaseServer.gameDbService, true);
-                    UnicastRemoteObject.unexportObject(databaseServer.userDbService, true);
-                    databaseServer.timerTask.cancel();
+                    //UnicastRemoteObject.unexportObject(databaseServer.gameDbService, false);
+                    //UnicastRemoteObject.unexportObject(databaseServer.userDbService, false);
+                    //databaseServer.timerTask.cancel();
 
                     LOGGER.info("STOPPING PROCEDURE: Step3 = Unexporting objects from registry");
 

@@ -87,7 +87,6 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                 }
             }.start();
         }
-
     }
 
     /**
@@ -112,8 +111,11 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
 
                 } catch (Exception e) {
-                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST GAME TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
                     //e.printStackTrace();
+
+                    otherDbServer.addGameToQueue(gameToPersist);
+                    LOGGER.error("DATABASE '{}' ADDED GAME TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
                 }
             }
         }
@@ -231,8 +233,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
                 } catch (Exception e) {
-                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST MOVE TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
                     //e.printStackTrace();
+
+                    move.setGame(new Game(gameName));
+                    otherDbServer.addMoveToQueue(move);
+
+                    LOGGER.error("DATABASE '{}' ADDED MOVE TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
                 }
             }
         }
@@ -326,6 +333,13 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         otherDatabasesLock.writeLock().unlock();
     }
 
+    /**
+     * Returns a list with mappings of cards to their images. Images are serializable in byte array format.
+     *
+     * @param isSpecialEdition
+     * @return
+     * @throws RemoteException
+     */
     public List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException {
 
         throwIfNotRunning();
@@ -365,28 +379,71 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     /**
-     * Method used to recreate games from a database
+     * The server-side method of the database to return all pending updates for the requesting db server.
      *
-     * @return List of games
+     * @param requestingDbServer
+     * @return
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Game> copyDatabase() throws RemoteException {
-
+    public List<Game> fetchQueueingGameUpdates(Server requestingDbServer) throws RemoteException {
         throwIfNotRunning();
 
-        List<Game> gameList = new ArrayList<>();
-        try {
-            List<Game> gameDbList = gameDao.queryForAll();
-            for (Game game : gameDbList) {
-                game = fetchGame(game.getGameId());
-                gameList.add(game);
-            }
-            return gameList;
+        LOGGER.info("DATABASE '{}' IS REQUESTING GAME UPDATES", requestingDbServer);
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        DbServer dbServer = databaseServer.findDbServer(requestingDbServer);
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING GAME UPDATES: found dbServer = {}", requestingDbServer, dbServer);
+
+        if (dbServer != null) {
+
+            List<Game> ret = new ArrayList<>(dbServer.getGameUpdateQueue());
+
+            // Clear the updates
+            dbServer.getGameUpdateQueue().clear();
+
+            LOGGER.info("DATABASE '{}' IS REQUESTING GAME UPDATES: cleared db update list size = {}", requestingDbServer, dbServer.getUserUpdateQueue().size());
+            LOGGER.info("DATABASE '{}'RETURNING GAME UPDATES: returning = {}", requestingDbServer, ret);
+
+            return ret;
         }
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: Database not found!", requestingDbServer);
+
+        return null;
+    }
+
+    /**
+     * The server-side method of the database to return all pending updates for the requesting db server.
+     *
+     * @param requestingDbServer
+     * @return
+     * @throws RemoteException
+     */
+    @Override
+    public List<Move> fetchQueueingMoveUpdates(Server requestingDbServer) throws RemoteException {
+        throwIfNotRunning();
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING MOVE UPDATES", requestingDbServer);
+
+        DbServer dbServer = databaseServer.findDbServer(requestingDbServer);
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING MOVE UPDATES: found dbServer = {}", requestingDbServer, dbServer);
+
+        if (dbServer != null) {
+
+            List<Move> ret = new ArrayList<>(dbServer.getMoveUpdateQueue());
+
+            // Clear the updates
+            dbServer.getMoveUpdateQueue().clear();
+
+            LOGGER.info("DATABASE '{}' IS REQUESTING MOVE UPDATES: cleared db update list size = {}", requestingDbServer, dbServer.getUserUpdateQueue().size());
+            LOGGER.info("DATABASE '{}' IS REQUESTING MOVE UPDATES: returning = {}", requestingDbServer, ret);
+
+            return ret;
+        }
+
+        LOGGER.info("DATABASE '{}' IS REQUESTING UPDATES: Database not found!", requestingDbServer);
 
         return null;
     }
@@ -400,6 +457,55 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         if (!databaseServer.isInstanceRunning()) {
             LOGGER.error("DATABASE '{}:{}' NOT RUNNING", this.databaseServer.getDbIp(), this.databaseServer.getDbPort());
             throw new RemoteException("INSTANCE IS NOT RUNNING : '" + databaseServer.getDbIp() + ":" + databaseServer.getDbPort() + "'");
+        }
+    }
+
+    /**
+     * First fetches al Game updates, then all Move updates from other databases.
+     * This is the client-side method of the database.
+     *
+     * @param otherDbServer
+     * @param currentServer
+     * @throws RemoteException
+     */
+    public void fetchUpdatesFromOtherDatabase(DbServer otherDbServer, Server currentServer) throws RemoteException {
+        fetchGameUpdates(otherDbServer, currentServer);
+        fetchMoveUpdates(otherDbServer, currentServer);
+    }
+
+    private void fetchGameUpdates(DbServer otherDbServer, Server currentServer) {
+        try {
+            LOGGER.info("FETCHING GAME UPDATES FROM dbServer = {}", otherDbServer);
+            List<Game> games = otherDbServer.getGameDbStub().fetchQueueingGameUpdates(currentServer);
+
+            LOGGER.info("FETCHED GAME UPDATES FROM dbServer = {}, RETURNED GAME UPDATES = {}", otherDbServer, games);
+
+            if (games != null) {
+                for (Game game : games) {
+                    persistGame(game, false);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("ERROR FETCHING GAME UPDATES FROM dbServer = {}", otherDbServer);
+            e.printStackTrace();
+        }
+    }
+
+    private void fetchMoveUpdates(DbServer otherDbServer, Server currentServer) {
+        try {
+            LOGGER.info("FETCHING MOVE UPDATES FROM dbServer = {}", otherDbServer);
+            List<Move> moves = otherDbServer.getGameDbStub().fetchQueueingMoveUpdates(currentServer);
+
+            LOGGER.info("FETCHED MOVE UPDATES FROM dbServer = {}, RETURNED MOVE UPDATES = {}", otherDbServer, moves);
+
+            if (moves != null) {
+                for (Move move : moves) {
+                    persistMove(move.getGame().getGameId(), move, false); //TODO check if game is passed also
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("ERROR FETCHING MOVE UPDATES FROM dbServer = {}", otherDbServer);
+            e.printStackTrace();
         }
     }
 }

@@ -59,6 +59,10 @@ public class Game extends Observable implements Serializable {
     public Game() {
     }
 
+    public Game(String gameId) {
+        this.gameId = gameId;
+    }
+
     /**
      * Used at ApplicationServer to instantiate a new game (with unique id)
      *

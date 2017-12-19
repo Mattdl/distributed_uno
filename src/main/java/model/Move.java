@@ -32,7 +32,6 @@ public class Move implements Serializable {
     @DatabaseField
     private boolean hasFetchedCards;
 
-
     // ORMLITE: Returning fields for foreign keys
     @DatabaseField(foreign = true, foreignAutoRefresh = true)
     private Game game;
