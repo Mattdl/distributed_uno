@@ -307,7 +307,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      * @param otherDatabases
      */
     public void updateOtherDatabases(List<DbServer> otherDatabases){
-        LOGGER.info("Updating Other Databases in 'updateOtherDatabases'");
+        LOGGER.info("DATABASE GAMESERVICE UPDATING CONNECTIONS");
 
         otherDatabasesLock.writeLock().lock();
         this.otherDatabases = otherDatabases;

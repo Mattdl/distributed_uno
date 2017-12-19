@@ -6,21 +6,17 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
 import com.j256.ormlite.table.TableUtils;
-import javafx.util.Pair;
 import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.appserver_dbserver.UserDbStub;
 
-import java.rmi.Naming;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.locks.ReadWriteLock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DatabaseServer {
 
@@ -142,54 +138,59 @@ public class DatabaseServer {
             public void run() {
                 // Your database code here
 
-                LOGGER.info("Entering registerAsClientWithOtherDatabases");
+                LOGGER.info("CHECKING PEER DATABASE CONNECTIONS OF '{}:{}'", dbIp, dbPort);
 
                 boolean updated = false;
 
                 for (DbServer otherDbServer : otherDatabases) {
 
-                    //if (!otherDbServer.isConnected()) {
+                    if (!otherDbServer.isConnected()) {
 
-                    Registry myRegistry;
-                    GameDbStub gameDbStub = null;
-                    UserDbStub userDbStub = null;
+                        Registry myRegistry;
+                        GameDbStub gameDbStub = null;
+                        UserDbStub userDbStub = null;
 
-                    try {
-                        myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
+                        try {
+                            myRegistry = LocateRegistry.getRegistry(otherDbServer.getIp(), otherDbServer.getPort());
 
-                        if (myRegistry != null) {
-                            gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
-                            userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
+                            if (myRegistry != null) {
+                                gameDbStub = (GameDbStub) myRegistry.lookup("GameDbService");
+                                userDbStub = (UserDbStub) myRegistry.lookup("UserDbService");
+                            }
+
+                            // If new connection
+                            otherDbServer.setGameDbStub(gameDbStub);
+                            otherDbServer.setUserDbStub(userDbStub);
+
+                            updated = true;
+
+                            LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+
+                        } catch (Exception e) {
+                            LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
+
+                            //e.printStackTrace();
                         }
-
-                        // If new connection
-                        otherDbServer.setGameDbStub(gameDbStub);
-                        otherDbServer.setUserDbStub(userDbStub);
-
-                        updated = true;
-
-                        LOGGER.info("DATABASE '{}:{}' CONNECTED TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
-
-
-                    } catch (Exception e) {
-                        LOGGER.info("DATABASE '{}:{}' FAILED CONNECTING TO OTHER DATABASE, other database server = '{}:{}'", dbIp, dbPort, otherDbServer.getIp(), otherDbServer.getPort());
-
-                        //e.printStackTrace();
                     }
-                    //}
-                    LOGGER.info("Leaving registerAsClientWithOtherDatabases");
                 }
 
                 if (updated) {
-                    LOGGER.info("Other Databases Connections were changed.");
                     gameDbService.updateOtherDatabases(otherDatabases);
                 }
+
+                LOGGER.info("CHECKED PEER DATABASE CONNECTIONS OF '{}:{}', update = {}", dbIp, dbPort, updated);
             }
         };
 
         timer.scheduleAtFixedRate(timerTask, 2 * 1000, connRefreshTime);
     }
 
+    /**
+     * Shuts down the target database.
+     *
+     * @param targetDbServer
+     */
     public static void stopDatabaseServer(DbServer targetDbServer) {
         LOGGER.info("STOPPING DATABASE, targetDbServer = {} ", targetDbServer);
 
@@ -204,7 +205,7 @@ public class DatabaseServer {
             pair = it.next();
             DatabaseServer databaseServer = pair.getKey();
 
-            LOGGER.info("In the while, databaseServer = {} ", databaseServer);
+            //LOGGER.info("In the while, databaseServer = {} ", databaseServer);
 
 
             if (databaseServer.instanceRunning
@@ -212,32 +213,27 @@ public class DatabaseServer {
                     && databaseServer.dbPort == targetDbServer.getPort()) {
                 found = true;
 
-                LOGGER.info("In the while: 1");
-
+                LOGGER.info("STOPPING PROCEDURE: Step1 = found instance");
 
                 Registry registry = pair.getValue();
-
-                LOGGER.info("In the while: 2");
-
 
                 try {
                     registry.unbind("GameDbService");
                     registry.unbind("UserDbService");
 
-                    LOGGER.info("In the while: 3");
+                    LOGGER.info("STOPPING PROCEDURE: Step2 = Unbinding services");
 
 
                     UnicastRemoteObject.unexportObject(databaseServer.gameDbService, true);
                     UnicastRemoteObject.unexportObject(databaseServer.userDbService, true);
                     databaseServer.timerTask.cancel();
 
-                    LOGGER.info("In the while: 4");
-
+                    LOGGER.info("STOPPING PROCEDURE: Step3 = Unexporting objects from registry");
 
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                LOGGER.info("Leaving the while: 5");
+                LOGGER.info("STOPPING PROCEDURE: FINISHED");
 
 
                 databaseServer.instanceRunning = false;
@@ -246,8 +242,6 @@ public class DatabaseServer {
 
             }
         }
-
-        //databaseInstances.remove(pair);
     }
 
     @Override
@@ -263,6 +257,15 @@ public class DatabaseServer {
     public int hashCode() {
 
         return Objects.hash(dbIp, dbPort);
+    }
+
+    @Override
+    public String toString() {
+        return "DatabaseServer{" +
+                "instanceRunning=" + instanceRunning +
+                ", dbIp='" + dbIp + '\'' +
+                ", dbPort=" + dbPort +
+                '}';
     }
 
     public static void main(String[] args) {
@@ -289,8 +292,6 @@ public class DatabaseServer {
         }
 
         DatabaseServer databaseServer = new DatabaseServer(dbIp, dbPort, otherDatabases);
-        //databaseInstances.add(databaseServer);
-
         databaseServer.startServer();
     }
 }
