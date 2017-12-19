@@ -53,13 +53,17 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                 if (!game.isInitialyPersisted()) {
                     LOGGER.info("Persisting Game Object to Database!");
 
-                    try {
-                        gameDbService.persistGame(game, true);
-                    } catch (Exception e) {
-                        LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-                        AppServer.retrieveNewDatabaseInfo(appServer);
-                        AppServer.registerAsClientWithDatabase(appServer);
-                        return false;
+                    boolean persistedToDb = false;
+
+                    while (!persistedToDb) {
+                        try {
+                            gameDbService.persistGame(game, true);
+                            persistedToDb = true;
+                        } catch (Exception e) {
+                            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                            AppServer.retrieveNewDatabaseInfo(appServer);
+                            AppServer.registerAsClientWithDatabase(appServer);
+                        }
                     }
                     game.setInitialyPersisted(true);
 

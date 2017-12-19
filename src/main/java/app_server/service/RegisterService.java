@@ -40,14 +40,18 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
 
         User user = new User(username, hashRet, saltRet);
 
-        try {
+        boolean persistedToDb = false;
 
-            successful = userDbService.persistUser(user, true);
+        while (!persistedToDb) {
+            try {
 
-        } catch (Exception e) {
-            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-            AppServer.retrieveNewDatabaseInfo(appServer);
-            AppServer.registerAsClientWithDatabase(appServer);
+                successful = userDbService.persistUser(user, true);
+                persistedToDb = true;
+            } catch (RemoteException e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+            }
         }
 
         return successful;

@@ -42,12 +42,17 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
         // fetch login with database
         User dbUser = null;
-        try {
-            dbUser = userDbService.fetchUser(username);
-        } catch (Exception e) {
-            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-            AppServer.retrieveNewDatabaseInfo(appServer);
-            AppServer.registerAsClientWithDatabase(appServer);
+        boolean persistedToDb = false;
+
+        while (!persistedToDb) {
+            try {
+                dbUser = userDbService.fetchUser(username);
+                persistedToDb = true;
+            } catch (Exception e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+            }
         }
 
         LOGGER.info("USER IN DATABASE FOUND user = {}", dbUser);

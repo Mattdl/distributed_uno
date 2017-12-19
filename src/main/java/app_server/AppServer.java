@@ -138,7 +138,7 @@ public class AppServer {
      *
      * @return
      */
-    public static void registerAsClientWithDatabase(AppServer appServer) {
+    public static boolean registerAsClientWithDatabase(AppServer appServer) {
 
         LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}", appServer.dbIp, appServer.dbPort);
 
@@ -167,6 +167,8 @@ public class AppServer {
         }
 
         LOGGER.info("Leaving registerAsClientWithDatabase");
+
+        return true;
     }
 
     public static void main(String[] args) {

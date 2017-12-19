@@ -296,16 +296,19 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
             LOGGER.info("APPSERVER trying to persist MOVE for gameId = {},move={}", game.getGameId(), move);
 
+            boolean persistedToDb = false;
 
-            try {
-                gameDbService.persistMove(game.getGameId(), move, true);
-                LOGGER.info("MOVE persisted to database for game = {}", game);
+            while (!persistedToDb) {
+                try {
+                    gameDbService.persistMove(game.getGameId(), move, true);
+                    LOGGER.info("MOVE persisted to database for game = {}", game);
+                    persistedToDb = true;
 
-            } catch (Exception e) {
-                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-                AppServer.retrieveNewDatabaseInfo(appServer);
-                AppServer.registerAsClientWithDatabase(appServer);
-                return null;
+                } catch (Exception e) {
+                    LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                    AppServer.retrieveNewDatabaseInfo(appServer);
+                    AppServer.registerAsClientWithDatabase(appServer);
+                }
             }
 
             //gameDbService.fetchGame(game.getGameId());
@@ -356,13 +359,18 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         winner.addScore(score);
 
+        boolean persistedToDb = false;
+
         //Update userscore in database
-        try {
-            gameDbService.updateWinner(winner);
-        } catch (Exception e) {
-            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-            AppServer.retrieveNewDatabaseInfo(appServer);
-            AppServer.registerAsClientWithDatabase(appServer);
+        while (!persistedToDb) {
+            try {
+                gameDbService.updateWinner(winner);
+                persistedToDb = true;
+            } catch (Exception e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+            }
         }
     }
 
@@ -393,13 +401,18 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     public List<Card> fetchCardImageMappings() throws RemoteException {
         LOGGER.info("APPSERVER REQUESTING IMAGES");
         List<Card> ret = null;
+        boolean persistedToDb = false;
 
-        try {
-            ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
-        } catch (Exception e) {
-            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-            AppServer.retrieveNewDatabaseInfo(appServer);
-            AppServer.registerAsClientWithDatabase(appServer);
+        while (!persistedToDb) {
+
+            try {
+                ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
+                persistedToDb = true;
+            } catch (Exception e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+            }
         }
 
         LOGGER.info("APPSERVER RETURNING IMAGES = {}", ret);

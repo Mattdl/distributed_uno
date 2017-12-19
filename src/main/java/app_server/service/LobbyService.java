@@ -20,7 +20,6 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LobbyService.class.getName());
 
-
     private Lobby lobby;
     private GameDbStub gameDbService;
 
@@ -167,13 +166,17 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         for (Player player : game.getPlayerList()) {
 
             int highscore = -1;
-            try {
-                highscore = gameDbService.fetchPlayerScore(player.getName());
-            } catch (Exception e) {
-                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
-                AppServer.retrieveNewDatabaseInfo(appServer);
-                AppServer.registerAsClientWithDatabase(appServer);
-                return null;
+            boolean persistedToDb = false;
+
+            while (!persistedToDb) {
+                try {
+                    highscore = gameDbService.fetchPlayerScore(player.getName());
+                    persistedToDb = true;
+                } catch (Exception e) {
+                    LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                    AppServer.retrieveNewDatabaseInfo(appServer);
+                    AppServer.registerAsClientWithDatabase(appServer);
+                }
             }
 
             player.setHighscore(highscore);
