@@ -19,14 +19,11 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
     final Logger LOGGER = LoggerFactory.getLogger(GameLobbyService.class);
 
     private Lobby lobby;
-    private GameDbStub gameDbService;
-
     private AppServer appServer;
 
 
-    public GameLobbyService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
+    public GameLobbyService(Lobby lobby, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
-        this.gameDbService = gameDbService;
         this.appServer = appServer;
     }
 
@@ -57,7 +54,7 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
 
                     while (!persistedToDb) {
                         try {
-                            gameDbService.persistGame(game, true);
+                            appServer.getGameDbService().persistGame(game, true);
                             persistedToDb = true;
                         } catch (Exception e) {
                             LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");

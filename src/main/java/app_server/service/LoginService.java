@@ -21,12 +21,9 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
     private final long TTL = 24 * 60 * 60 * 1000; //24h Time to live
 
-    private UserDbStub userDbService;
-
     private AppServer appServer;
 
-    public LoginService(UserDbStub userDbService, AppServer appServer) throws RemoteException {
-        this.userDbService = userDbService;
+    public LoginService(AppServer appServer) throws RemoteException {
         this.appServer = appServer;
     }
 
@@ -46,7 +43,7 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
         while (!persistedToDb) {
             try {
-                dbUser = userDbService.fetchUser(username);
+                dbUser = appServer.getUserDbService().fetchUser(username);
                 persistedToDb = true;
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");

@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import stub_RMI.appserver_dbserver.UserDbStub;
 
+import javax.xml.crypto.Data;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.SQLException;
@@ -21,24 +22,27 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     final Logger LOGGER = LoggerFactory.getLogger(UserDbService.class);
 
-
     private List<DbServer> otherDatabases;
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
     private Dao<User, String> userDao;
     private Dao<Player, String> playerDao;
     private Lock lock = new ReentrantLock();
 
+    private DatabaseServer databaseServer;
 
     public UserDbService() throws RemoteException {
     }
 
-    public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao, Dao<Player, String> playerDao) throws RemoteException {
+    public UserDbService(List<DbServer> otherDatabases, Dao<User, String> userDao, Dao<Player, String> playerDao, DatabaseServer databaseServer) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.userDao = userDao;
         this.playerDao = playerDao;
+        this.databaseServer = databaseServer;
     }
 
     public synchronized boolean persistUser(User userToPersist, boolean propagate) throws RemoteException {
+
+        throwIfNotRunning();
 
 
         LOGGER.info("Persisting User = {}", userToPersist);
@@ -115,8 +119,8 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
                     LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getPlayer().getName(), otherDbServer);
 
                 } catch (Exception e) {
-                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
-                    e.printStackTrace();
+                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                    //e.printStackTrace();
                 }
             }
         }
@@ -134,6 +138,9 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
      */
     @Override
     public User fetchUser(String username) throws RemoteException {
+
+        throwIfNotRunning();
+
         List<User> userList = new LinkedList<>();
 
         try {
@@ -158,11 +165,15 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     /**
      * Method used to recreate games from a database
+     *
      * @return List of games
      * @throws RemoteException
      */
     @Override
-    public synchronized List<User> copyDatabase() throws RemoteException{
+    public synchronized List<User> copyDatabase() throws RemoteException {
+
+        throwIfNotRunning();
+
         try {
             List<User> userList = userDao.queryForAll();
 
@@ -176,4 +187,38 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
     }
 
+    /**
+     * Update the list of other databases
+     *
+     * @param otherDatabases
+     */
+    public void updateOtherDatabases(List<DbServer> otherDatabases) {
+        LOGGER.info("DATABASE GAMESERVICE UPDATING CONNECTIONS");
+
+        otherDatabasesLock.writeLock().lock();
+        this.otherDatabases = otherDatabases;
+        otherDatabasesLock.writeLock().unlock();
+    }
+
+    /**
+     * Throws RemoteException if the instance is not running
+     *
+     * @throws RemoteException
+     */
+    private void throwIfNotRunning() throws RemoteException {
+        if (!databaseServer.isInstanceRunning()) {
+            LOGGER.error("DATABASE '{}:{}' NOT RUNNING", this.databaseServer.getDbIp(), this.databaseServer.getDbPort());
+            throw new RemoteException("INSTANCE IS NOT RUNNING : '" + databaseServer.getDbIp() + ":" + databaseServer.getDbPort() + "'");
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "UserDbService{" +
+                "otherDatabases=" + otherDatabases +
+                ", userDao=" + userDao +
+                ", playerDao=" + playerDao +
+                ", databaseServer=" + databaseServer +
+                '}';
+    }
 }

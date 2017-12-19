@@ -23,16 +23,12 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
     private Lobby lobby;
 
-    //RMI
-    private GameDbStub gameDbService;
-
     private AppServer appServer;
 
 
-    public GameService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
+    public GameService(Lobby lobby, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
-        this.gameDbService = gameDbService;
         this.appServer = appServer;
     }
 
@@ -300,7 +296,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
             while (!persistedToDb) {
                 try {
-                    gameDbService.persistMove(game.getGameId(), move, true);
+                    appServer.getGameDbService().persistMove(game.getGameId(), move, true);
                     LOGGER.info("MOVE persisted to database for game = {}", game);
                     persistedToDb = true;
 
@@ -364,7 +360,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         //Update userscore in database
         while (!persistedToDb) {
             try {
-                gameDbService.updateWinner(winner);
+                appServer.getGameDbService().updateWinner(winner);
                 persistedToDb = true;
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
@@ -406,7 +402,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         while (!persistedToDb) {
 
             try {
-                ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
+                ret = appServer.getGameDbService().fetchCardImageMappings(Dispatcher.isHolliday);
                 persistedToDb = true;
             } catch (Exception e) {
                 LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");

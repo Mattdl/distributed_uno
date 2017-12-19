@@ -69,8 +69,8 @@ public class DatabaseServer {
                 databaseInstances.replace(this, registry);
             }
 
-            userDbService = new UserDbService(otherDatabases, userDao, playerDao);
-            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao);
+            userDbService = new UserDbService(otherDatabases, userDao, playerDao, this);
+            gameDbService = new GameDbService(otherDatabases, gameDao, moveDao, playerDao, cardDao, this);
 
             //Bind RMI implementations to service names
             registry.rebind("UserDbService", userDbService);
@@ -177,6 +177,7 @@ public class DatabaseServer {
 
                 if (updated) {
                     gameDbService.updateOtherDatabases(otherDatabases);
+                    userDbService.updateOtherDatabases(otherDatabases);
                 }
 
                 LOGGER.info("CHECKED PEER DATABASE CONNECTIONS OF '{}:{}', update = {}", dbIp, dbPort, updated);
@@ -187,7 +188,7 @@ public class DatabaseServer {
     }
 
     /**
-     * Shuts down the target database.
+     * Shuts down the target database. This is a simulation, as unexporting RemoteObjects in RMI removes them from the whole runtime.
      *
      * @param targetDbServer
      */
@@ -206,6 +207,7 @@ public class DatabaseServer {
             DatabaseServer databaseServer = pair.getKey();
 
             //LOGGER.info("In the while, databaseServer = {} ", databaseServer);
+            LOGGER.info("STOPPING PROCEDURE: Step0 = iterating: instance = {}", databaseServer);
 
 
             if (databaseServer.instanceRunning
@@ -222,7 +224,6 @@ public class DatabaseServer {
                     registry.unbind("UserDbService");
 
                     LOGGER.info("STOPPING PROCEDURE: Step2 = Unbinding services");
-
 
                     UnicastRemoteObject.unexportObject(databaseServer.gameDbService, true);
                     UnicastRemoteObject.unexportObject(databaseServer.userDbService, true);
@@ -242,6 +243,18 @@ public class DatabaseServer {
 
             }
         }
+    }
+
+    public boolean isInstanceRunning() {
+        return instanceRunning;
+    }
+
+    public String getDbIp() {
+        return dbIp;
+    }
+
+    public int getDbPort() {
+        return dbPort;
     }
 
     @Override

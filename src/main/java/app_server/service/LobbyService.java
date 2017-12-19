@@ -21,14 +21,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     private static final Logger LOGGER = LoggerFactory.getLogger(LobbyService.class.getName());
 
     private Lobby lobby;
-    private GameDbStub gameDbService;
-
     private AppServer appServer;
 
 
-    public LobbyService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
+    public LobbyService(Lobby lobby, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
-        this.gameDbService = gameDbService;
         this.appServer = appServer;
     }
 
@@ -170,10 +167,12 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
             while (!persistedToDb) {
                 try {
-                    highscore = gameDbService.fetchPlayerScore(player.getName());
+                    highscore = appServer.getGameDbService().fetchPlayerScore(player.getName());
                     persistedToDb = true;
                 } catch (Exception e) {
                     LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                    e.printStackTrace();
+
                     AppServer.retrieveNewDatabaseInfo(appServer);
                     AppServer.registerAsClientWithDatabase(appServer);
                 }

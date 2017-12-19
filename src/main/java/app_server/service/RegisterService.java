@@ -16,12 +16,9 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
 
     private final Logger LOGGER = LoggerFactory.getLogger(RegisterService.class.getName());
 
-    private UserDbStub userDbService;
-
     private AppServer appServer;
 
-    public RegisterService(UserDbStub userDbService, AppServer appServer) throws RemoteException {
-        this.userDbService = userDbService;
+    public RegisterService(AppServer appServer) throws RemoteException {
         this.appServer = appServer;
     }
 
@@ -45,14 +42,23 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
         while (!persistedToDb) {
             try {
 
-                successful = userDbService.persistUser(user, true);
+                successful = appServer.getUserDbService().persistUser(user, true);
                 persistedToDb = true;
+                LOGGER.error("APPSERVER SUCCESSFUL PERSIST");
+
             } catch (RemoteException e) {
-                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION, Database={}", appServer.getDatabaseToString());
+                LOGGER.error("APPSERVER CONNECTION ERROR, msg = {}", e.getMessage());
+                //e.printStackTrace();
+
                 AppServer.retrieveNewDatabaseInfo(appServer);
                 AppServer.registerAsClientWithDatabase(appServer);
+                LOGGER.error("APPSERVER RETRYING PERSIST");
             }
         }
+
+        LOGGER.error("SUCCESSFUL CREATION OF USER!!!");
+
 
         return successful;
     }

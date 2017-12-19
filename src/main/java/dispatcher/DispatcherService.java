@@ -72,7 +72,10 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
 
             while (iterations < Dispatcher.dbServers.size() - 1 && dbServer == null) {
 
-                DbServer possibleDbServer = Dispatcher.dbServers.get(appServer.getNewDatabaseIndex());
+                int newIndex = (appServer.getNewDatabaseIndex() + 1) % Dispatcher.dbServers.size();
+                appServer.setNewDatabaseIndex(newIndex);
+
+                DbServer possibleDbServer = Dispatcher.dbServers.get(newIndex);
 
                 /*LOGGER.debug("retrieveActiveDatabaseInfo, iteration = {}, tmp db server = {}, assigned db server = {}",
                         assignedDbServer,tmpServer,assignedDbServer);*/
@@ -94,9 +97,6 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
                     // The return value
                     dbServer = possibleDbServer;
                 }
-
-                int newIndex = appServer.getNewDatabaseIndex() + 1 % Dispatcher.dbServers.size();
-                appServer.setNewDatabaseIndex(newIndex);
                 iterations++;
             }
 
@@ -104,6 +104,7 @@ public class DispatcherService extends UnicastRemoteObject implements Dispatcher
                 LOGGER.error("NO OTHER DATABASE FOUND FOR THE APPSERVER!");
             }
 
+            LOGGER.info("DISPATCHER RETURNING NEW DATABASE INFO: dbServer = {}", dbServer);
             LOGGER.info("DISPATCHER STATUS: dbServers = {}, appServers = {}", dbServers, appServers);
 
             return dbServer;

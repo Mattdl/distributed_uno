@@ -28,16 +28,19 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     private List<DbServer> otherDatabases;
     private ReadWriteLock otherDatabasesLock = new ReentrantReadWriteLock();
 
+    private DatabaseServer databaseServer;
+
 
     public GameDbService() throws RemoteException {
     }
 
-    public GameDbService(List<DbServer> otherDatabases, Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao) throws RemoteException {
+    public GameDbService(List<DbServer> otherDatabases, Dao<Game, String> gameDao, Dao<Move, String> moveDao, Dao<Player, String> playerDao, Dao<Card, String> cardDao, DatabaseServer databaseServer) throws RemoteException {
         this.otherDatabases = otherDatabases;
         this.gameDao = gameDao;
         this.moveDao = moveDao;
         this.playerDao = playerDao;
         this.cardDao = cardDao;
+        this.databaseServer = databaseServer;
     }
 
     /**
@@ -51,6 +54,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      */
     @Override
     public synchronized boolean persistGame(Game gameToPersist, boolean propagate) throws RemoteException {
+
+        throwIfNotRunning();
 
         LOGGER.info("Persisting Game = {}", gameToPersist);
 
@@ -107,8 +112,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     LOGGER.info("GAME '{}' was persisted to other database = {}", gameToPersist.getGameId(), otherDbServer);
 
                 } catch (Exception e) {
-                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
-                    e.printStackTrace();
+                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                    //e.printStackTrace();
                 }
             }
         }
@@ -171,6 +176,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     //TODO test if works
     @Override
     public synchronized boolean persistMove(String gameId, Move move, boolean propagate) throws RemoteException {
+
+        throwIfNotRunning();
+
         LOGGER.info("Persisting 1 move = {}, for game = {}", move, gameId);
 
         try {
@@ -223,8 +231,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
                     LOGGER.info("MOVE for GAME '{}' was persisted to other database = {}", gameName, otherDbServer);
 
                 } catch (Exception e) {
-                    LOGGER.error("COULD NOT PERSIST TO OTHER DATABASE : {}");
-                    e.printStackTrace();
+                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                    //e.printStackTrace();
                 }
             }
         }
@@ -242,6 +250,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      */
     @Override
     public synchronized Game fetchGame(String gameName) throws RemoteException {
+
+        throwIfNotRunning();
 
         LOGGER.info("Fetching Game with name = '{}'", gameName);
 
@@ -288,6 +298,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     @Override
     public synchronized void updateWinner(Player player) throws RemoteException {
 
+        throwIfNotRunning();
+
         LOGGER.info("Fetching Player in database");
 
         try {
@@ -306,7 +318,7 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      *
      * @param otherDatabases
      */
-    public void updateOtherDatabases(List<DbServer> otherDatabases){
+    public void updateOtherDatabases(List<DbServer> otherDatabases) {
         LOGGER.info("DATABASE GAMESERVICE UPDATING CONNECTIONS");
 
         otherDatabasesLock.writeLock().lock();
@@ -315,6 +327,9 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
     }
 
     public List<Card> fetchCardImageMappings(boolean isSpecialEdition) throws RemoteException {
+
+        throwIfNotRunning();
+
         LOGGER.info("DATABASE FETCHING CARDS FOR APPSERVER");
         return new DeckBuilder().getAllCardImageMappings(isSpecialEdition);
     }
@@ -329,6 +344,8 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
      */
     @Override
     public synchronized int fetchPlayerScore(String playerName) throws RemoteException {
+
+        throwIfNotRunning();
 
         try {
 
@@ -349,15 +366,19 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
 
     /**
      * Method used to recreate games from a database
+     *
      * @return List of games
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Game> copyDatabase() throws RemoteException{
+    public synchronized List<Game> copyDatabase() throws RemoteException {
+
+        throwIfNotRunning();
+
         List<Game> gameList = new ArrayList<>();
         try {
             List<Game> gameDbList = gameDao.queryForAll();
-            for(Game game : gameDbList){
+            for (Game game : gameDbList) {
                 game = fetchGame(game.getGameId());
                 gameList.add(game);
             }
@@ -368,6 +389,17 @@ public class GameDbService extends UnicastRemoteObject implements GameDbStub {
         }
 
         return null;
+    }
 
+    /**
+     * Throws RemoteException if the instance is not running
+     *
+     * @throws RemoteException
+     */
+    private void throwIfNotRunning() throws RemoteException {
+        if (!databaseServer.isInstanceRunning()) {
+            LOGGER.error("DATABASE '{}:{}' NOT RUNNING", this.databaseServer.getDbIp(), this.databaseServer.getDbPort());
+            throw new RemoteException("INSTANCE IS NOT RUNNING : '" + databaseServer.getDbIp() + ":" + databaseServer.getDbPort() + "'");
+        }
     }
 }

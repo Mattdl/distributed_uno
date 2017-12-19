@@ -14,6 +14,7 @@ import stub_RMI.appserver_dbserver.UserDbStub;
 import stub_RMI.client_dispatcher.DispatcherStub;
 
 import java.rmi.ConnectException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Base64;
@@ -67,15 +68,15 @@ public class AppServer {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Bind RMI implementations to service names
-            registry.rebind("LoginService", new LoginService(userDbService, this));
+            registry.rebind("LoginService", new LoginService(this));
 
-            registry.rebind("GameService", new GameService(lobby, gameDbService, this));
+            registry.rebind("GameService", new GameService(lobby, this));
 
-            registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService, this));
+            registry.rebind("GameLobbyService", new GameLobbyService(lobby, this));
 
-            registry.rebind("LobbyService", new LobbyService(lobby, gameDbService, this));
+            registry.rebind("LobbyService", new LobbyService(lobby, this));
 
-            registry.rebind("RegisterService", new RegisterService(userDbService, this));
+            registry.rebind("RegisterService", new RegisterService(this));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,7 +107,7 @@ public class AppServer {
     /**
      * RMI call to Dispatcher to retrieve new database info
      */
-    public static void retrieveNewDatabaseInfo(AppServer appServer) {
+    public synchronized static void retrieveNewDatabaseInfo(AppServer appServer) {
         LOGGER.info("APPSERVER ASKING NEW DATABASE INFO, current database server = {}:{}", appServer.dbIp, appServer.dbPort);
 
         try {
@@ -138,7 +139,7 @@ public class AppServer {
      *
      * @return
      */
-    public static boolean registerAsClientWithDatabase(AppServer appServer) {
+    public synchronized static void registerAsClientWithDatabase(AppServer appServer) {
 
         LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}", appServer.dbIp, appServer.dbPort);
 
@@ -148,27 +149,53 @@ public class AppServer {
             try {
                 myRegistry = LocateRegistry.getRegistry(appServer.dbIp, appServer.dbPort);
 
+                LOGGER.info("APPSERVER my registry = {}, onIP = {}, onPort = {}", myRegistry, appServer.dbIp, appServer.dbPort);
+
+                LOGGER.info("APPSERVER before = {}", appServer.gameDbService);
+
                 if (myRegistry != null) {
                     appServer.gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
                     appServer.userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
                 }
+                LOGGER.info("APPSERVER after = {}", appServer.gameDbService);
+
 
                 LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", appServer.dbIp, appServer.dbPort);
 
 
-            } catch (Exception e) {
+            } catch (RemoteException e) {
                 LOGGER.info("APPSERVER FAILED CONNECTING TO DATABASE, database server = {}:{}", appServer.dbIp, appServer.dbPort);
-
-                //e.printStackTrace();
+                e.printStackTrace();
 
                 //if no connetion, ask dispatcher for new dbIP+port
                 retrieveNewDatabaseInfo(appServer);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 
         LOGGER.info("Leaving registerAsClientWithDatabase");
+    }
 
-        return true;
+    public GameDbStub getGameDbService() {
+        return gameDbService;
+    }
+
+    public void setGameDbService(GameDbStub gameDbService) {
+        this.gameDbService = gameDbService;
+    }
+
+    public UserDbStub getUserDbService() {
+        return userDbService;
+    }
+
+    public void setUserDbService(UserDbStub userDbService) {
+        this.userDbService = userDbService;
+    }
+
+    public String getDatabaseToString() {
+        return "'" + dbIp + ":" + dbPort + "'";
     }
 
     public static void main(String[] args) {
