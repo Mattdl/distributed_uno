@@ -1,0 +1,17 @@
+app_server
+app_server.service
+client
+client.controller
+client.service
+client.service.game
+client.service.game_lobby
+client.service.lobby
+client.service.login
+db_server
+dispatcher
+game_logic
+model
+security
+stub_RMI.appserver_dbserver
+stub_RMI.client_appserver
+stub_RMI.client_dispatcher
