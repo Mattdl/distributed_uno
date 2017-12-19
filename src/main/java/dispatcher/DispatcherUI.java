@@ -1,5 +1,6 @@
 package dispatcher;
 
+import app_server.AppServer;
 import db_server.DatabaseServer;
 import model.DbServer;
 
@@ -27,7 +28,7 @@ public class DispatcherUI extends Dispatcher {
         //Create and set up the window.
         frame = new JFrame("DISPATCHER");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 200);
+        frame.setSize(400, 300);
         frame.setLocationRelativeTo(null);
 
         Container pane = frame.getContentPane();
@@ -37,15 +38,18 @@ public class DispatcherUI extends Dispatcher {
 
         JPanel panelNorth = new JPanel();
         JPanel panelCenter = new JPanel();
+        JPanel panelBottom = new JPanel();
 
 
-        //Add the ubiquitous "Hello World" label.
+        // NORTH
         JLabel label = new JLabel("Control panel for the dispatcher.");
         panelNorth.add(label);
         frame.add(panelNorth, BorderLayout.NORTH);
 
         LOGGER.info("DISPLAYING BUTTONS FOR dbservers = {}", dbServers);
 
+        // CENTER
+        panelCenter.add(new JLabel("Database Controls"));
         for (DbServer dbServer : dbServers) {
             JButton button = new JButton(dbServer.toDisplayString());
             button.addActionListener((e) -> {
@@ -60,6 +64,17 @@ public class DispatcherUI extends Dispatcher {
             panelCenter.add(button);
         }
         frame.add(panelCenter, BorderLayout.CENTER);
+
+        // BOTTOM
+        String base = "IS HOLIDAY = ";
+        JButton button = new JButton(base + Dispatcher.isHolliday);
+        button.addActionListener((e) -> {
+            Dispatcher.isHolliday = !Dispatcher.isHolliday;
+            button.setText(base + Dispatcher.isHolliday);
+        });
+        panelBottom.add(new JLabel("AppServer controls"));
+        panelBottom.add(button);
+        frame.add(panelBottom, BorderLayout.SOUTH);
 
         //Display the window.
         frame.pack();

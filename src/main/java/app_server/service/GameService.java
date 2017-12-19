@@ -1,5 +1,6 @@
 package app_server.service;
 
+import dispatcher.Dispatcher;
 import game_logic.GameLogic;
 import model.*;
 import org.slf4j.Logger;
@@ -14,8 +15,6 @@ import java.util.List;
 import java.util.Random;
 
 public class GameService extends UnicastRemoteObject implements GameStub {
-
-    private final boolean isHolliday = false;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GameService.class.getName());
 
@@ -373,7 +372,7 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     public List<Card> fetchCardImageMappings() throws RemoteException {
         LOGGER.info("APPSERVER REQUESTING IMAGES");
 
-        List<Card> ret = gameDbService.fetchCardImageMappings(isHolliday);
+        List<Card> ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
 
         LOGGER.info("APPSERVER RETURNING IMAGES = {}", ret);
         return ret;

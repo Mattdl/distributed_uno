@@ -37,7 +37,9 @@ public class Dispatcher {
     static List<DbServer> dbServers;
 
     //TODO SET THESE PARAMS
-    private boolean testFailureDatabase = false;
+    protected boolean testFailureDatabase = false;
+    public static boolean isHolliday = false;
+
 
     protected void init() {
         LOGGER.info("DISPATCHER STARTING setup");
