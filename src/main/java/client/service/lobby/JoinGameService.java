@@ -26,7 +26,7 @@ public class JoinGameService extends Service<String> {
 
                 LobbyStub lobbyService = (LobbyStub) myRegistry.lookup("LobbyService");
 
-                String ret = lobbyService.joinGame(Main.currentPlayer, gameName);
+                String ret = lobbyService.joinGame(Main.currentPlayer, gameName, Main.token);
 
                 //TODO LOGGER
 

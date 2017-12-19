@@ -3,9 +3,11 @@ package app_server.service;
 import app_server.AppServer;
 import dispatcher.Dispatcher;
 import game_logic.GameLogic;
+import jdk.nashorn.internal.parser.Token;
 import model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import security.JWTUtils;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.GameStub;
 
@@ -42,7 +44,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Card> initCards(String gameName, Player player) throws RemoteException {
+    public synchronized List<Card> initCards(String gameName, Player player, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         LOGGER.info("In InitCard method");
 
         Game game = lobby.findGame(gameName);
@@ -91,7 +96,9 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @return
      */
     @Override
-    public synchronized Move getCurrentPlayerAndLastCard(String gameName, boolean init) throws RemoteException {
+    public synchronized Move getCurrentPlayerAndLastCard(String gameName, boolean init, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
         LOGGER.info("In getCurrentPlayerAndLastCard method");
 
         try {
@@ -136,7 +143,9 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Player> getPlayerUpdates(String gameName, Player client, boolean init) throws RemoteException {
+    public synchronized List<Player> getPlayerUpdates(String gameName, Player client, boolean init, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
 
         LOGGER.info("Entering getPlayerUpdates");
 
@@ -173,7 +182,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized Card playMove(String gameName, Move move) throws RemoteException {
+    public synchronized Card playMove(String gameName, Move move, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         Game game = lobby.findGame(gameName);
 
         if (game != null) {
@@ -212,7 +224,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @throws RemoteException
      */
     @Override
-    public synchronized List<Card> getPlusCards(String gameName, Player player) throws RemoteException {
+    public synchronized List<Card> getPlusCards(String gameName, Player player, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         Game game = lobby.findGame(gameName);
         Player serverSidePlayer = game.findPlayer(player);
         List<Card> ret = new ArrayList<>();
@@ -377,7 +392,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
      * @return
      * @throws RemoteException
      */
-    public List<String> getGameResults(String gameName) throws RemoteException {
+    public List<String> getGameResults(String gameName, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         Game game = lobby.findGame(gameName);
 
         int score = gameLogic.calculateScore(game);
@@ -394,7 +412,10 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
 
     @Override
-    public List<Card> fetchCardImageMappings() throws RemoteException {
+    public List<Card> fetchCardImageMappings(String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return null;
+
         LOGGER.info("APPSERVER REQUESTING IMAGES");
         List<Card> ret = null;
         boolean persistedToDb = false;

@@ -33,7 +33,7 @@ public class EndGameService extends Service<List<String>> {
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
-                List<String> results = gameService.getGameResults(currentGame.getGameId());
+                List<String> results = gameService.getGameResults(currentGame.getGameId(), Main.token);
 
                 LOGGER.log(Level.INFO, "EndGameService result = {0}", results);
 

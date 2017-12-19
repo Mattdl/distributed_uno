@@ -44,6 +44,7 @@ public class LoginService extends Service<Boolean> {
 
                     if (Main.token != null) {
                         succesfulLogin = loginService.loginWithToken(Main.token);
+                        System.out.println("1: " + succesfulLogin);
                     }
 
                     if(!succesfulLogin) {

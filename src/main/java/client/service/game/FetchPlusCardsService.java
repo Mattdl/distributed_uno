@@ -42,7 +42,7 @@ public class FetchPlusCardsService extends Service<Void> {
 
                     LOGGER.log(Level.INFO,"Requesting plus cards");
 
-                    List<Card> cards = gameService.getPlusCards(currentGame.getGameId(), Main.currentPlayer);
+                    List<Card> cards = gameService.getPlusCards(currentGame.getGameId(), Main.currentPlayer, Main.token);
 
                     isSuccessful = cards != null;
 

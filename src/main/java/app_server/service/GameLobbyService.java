@@ -5,6 +5,7 @@ import model.Game;
 import model.Lobby;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import security.JWTUtils;
 import stub_RMI.appserver_dbserver.GameDbStub;
 import stub_RMI.client_appserver.GameLobbyStub;
 
@@ -36,7 +37,10 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
      * @throws RemoteException
      */
     @Override
-    public synchronized boolean hasEverybodyJoined(String gameName) throws RemoteException {
+    public synchronized boolean hasEverybodyJoined(String gameName, String token) throws RemoteException {
+        if(!JWTUtils.validateJWT(token, AppServer.apiSecret))
+            return false;
+
         LOGGER.info("Entering hasEverybodyJoined");
 
         try {

@@ -46,7 +46,7 @@ public class CreateGameService extends Service<String> {
                 LOGGER.log(Level.INFO, "Lookup successful");
 
 
-                String gameId = lobbyService.createNewGame(initPlayer, name, size);
+                String gameId = lobbyService.createNewGame(initPlayer, name, size, Main.token);
 
                 LOGGER.log(Level.INFO, "Return value, created game with Id = {0}",gameId);
 

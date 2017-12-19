@@ -39,7 +39,7 @@ public class FetchCurrentPlayerAndCardService extends Service<Boolean> {
                 //must only be performed once for the initialization
                 do {
                     //RMI call
-                    Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameId(), isInit);
+                    Move ret = gameService.getCurrentPlayerAndLastCard(game.getGameId(), isInit, Main.token);
 
                     isSuccessful = ret != null;
 

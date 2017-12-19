@@ -38,7 +38,7 @@ public class PlayMoveService extends Service<Boolean> {
                 Registry myRegistry = LocateRegistry.getRegistry(Main.appServer.getIp(), Main.appServer.getPort());
                 GameStub gameService = (GameStub) myRegistry.lookup("GameService");
 
-                Card drawnCard = gameService.playMove(game.getGameId(), playedMove);
+                Card drawnCard = gameService.playMove(game.getGameId(), playedMove, Main.token);
 
                 LOGGER.log(Level.INFO, "Drawn card from PlayMoveService = {0}", drawnCard);
 

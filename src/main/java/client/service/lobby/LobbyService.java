@@ -42,7 +42,7 @@ public class LobbyService extends Service<Void> {
                 int version = -1;
 
                 while(isInLobby){
-                    Lobby retLobby = lobbyService.getJoinableGames(version);
+                    Lobby retLobby = lobbyService.getJoinableGames(version, Main.token);
 
                     version = retLobby.getVersion();
 

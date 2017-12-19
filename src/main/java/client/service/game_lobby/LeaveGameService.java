@@ -36,7 +36,7 @@ public class LeaveGameService extends Service<String> {
                 LOGGER.log(Level.INFO, "Lookup successful");
 
 
-                String ret = lobbyService.leaveGame(Main.currentPlayer, gameName);
+                String ret = lobbyService.leaveGame(Main.currentPlayer, gameName, Main.token);
 
                 LOGGER.log(Level.INFO, "Successfully removed: " + ret);
 
