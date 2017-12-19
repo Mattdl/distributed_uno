@@ -108,24 +108,22 @@ public class UserDbService extends UnicastRemoteObject implements UserDbStub {
 
         for (DbServer otherDbServer : otherDatabases) {
 
-            if (otherDbServer.isConnected()) {
+            UserDbStub userDbStub = otherDbServer.getUserDbStub();
 
-                UserDbStub userDbStub = otherDbServer.getUserDbStub();
+            try {
 
-                try {
+                userDbStub.persistUser(userToPersist, false);
 
-                    userDbStub.persistUser(userToPersist, false);
+                LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getPlayer().getName(), otherDbServer);
 
-                    LOGGER.info("USER '{}' was persisted to other database = {}", userToPersist.getPlayer().getName(), otherDbServer);
+            } catch (Exception e) {
+                LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
+                //e.printStackTrace();
 
-                } catch (Exception e) {
-                    LOGGER.error("DATABASE '{}'COULD NOT PERSIST TO OTHER DATABASE : {}", this.databaseServer, otherDbServer);
-                    //e.printStackTrace();
-
-                    otherDbServer.addUserToQueue(userToPersist);
-                    LOGGER.error("DATABASE '{}' ADDED USER TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
-                }
+                otherDbServer.addUserToQueue(userToPersist);
+                LOGGER.error("DATABASE '{}' ADDED USER TO UPDATE QUEUE of {}", this.databaseServer, otherDbServer);
             }
+
         }
 
         otherDatabasesLock.readLock().unlock();
