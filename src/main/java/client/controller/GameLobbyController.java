@@ -7,8 +7,10 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
@@ -42,6 +44,9 @@ public class GameLobbyController implements Observer {
     private Text numberOfPlayersText;
 
     @FXML
+    private Label statusbar;
+
+    @FXML
     private BorderPane gameLobbyBorderPane;
 
     public GameLobbyController(Game game) {
@@ -62,6 +67,7 @@ public class GameLobbyController implements Observer {
         gameLobbyService.start();
 
         gameNameText.setText(currentGame.getGameName());
+        statusbar.setText("Waiting for other players to join...");
     }
 
     /**
@@ -110,7 +116,9 @@ public class GameLobbyController implements Observer {
                 //Set Playerlist
                 currentPlayersVBox.getChildren().clear();
                 for (Player p : currentGame.getPlayerList()) {
-                    currentPlayersVBox.getChildren().add(new Text(p.getName() + ": " + p.getHighscore()));
+                    Text text = new Text(p.getName() + ": " + p.getHighscore());
+                    text.setFill(new Color(1,0.9294,0.9294, 1));
+                    currentPlayersVBox.getChildren().add(text);
                 }
 
                 //Set playercount

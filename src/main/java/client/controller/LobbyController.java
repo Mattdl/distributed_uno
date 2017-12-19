@@ -12,6 +12,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Game;
@@ -48,7 +49,7 @@ public class LobbyController implements Observer {
     @FXML
     public void initialize() {
 
-        BackgroundImage myBI= new BackgroundImage(new Image("background/Lobby-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+        BackgroundImage myBI= new BackgroundImage(new Image("background/Lobby-Screen-Background.gif",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
         lobbyBorderPane.setBackground(new Background(myBI));
@@ -78,10 +79,10 @@ public class LobbyController implements Observer {
             @Override
             public void run() {
                 VBox vboxEntryList = new VBox();
-                vboxEntryList.getChildren().add(new Text("Lobby"));
                 LOGGER.info("VBOX initiated");
 
                 for (Game game : lobby.getGameList()) {
+                    System.out.println("Added game");
                     vboxEntryList.getChildren().add(createGameEntry(game));
                 }
                 LOGGER.info("game entries initiated");
@@ -107,10 +108,15 @@ public class LobbyController implements Observer {
      */
     public HBox createGameEntry(Game game) {
         HBox entry = new HBox();
-        entry.getChildren().add(new Text(game.getGameName()));
-        entry.getChildren().add(new Text("Players: " + game.getPlayerList().size() + " of " + game.getGameSize()));
+        Text gameNameText = new Text(game.getGameName() + "  (");
+        gameNameText.setFill(new Color(1,0.9294,0.9294, 1));
+        Text gameInfo = new Text("Players: " + game.getPlayerList().size() + " of " + game.getGameSize()+ ")"  );
+        gameInfo.setFill(new Color(1,0.9294,0.9294, 1));
 
-        Button button = new Button(game.getGameName());
+        entry.getChildren().add(gameNameText);
+        entry.getChildren().add(gameInfo);
+
+        Button button = new Button("Join " + game.getGameName());
         button.setId(game.getGameId());
         button.setOnAction(e -> joinGame(e));
         entry.getChildren().add(button);

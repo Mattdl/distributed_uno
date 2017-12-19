@@ -9,7 +9,10 @@
 
 <BorderPane id="lobbyBorderPane" fx:id="lobbyBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.controller.LobbyController">
    <bottom>
-      <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#createNewGame" text="Create New Game" BorderPane.alignment="CENTER" />
+      <Button fx:id="createGameButton" mnemonicParsing="false" onAction="#createNewGame" text="Create New Game" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets bottom="60.0" />
+         </BorderPane.margin></Button>
    </bottom>
    <center>
       <TilePane fx:id="centerContainer" alignment="CENTER" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">

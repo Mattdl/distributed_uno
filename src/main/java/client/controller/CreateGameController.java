@@ -37,7 +37,7 @@ public class CreateGameController {
     @FXML
     public void initialize() {
 
-        BackgroundImage myBI= new BackgroundImage(new Image("background/Lobby-Screen-Background.jpg",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
+        BackgroundImage myBI= new BackgroundImage(new Image("background/CreateGame-Screen-Background.gif",sceneFactory.getWIDTH(),sceneFactory.getHEIGHT()*1.02,false,true),
                 BackgroundRepeat.REPEAT, BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
                 BackgroundSize.DEFAULT);
         createGameBorderPane.setBackground(new Background(myBI));
@@ -45,7 +45,7 @@ public class CreateGameController {
         //Set choicebox values
         ObservableList<Integer> availableChoices = FXCollections.observableArrayList(2, 3, 4);
         numberOfPlayers.setItems(availableChoices);
-        numberOfPlayers.setValue(4);
+        numberOfPlayers.setValue(2);
     }
 
     @FXML
