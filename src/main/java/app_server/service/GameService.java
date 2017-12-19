@@ -1,5 +1,6 @@
 package app_server.service;
 
+import app_server.AppServer;
 import dispatcher.Dispatcher;
 import game_logic.GameLogic;
 import model.*;
@@ -25,10 +26,14 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     //RMI
     private GameDbStub gameDbService;
 
-    public GameService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
+    private AppServer appServer;
+
+
+    public GameService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
         this.gameLogic = new GameLogic();
         this.gameDbService = gameDbService;
+        this.appServer = appServer;
     }
 
     /**
@@ -292,8 +297,16 @@ public class GameService extends UnicastRemoteObject implements GameStub {
             LOGGER.info("APPSERVER trying to persist MOVE for gameId = {},move={}", game.getGameId(), move);
 
 
-            gameDbService.persistMove(game.getGameId(), move, true);
-            LOGGER.info("MOVE persisted to database for game = {}", game);
+            try {
+                gameDbService.persistMove(game.getGameId(), move, true);
+                LOGGER.info("MOVE persisted to database for game = {}", game);
+
+            } catch (Exception e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+                return null;
+            }
 
             //gameDbService.fetchGame(game.getGameId());
             //LOGGER.info("FETCH GAME AFTER MOVE, game = {}", game);
@@ -304,7 +317,9 @@ public class GameService extends UnicastRemoteObject implements GameStub {
 
         Player serverPlayer = game.findPlayer(move.getPlayer());
 
-        if (serverPlayer != null) {
+        if (serverPlayer != null)
+
+        {
             move.setPlayer(serverPlayer);
 
             //Update game
@@ -342,7 +357,13 @@ public class GameService extends UnicastRemoteObject implements GameStub {
         winner.addScore(score);
 
         //Update userscore in database
-        gameDbService.updateWinner(winner);
+        try {
+            gameDbService.updateWinner(winner);
+        } catch (Exception e) {
+            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+            AppServer.retrieveNewDatabaseInfo(appServer);
+            AppServer.registerAsClientWithDatabase(appServer);
+        }
     }
 
     /**
@@ -371,8 +392,15 @@ public class GameService extends UnicastRemoteObject implements GameStub {
     @Override
     public List<Card> fetchCardImageMappings() throws RemoteException {
         LOGGER.info("APPSERVER REQUESTING IMAGES");
+        List<Card> ret = null;
 
-        List<Card> ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
+        try {
+            ret = gameDbService.fetchCardImageMappings(Dispatcher.isHolliday);
+        } catch (Exception e) {
+            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+            AppServer.retrieveNewDatabaseInfo(appServer);
+            AppServer.registerAsClientWithDatabase(appServer);
+        }
 
         LOGGER.info("APPSERVER RETURNING IMAGES = {}", ret);
         return ret;

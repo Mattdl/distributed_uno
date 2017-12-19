@@ -1,5 +1,6 @@
 package app_server.service;
 
+import app_server.AppServer;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,12 +18,14 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
 
     private UserDbStub userDbService;
 
+    private AppServer appServer;
 
-    public RegisterService(UserDbStub userDbService) throws RemoteException {
+    public RegisterService(UserDbStub userDbService, AppServer appServer) throws RemoteException {
         this.userDbService = userDbService;
+        this.appServer = appServer;
     }
 
-    public boolean register(String username, String password) {
+    public boolean register(String username, String password) throws RemoteException {
         LOGGER.info("Registering for username = {}, password = {}", username, password);
 
         byte[] salt = Passwords.getNextSalt();
@@ -41,8 +44,10 @@ public class RegisterService extends UnicastRemoteObject implements RegisterStub
 
             successful = userDbService.persistUser(user, true);
 
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        } catch (Exception e) {
+            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+            AppServer.retrieveNewDatabaseInfo(appServer);
+            AppServer.registerAsClientWithDatabase(appServer);
         }
 
         return successful;

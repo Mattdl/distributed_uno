@@ -23,8 +23,11 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
 
     private UserDbStub userDbService;
 
-    public LoginService(UserDbStub userDbService) throws RemoteException {
+    private AppServer appServer;
+
+    public LoginService(UserDbStub userDbService, AppServer appServer) throws RemoteException {
         this.userDbService = userDbService;
+        this.appServer = appServer;
     }
 
     @Override
@@ -38,7 +41,14 @@ public class LoginService extends UnicastRemoteObject implements LoginStub {
         LOGGER.info("GETTING LOGIN TOKEN FOR username = {}, password = {}", username, inputPassword);
 
         // fetch login with database
-        User dbUser = userDbService.fetchUser(username);
+        User dbUser = null;
+        try {
+            dbUser = userDbService.fetchUser(username);
+        } catch (Exception e) {
+            LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+            AppServer.retrieveNewDatabaseInfo(appServer);
+            AppServer.registerAsClientWithDatabase(appServer);
+        }
 
         LOGGER.info("USER IN DATABASE FOUND user = {}", dbUser);
 

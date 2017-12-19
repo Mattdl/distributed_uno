@@ -1,5 +1,6 @@
 package app_server.service;
 
+import app_server.AppServer;
 import model.Game;
 import model.Lobby;
 import org.slf4j.Logger;
@@ -20,9 +21,13 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
     private Lobby lobby;
     private GameDbStub gameDbService;
 
-    public GameLobbyService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
+    private AppServer appServer;
+
+
+    public GameLobbyService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
         this.gameDbService = gameDbService;
+        this.appServer = appServer;
     }
 
     /**
@@ -48,7 +53,14 @@ public class GameLobbyService extends UnicastRemoteObject implements GameLobbySt
                 if (!game.isInitialyPersisted()) {
                     LOGGER.info("Persisting Game Object to Database!");
 
-                    gameDbService.persistGame(game, true);
+                    try {
+                        gameDbService.persistGame(game, true);
+                    } catch (Exception e) {
+                        LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                        AppServer.retrieveNewDatabaseInfo(appServer);
+                        AppServer.registerAsClientWithDatabase(appServer);
+                        return false;
+                    }
                     game.setInitialyPersisted(true);
 
                     //TODO delete this, just for testing

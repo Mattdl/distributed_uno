@@ -1,5 +1,6 @@
 package app_server.service;
 
+import app_server.AppServer;
 import model.Card;
 import model.Game;
 import model.Lobby;
@@ -23,9 +24,13 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
     private Lobby lobby;
     private GameDbStub gameDbService;
 
-    public LobbyService(Lobby lobby, GameDbStub gameDbService) throws RemoteException {
+    private AppServer appServer;
+
+
+    public LobbyService(Lobby lobby, GameDbStub gameDbService, AppServer appServer) throws RemoteException {
         this.lobby = lobby;
         this.gameDbService = gameDbService;
+        this.appServer = appServer;
     }
 
     /**
@@ -121,7 +126,7 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
      */
     @Override
     public synchronized String leaveGame(Player player, String gameName) throws RemoteException {
-        LOGGER.info( "Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
+        LOGGER.info("Trying to remove PLAYER " + player.getName() + " from GAME " + gameName);
 
         Game gameInLobby = lobby.findGame(gameName);
 
@@ -159,13 +164,24 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
         LOGGER.info("Entering getGameLobbyInfo");
 
         Game game = lobby.findGame(gameName);
-        for(Player player: game.getPlayerList()){
-            player.setHighscore(gameDbService.fetchPlayerScore(player.getName()));
+        for (Player player : game.getPlayerList()) {
+
+            int highscore = -1;
+            try {
+                highscore = gameDbService.fetchPlayerScore(player.getName());
+            } catch (Exception e) {
+                LOGGER.error("APPSERVER COULD NOT CONNECT TO DATABASE FOR ACTION");
+                AppServer.retrieveNewDatabaseInfo(appServer);
+                AppServer.registerAsClientWithDatabase(appServer);
+                return null;
+            }
+
+            player.setHighscore(highscore);
         }
 
         try {
 
-            LOGGER.info("getGameLobbyInfo, clientversion={}, gameName = '{}', found game={}",clientVersion,gameName,game);
+            LOGGER.info("getGameLobbyInfo, clientversion={}, gameName = '{}', found game={}", clientVersion, gameName, game);
             //Use while here, because otherwise for every total Lobby update, it will continue...
             while (clientVersion >= game.getVersion()) {
                 wait();
@@ -187,11 +203,11 @@ public class LobbyService extends UnicastRemoteObject implements LobbyStub {
 
     private synchronized void lobbyUpdated() {
         lobby.updateVersion();
-        LOGGER.info( "lobbyUpdated method");
+        LOGGER.info("lobbyUpdated method");
 
         notifyAll();
 
-        LOGGER.info( "Notified everybody");
+        LOGGER.info("Notified everybody");
 
     }
 }

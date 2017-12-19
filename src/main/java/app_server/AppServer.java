@@ -24,7 +24,7 @@ import static security.JWTUtils.generateApiSecret;
 
 public class AppServer {
 
-    final Logger LOGGER = LoggerFactory.getLogger(AppServer.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(AppServer.class);
 
     private String dbIp;
     private int dbPort;
@@ -38,7 +38,7 @@ public class AppServer {
 
     private GameDbStub gameDbService;
     private UserDbStub userDbService;
-    private DispatcherStub dispatcherService;
+    private static DispatcherStub dispatcherService;
 
     public static String apiSecret;
 
@@ -59,7 +59,7 @@ public class AppServer {
     private void startServer() {
 
         registerAsClientWithDispatcher(DISPATCHER_IP, DISPATCHER_PORT);
-        registerAsClientWithDatabase();
+        registerAsClientWithDatabase(this);
 
         initData();
 
@@ -67,15 +67,15 @@ public class AppServer {
             Registry registry = LocateRegistry.createRegistry(port);
 
             //Bind RMI implementations to service names
-            registry.rebind("LoginService", new LoginService(userDbService));
+            registry.rebind("LoginService", new LoginService(userDbService, this));
 
-            registry.rebind("GameService", new GameService(lobby, gameDbService));
+            registry.rebind("GameService", new GameService(lobby, gameDbService, this));
 
-            registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService));
+            registry.rebind("GameLobbyService", new GameLobbyService(lobby, gameDbService, this));
 
-            registry.rebind("LobbyService", new LobbyService(lobby, gameDbService));
+            registry.rebind("LobbyService", new LobbyService(lobby, gameDbService, this));
 
-            registry.rebind("RegisterService", new  RegisterService(userDbService));
+            registry.rebind("RegisterService", new RegisterService(userDbService, this));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -106,23 +106,23 @@ public class AppServer {
     /**
      * RMI call to Dispatcher to retrieve new database info
      */
-    private void retrieveNewDatabaseInfo() {
-        LOGGER.info("APPSERVER ASKING NEW DATABASE INFO, current database server = {}:{}", dbIp, dbPort);
+    public static void retrieveNewDatabaseInfo(AppServer appServer) {
+        LOGGER.info("APPSERVER ASKING NEW DATABASE INFO, current database server = {}:{}", appServer.dbIp, appServer.dbPort);
 
         try {
-            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}", dbIp, dbPort);
-            Server server = dispatcherService.retrieveActiveDatabaseInfo(currentServer);
+            LOGGER.info("Entering retrieveNewDatabaseInfo on APPSERVER, current dbServer = {}:{}", appServer.dbIp, appServer.dbPort);
+            Server server = dispatcherService.retrieveActiveDatabaseInfo(appServer.currentServer);
 
             LOGGER.info("NEW DATABASE INFO RETRIEVED on APPSERVER, dbserver = {}", server);
 
-            dbPort = server.getPort();
-            dbIp = server.getIp();
+            appServer.dbPort = server.getPort();
+            appServer.dbIp = server.getIp();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        LOGGER.info("APPSERVER RETRIEVED NEW DATABASE INFO= {}:{}", dbIp, dbPort);
+        LOGGER.info("APPSERVER RETRIEVED NEW DATABASE INFO= {}:{}", appServer.dbIp, appServer.dbPort);
     }
 
     /**
@@ -134,35 +134,35 @@ public class AppServer {
 
 
     /**
-     * This app server is an RMI client of the databse, to persist/retrieve games.
+     * This app server is an RMI client of the database, to persist/retrieve games.
      *
      * @return
      */
-    private void registerAsClientWithDatabase() {
+    public static void registerAsClientWithDatabase(AppServer appServer) {
 
-        LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}", dbIp, dbPort);
+        LOGGER.info("Entering registerAsClientWithDatabase, dbIp={}, dbPort={}", appServer.dbIp, appServer.dbPort);
 
         Registry myRegistry = null;
 
-        while (myRegistry == null || gameDbService == null || userDbService == null) {
+        while (myRegistry == null || appServer.gameDbService == null || appServer.userDbService == null) {
             try {
-                myRegistry = LocateRegistry.getRegistry(dbIp, dbPort);
+                myRegistry = LocateRegistry.getRegistry(appServer.dbIp, appServer.dbPort);
 
                 if (myRegistry != null) {
-                    gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
-                    userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
+                    appServer.gameDbService = (GameDbStub) myRegistry.lookup("GameDbService");
+                    appServer.userDbService = (UserDbStub) myRegistry.lookup("UserDbService");
                 }
 
-                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", dbIp, dbPort);
+                LOGGER.info("APPSERVER CONNECTED TO DATABASE, database server = {}:{}", appServer.dbIp, appServer.dbPort);
 
 
             } catch (Exception e) {
-                LOGGER.info("APPSERVER FAILED CONNECTING TO DATABASE, database server = {}:{}", dbIp, dbPort);
+                LOGGER.info("APPSERVER FAILED CONNECTING TO DATABASE, database server = {}:{}", appServer.dbIp, appServer.dbPort);
 
                 //e.printStackTrace();
 
                 //if no connetion, ask dispatcher for new dbIP+port
-                retrieveNewDatabaseInfo();
+                retrieveNewDatabaseInfo(appServer);
             }
         }
 
