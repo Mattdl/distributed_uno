@@ -368,9 +368,11 @@ public class GameController implements Observer {
         LOGGER.log(Level.INFO, "switching To WinnerScene");
 
         Stage popup = new Stage();
+        popup.setX(stage.getX() + stage.getWidth()*0.12);
+        popup.setY(stage.getY() + stage.getHeight()*0.12);
         popup.initModality(Modality.APPLICATION_MODAL);
         popup.setResizable(false);
-        popup.initStyle(StageStyle.TRANSPARENT);
+        popup.initStyle(StageStyle.DECORATED);
         popup.setTitle("Winner Screen");
 
 
